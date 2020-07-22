@@ -1,0 +1,75 @@
+﻿<Window x:Class="TT.Diary.Desktop.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TT.Diary.Desktop"
+        xmlns:vm="clr-namespace:TT.Diary.Desktop.ViewModel"
+        mc:Ignorable="d"
+        Title="Diary"
+        WindowState="Maximized" >
+    <Window.DataContext>
+        <vm:Context />
+    </Window.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Row="0" Grid.Column="0">
+            <ToolBarTray x:Name="MainToolBar">
+                <ToolBar Band="1" BandIndex="1" ItemsSource="{Binding DiaryTypes, Mode=OneWay}">
+                    <ToolBar.ItemTemplate>
+                        <DataTemplate>
+                            <Button ToolTip="{Binding Tip}" Background="Transparent" BorderBrush="Transparent" Margin="0,0,10,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="{Binding ImgUrl}"/>
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>
+                    </ToolBar.ItemTemplate>
+                </ToolBar>
+            </ToolBarTray>
+        </StackPanel>
+
+        <Border Grid.Row="0" Grid.Column="1" BorderBrush="Gray" BorderThickness="1" CornerRadius="2">
+            <Menu Background="{Binding Path=Background, ElementName=MainToolBar}">
+                <MenuItem Width="{Binding Path=ActualHeight, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Menu}}}" 
+                          Height="{Binding Path=ActualHeight, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Menu}}}" 
+                          ItemsSource="{Binding ListTypes, Mode=OneWay}"
+                          ToolTip="{Binding DictionaryTip, Mode=OneWay}">
+                    <MenuItem.Header>
+                        <Grid>
+                            <Line X1="0" Y1="0" X2="26" Y2="0" Stroke="Gray" />
+                            <Line X1="0" Y1="6" X2="26" Y2="6" Stroke="Gray" />
+                            <Line X1="0" Y1="12" X2="26" Y2="12" Stroke="Gray" />
+                        </Grid>
+                    </MenuItem.Header>
+                    <MenuItem.ItemTemplate>
+                        <DataTemplate>
+                            <MenuItem Header="{Binding Name}" ToolTip="{Binding Tip}">
+                                <MenuItem.Icon>
+                                    <Image Source="{Binding ImgUrl}"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </DataTemplate>
+                    </MenuItem.ItemTemplate>
+                </MenuItem>
+            </Menu>
+        </Border>
+
+        <Grid Grid.Row="1" Grid.ColumnSpan="2">
+            <Image HorizontalAlignment="Right" VerticalAlignment="Top" Stretch="None" Source="Images\Background\big_lemon.png" />
+            <Image HorizontalAlignment="Left" VerticalAlignment="Bottom" Stretch="None" Source="Images\Background\small_lemon.png" />
+            <StackPanel>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>
