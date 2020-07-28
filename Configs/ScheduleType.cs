@@ -2,9 +2,9 @@
 
 namespace TT.Diary.Desktop.Configs
 {
-    public class DiaryType : MenuItem
+    public class ScheduleType : MenuItem
     {
-        public string ImgUrl { get; set; }
+        public string ImgUrl { get; private set; }
 
         public override void SetProperties(XmlNode node)
         {

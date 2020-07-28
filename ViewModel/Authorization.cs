@@ -1,0 +1,250 @@
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Security.Cryptography;
+using System.Threading.Tasks;
+using GalaSoft.MvvmLight.Command;
+
+namespace TT.Diary.Desktop.ViewModel
+{
+    public class Authorization
+    {
+        // client configuration
+        private readonly string CLIENT_ID = "581620216539-5i0qe6ovp1erprtiobnrtovlognnqdf5.apps.googleusercontent.com";
+        private readonly string CLIENT_SECRET = "svl14TS194zPEnVG0eKC4oGA";
+        private readonly string AUTHORIZATION_ENDPOINT = "https://accounts.google.com/o/oauth2/v2/auth";
+        private readonly string USER_INFO_REQUEST_URI = "https://www.googleapis.com/oauth2/v3/userinfo";
+        private readonly string TOKEN_REQUEST_URI = "https://www.googleapis.com/oauth2/v4/token";
+        private readonly string CODE_CHALLENGE_METHOD = "S256";
+        private readonly string AUTHORIZATION_REQUEST = "{0}?response_type=code&scope=openid%20profile&redirect_uri={1}&client_id={2}&state={3}&code_challenge={4}&code_challenge_method={5}";
+        private readonly string RESPONSE_STRING = "<html><head><meta http-equiv='refresh' content='10;url=https://google.com'></head><body>Please return to the app.</body></html>";
+        private readonly string TOKEN_REQUEST_BODY = "code={0}&redirect_uri={1}&client_id={2}&code_verifier={3}&client_secret={4}&scope=&grant_type=authorization_code";
+
+        public RelayCommand<IWindowService> SignInCommand { get; }
+        public RelayCommand<IWindowService> CloseWindowCommand { get; }
+
+        public Authorization()
+        {
+            SignInCommand = new RelayCommand<IWindowService>((window) => SignIn(window), true);
+
+            CloseWindowCommand = new RelayCommand<IWindowService>((window) =>
+            {
+                if (window == null)
+                    return;
+                window.Close();
+            }
+            , true);
+        }
+
+        private async void SignIn(IWindowService window)
+        {
+            // Generates state and PKCE values.
+            var state = RandomDataBase64url(32);
+            var code_verifier = RandomDataBase64url(32);
+            var code_challenge = Base64urlencodeNoPadding(Sha256(code_verifier));
+
+            // Creates a redirect URI using an available port on the loopback address.
+            var redirectURI = string.Format("http://{0}:{1}/", IPAddress.Loopback, GetRandomUnusedPort());
+
+            // Creates an HttpListener to listen for requests on that redirect URI.
+            var http = new HttpListener();
+            http.Prefixes.Add(redirectURI);
+            http.Start();
+
+            // Creates the OAuth 2.0 authorization request.
+            var authorizationRequest = string.Format(AUTHORIZATION_REQUEST,
+                AUTHORIZATION_ENDPOINT,
+                Uri.EscapeDataString(redirectURI),
+                CLIENT_ID,
+                state,
+                code_challenge,
+                CODE_CHALLENGE_METHOD);
+
+            // Opens request in the browser.
+            System.Diagnostics.Process.Start(authorizationRequest);
+
+            // Waits for the OAuth authorization response.
+            var context = await http.GetContextAsync();
+
+            // Brings this app back to the foreground.
+            window.Activate();
+
+            // Sends an HTTP response to the browser.
+            var response = context.Response;
+            var buffer = Encoding.UTF8.GetBytes(RESPONSE_STRING);
+            response.ContentLength64 = buffer.Length;
+            var responseOutput = response.OutputStream;
+            Task responseTask = responseOutput.WriteAsync(buffer, 0, buffer.Length).ContinueWith((task) =>
+            {
+                responseOutput.Close();
+                http.Stop();
+                http.Close();
+            });
+
+            // Checks for errors.
+            if (context.Request.QueryString.Get("error") != null)
+            {
+                window.ShowMessageBox(string.Format("OAuth authorization error: {0}.", context.Request.QueryString.Get("error")), "Error");
+                return;
+            }
+            if (context.Request.QueryString.Get("code") == null
+                || context.Request.QueryString.Get("state") == null)
+            {
+                window.ShowMessageBox(string.Format("Malformed authorization response. {0}.", context.Request.QueryString), "Error");
+                return;
+            }
+
+            // extracts the code
+            var code = context.Request.QueryString.Get("code");
+            var incoming_state = context.Request.QueryString.Get("state");
+
+            // Compares the receieved state to the expected value, to ensure that
+            // this app made the request which resulted in authorization.
+            if (incoming_state != state)
+            {
+                window.ShowMessageBox(string.Format("Received request with invalid state ({0})", incoming_state), "Error");
+                return;
+            }
+
+            // Starts the code exchange at the Token Endpoint.
+            var access_token = await PerformCodeExchange(code, code_verifier, redirectURI, window);
+            var userInfo = await GetUserInfo(access_token);
+
+            window.ShowWindow(new Context(userInfo));
+            window.Close();
+        }
+
+        // ref http://stackoverflow.com/a/3978040
+        private int GetRandomUnusedPort()
+        {
+            var listener = new TcpListener(IPAddress.Loopback, 0);
+            listener.Start();
+            var port = ((IPEndPoint)listener.LocalEndpoint).Port;
+            listener.Stop();
+            return port;
+        }
+
+        /// <summary>
+        /// Returns URI-safe data with a given input length.
+        /// </summary>
+        /// <param name="length">Input length (nb. output will be longer)</param>
+        /// <returns></returns>
+        private string RandomDataBase64url(uint length)
+        {
+            var rng = new RNGCryptoServiceProvider();
+            byte[] bytes = new byte[length];
+            rng.GetBytes(bytes);
+            return Base64urlencodeNoPadding(bytes);
+        }
+
+        /// <summary>
+        /// Base64url no-padding encodes the given input buffer.
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <returns></returns>
+        private string Base64urlencodeNoPadding(byte[] buffer)
+        {
+            string base64 = Convert.ToBase64String(buffer);
+            // Converts base64 to base64url.
+            base64 = base64.Replace("+", "-");
+            base64 = base64.Replace("/", "_");
+            // Strips padding.
+            base64 = base64.Replace("=", "");
+            return base64;
+        }
+
+        /// <summary>
+        /// Returns the SHA256 hash of the input string.
+        /// </summary>
+        /// <param name="inputStirng"></param>
+        /// <returns></returns>
+        private byte[] Sha256(string inputStirng)
+        {
+            byte[] bytes = Encoding.ASCII.GetBytes(inputStirng);
+            SHA256Managed sha256 = new SHA256Managed();
+            return sha256.ComputeHash(bytes);
+        }
+
+        private async Task<string> PerformCodeExchange(string code, string code_verifier, string redirectURI, IWindowService window)
+        {
+            // builds the  request
+            var tokenRequestBody = string.Format(TOKEN_REQUEST_BODY,
+                code,
+                Uri.EscapeDataString(redirectURI),
+                CLIENT_ID,
+                code_verifier,
+                CLIENT_SECRET
+                );
+
+            // sends the request
+            HttpWebRequest tokenRequest = (HttpWebRequest)WebRequest.Create(TOKEN_REQUEST_URI);
+            tokenRequest.Method = "POST";
+            tokenRequest.ContentType = "application/x-www-form-urlencoded";
+            tokenRequest.Accept = "Accept=text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
+            byte[] _byteVersion = Encoding.ASCII.GetBytes(tokenRequestBody);
+            tokenRequest.ContentLength = _byteVersion.Length;
+            Stream stream = tokenRequest.GetRequestStream();
+            await stream.WriteAsync(_byteVersion, 0, _byteVersion.Length);
+            stream.Close();
+
+            try
+            {
+                // gets the response
+                WebResponse tokenResponse = await tokenRequest.GetResponseAsync();
+                Dictionary<string, string> tokenEndpointDecoded;
+                using (StreamReader reader = new StreamReader(tokenResponse.GetResponseStream()))
+                {
+                    // reads response body
+                    var responseText = await reader.ReadToEndAsync();
+                    // converts to dictionary
+                    tokenEndpointDecoded = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseText);
+                }
+                tokenResponse.Close();
+                return tokenEndpointDecoded["access_token"];
+            }
+            catch (WebException ex)
+            {
+                if (ex.Status == WebExceptionStatus.ProtocolError)
+                {
+                    var response = ex.Response as HttpWebResponse;
+                    if (response != null)
+                    {
+                        using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+                        {
+                            // reads response body
+                            string responseText = await reader.ReadToEndAsync();
+                            window.ShowMessageBox(responseText, "Error");
+                        }
+                    }
+                }
+            }
+
+            return string.Empty;
+        }
+
+        private async Task<User> GetUserInfo(string access_token)
+        {
+            // sends the request
+            HttpWebRequest userinfoRequest = (HttpWebRequest)WebRequest.Create(USER_INFO_REQUEST_URI);
+            userinfoRequest.Method = "GET";
+            userinfoRequest.Headers.Add(string.Format("Authorization: Bearer {0}", access_token));
+            userinfoRequest.ContentType = "application/x-www-form-urlencoded";
+            userinfoRequest.Accept = "Accept=text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
+
+            // gets the response
+            WebResponse userinfoResponse = await userinfoRequest.GetResponseAsync();
+            string userinfoResponseText;
+            using (StreamReader userinfoResponseReader = new StreamReader(userinfoResponse.GetResponseStream()))
+            {
+                // reads response body
+                userinfoResponseText = await userinfoResponseReader.ReadToEndAsync();
+            }
+            userinfoResponse.Close();
+            return JsonConvert.DeserializeObject<User>(userinfoResponseText);
+        }
+    }
+}

@@ -2,8 +2,19 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:TT.Diary.Desktop"
-             StartupUri="MainWindow.xaml">
+             xmlns:vm="clr-namespace:TT.Diary.Desktop.ViewModel"
+             xmlns:v="clr-namespace:TT.Diary.Desktop.Views"
+             StartupUri="./Views/OAuth.xaml">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source=".\Styles\Button.xaml"/>
+                <ResourceDictionary>
+                    <DataTemplate DataType="{x:Type vm:Context}">
+                        <v:MainWindow/>
+                    </DataTemplate>
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

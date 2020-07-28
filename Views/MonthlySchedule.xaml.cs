@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace TT.Diary.Desktop
+namespace TT.Diary.Desktop.Views
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for MonthlySchedule.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MonthlySchedule : UserControl
     {
-        public MainWindow()
+        public MonthlySchedule()
         {
             InitializeComponent();
         }
