@@ -2,15 +2,24 @@
 using System;
 using System.Threading.Tasks;
 using System.Windows;
+using TT.Diary.Desktop.ViewModels.Common.Interfaces;
 
 namespace TT.Diary.Desktop
 {
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application
+    public partial class App : Application, IResourceService
     {
-        private static Logger _logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+
+        public void ChangeTheme(Uri uri)
+        {
+            // load by relative path
+            ResourceDictionary dictionary = (ResourceDictionary)LoadComponent(uri);
+            Resources.MergedDictionaries.RemoveAt(0);
+            Resources.MergedDictionaries.Insert(0, dictionary);
+        }
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -47,6 +56,8 @@ namespace TT.Diary.Desktop
         private void LogUnhandledException(Exception exception, string source)
         {
             string message = $"Unhandled exception ({source})";
+            _logger.Error(exception, message);
+
             try
             {
                 var assemblyName = System.Reflection.Assembly.GetExecutingAssembly().GetName();
@@ -56,10 +67,6 @@ namespace TT.Diary.Desktop
             catch (Exception ex)
             {
                 _logger.Error(ex, "Exception in LogUnhandledException");
-            }
-            finally
-            {
-                _logger.Error(exception, message);
             }
         }
     }

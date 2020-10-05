@@ -74,6 +74,7 @@
       <HintPath>packages\NLog.4.7.2\lib\net45\NLog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Configuration.ConfigurationManager, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\System.Configuration.ConfigurationManager.4.7.0\lib\net461\System.Configuration.ConfigurationManager.dll</HintPath>
@@ -129,37 +130,135 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Convertors\CommandConvertor.cs" />
-    <Compile Include="Convertors\VisibilityConvertor.cs" />
-    <Compile Include="ViewModel\Lists\ListModel.cs" />
+    <Compile Include="Configs\Theme.cs" />
+    <Compile Include="Converters\BooleanOrConverter.cs" />
+    <Compile Include="Converters\CommandConverter.cs" />
+    <Compile Include="Converters\RatingConverter.cs" />
+    <Compile Include="Converters\VisibilityConverter.cs" />
+    <Compile Include="ViewModels\Common\Command.cs" />
+    <Compile Include="ViewModels\Lists\CategoryDragAndDropAlgorithm.cs" />
+    <Compile Include="ViewModels\Lists\Habit.cs" />
+    <Compile Include="ViewModels\Lists\Note.cs" />
+    <Compile Include="Views\Controls\DataContextSpy.cs" />
+    <Compile Include="ViewModels\Common\Interfaces\IDragAndDrop.cs" />
+    <Compile Include="ViewModels\Lists\AbstractListItem.cs" />
+    <Compile Include="Views\Controls\StarRating.xaml.cs">
+      <DependentUpon>StarRating.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\Common\Extensions\CollectionExtension.cs" />
+    <Compile Include="ViewModels\Common\Interfaces\IResourceService.cs" />
+    <Compile Include="ViewModels\Common\Extensions\DependencyObjectExtension.cs" />
+    <Compile Include="ViewModels\Lists\Category.cs" />
+    <Compile Include="ViewModels\Common\Extensions\EnumExtension.cs" />
+    <Compile Include="ViewModels\Common\Messages.cs" />
+    <Compile Include="ViewModels\Common\ObservableObjectWithNotifyDataErrorInfo.cs" />
+    <Compile Include="ViewModels\Common\OperationContract.cs" />
+    <Compile Include="ViewModels\DataContexts\ListViewModel.cs" />
+    <Compile Include="ViewModels\Common\Extensions\GenericExtension.cs" />
+    <Compile Include="ViewModels\Lists\ToDo.cs" />
+    <Compile Include="ViewModels\Lists\Wish.cs" />
+    <Compile Include="Views\Lists\Habit.xaml.cs">
+      <DependentUpon>Habit.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Lists\ListView.xaml.cs">
+      <DependentUpon>ListView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Lists\Note.xaml.cs">
+      <DependentUpon>Note.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\OAuth.xaml.cs">
       <DependentUpon>OAuth.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModel\Authorization.cs" />
-    <Compile Include="ViewModel\Context.cs" />
-    <Compile Include="ViewModel\IWindowService.cs" />
-    <Compile Include="ViewModel\Schedules\DailySchedule.cs" />
-    <Compile Include="ViewModel\NotifyPropertyChanged.cs" />
-    <Compile Include="ViewModel\ControlModel.cs" />
-    <Compile Include="ViewModel\Schedules\MonthlySchedule.cs" />
-    <Compile Include="ViewModel\Schedules\WeeklySchedule.cs" />
-    <Compile Include="ViewModel\Schedules\YearlySchedule.cs" />
-    <Compile Include="ViewModel\User.cs" />
-    <Compile Include="Views\DailySchedule.xaml.cs">
-      <DependentUpon>DailySchedule.xaml</DependentUpon>
+    <Compile Include="ViewModels\DataContexts\Authorization.cs" />
+    <Compile Include="ViewModels\DataContexts\Context.cs" />
+    <Compile Include="ViewModels\Common\Interfaces\IWindowService.cs" />
+    <Compile Include="ViewModels\DataContexts\DailySchedule.cs" />
+    <Compile Include="ViewModels\Common\ContentControlViewModel.cs" />
+    <Compile Include="ViewModels\DataContexts\MonthlySchedule.cs" />
+    <Compile Include="ViewModels\DataContexts\WeeklySchedule.cs" />
+    <Compile Include="ViewModels\DataContexts\YearlySchedule.cs" />
+    <Compile Include="ViewModels\User.cs" />
+    <Compile Include="Views\DailyScheduleView.xaml.cs">
+      <DependentUpon>DailyScheduleView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Lists.xaml.cs">
-      <DependentUpon>Lists.xaml</DependentUpon>
+    <Compile Include="Views\Lists\TreeListView.xaml.cs">
+      <DependentUpon>TreeListView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\MonthlySchedule.xaml.cs">
-      <DependentUpon>MonthlySchedule.xaml</DependentUpon>
+    <Compile Include="Views\MonthlyScheduleView.xaml.cs">
+      <DependentUpon>MonthlyScheduleView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\WeeklySchedule.xaml.cs">
-      <DependentUpon>WeeklySchedule.xaml</DependentUpon>
+    <Compile Include="Views\Lists\ToDo.xaml.cs">
+      <DependentUpon>ToDo.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\YearlySchedule.xaml.cs">
-      <DependentUpon>YearlySchedule.xaml</DependentUpon>
+    <Compile Include="Views\WeeklyScheduleView.xaml.cs">
+      <DependentUpon>WeeklyScheduleView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Lists\Wish.xaml.cs">
+      <DependentUpon>Wish.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\YearlyScheduleView.xaml.cs">
+      <DependentUpon>YearlyScheduleView.xaml</DependentUpon>
+    </Compile>
+    <Page Include="Styles\CheckBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\DataGrid.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\DatePicker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\ErrorTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\GroupBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\TextBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Controls\StarRating.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\TextBlock.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\Themes\Coffee.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\Themes\Tea.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\ToggleButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\TreeViewItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Lists\Habit.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Lists\ListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Lists\Note.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -170,7 +269,7 @@
     </Compile>
     <Compile Include="Configs\ScheduleType.cs" />
     <Compile Include="Configs\ListType.cs" />
-    <Compile Include="Configs\MenuItem.cs" />
+    <Compile Include="Configs\AbstractMenuItem.cs" />
     <Compile Include="Configs\Section.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -184,23 +283,31 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\DailySchedule.xaml">
+    <Page Include="Views\DailyScheduleView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Lists.xaml">
+    <Page Include="Views\Lists\TreeListView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\MonthlySchedule.xaml">
+    <Page Include="Views\MonthlyScheduleView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\WeeklySchedule.xaml">
+    <Page Include="Views\Lists\ToDo.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\YearlySchedule.xaml">
+    <Page Include="Views\WeeklyScheduleView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Lists\Wish.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\YearlyScheduleView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -235,8 +342,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Background\big_lemon.png" />
-    <Resource Include="Images\Background\small_lemon.png" />
     <Resource Include="Images\Toolbar\day.png" />
     <Resource Include="Images\Toolbar\month.png" />
     <Resource Include="Images\Toolbar\week.png" />
@@ -258,9 +363,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Background\leaf.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Images\Google\btn_google_signin_light_focus_web.png" />
     <Resource Include="Images\Google\btn_google_signin_light_normal_web.png" />
     <Resource Include="Images\Google\btn_google_signin_light_pressed_web.png" />
@@ -269,6 +371,32 @@
     <Resource Include="Images\Button\btn_focus.png" />
     <Resource Include="Images\Button\btn_normal.png" />
     <Resource Include="Images\Button\btn_pressed.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Workspace\alarmclock.png" />
+    <Resource Include="Images\Workspace\date-time.png" />
+    <Resource Include="Images\Workspace\note.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Toolbar\add.png" />
+    <Resource Include="Images\Toolbar\edit.png" />
+    <Resource Include="Images\Toolbar\list.png" />
+    <Resource Include="Images\Toolbar\remove.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Themes\Tea\Background\top.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Themes\Tea\Background\down.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\leaf.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Themes\Coffee\Background\down.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Themes\Coffee\Background\top.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />

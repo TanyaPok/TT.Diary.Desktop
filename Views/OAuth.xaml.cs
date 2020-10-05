@@ -1,5 +1,5 @@
 ﻿using System.Windows;
-using TT.Diary.Desktop.ViewModel;
+using TT.Diary.Desktop.ViewModels.Common.Interfaces;
 
 namespace TT.Diary.Desktop.Views
 {
@@ -13,17 +13,13 @@ namespace TT.Diary.Desktop.Views
             InitializeComponent();
         }
 
-        public int ShowMessageBox(string message, string caption)
-        {
-            return (int)MessageBox.Show(message, caption, MessageBoxButton.OK);
-        }
-
         public void ShowWindow(object context)
         {
             MainWindow mainWindow = new MainWindow
             {
                 DataContext = context
             };
+
             mainWindow.Show();
         }
     }

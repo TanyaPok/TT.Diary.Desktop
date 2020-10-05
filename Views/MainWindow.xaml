@@ -3,10 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:TT.Diary.Desktop.Views"
-        xmlns:c="clr-namespace:TT.Diary.Desktop.Convertors"
+        xmlns:c="clr-namespace:TT.Diary.Desktop.Converters"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:command="http://www.galasoft.ch/mvvmlight"
         mc:Ignorable="d"
-        Title="{Binding Title}"
+        Title="{Binding WindowTitle}"
         WindowState="Maximized">
     <Grid>
         <Grid.RowDefinitions>
@@ -16,28 +17,41 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
         <Grid.Resources>
-            <c:CommandConvertor x:Key="commandConvertor" />
-            <c:VisibilityConvertor x:Key="visibilityConvertor"/>
+            <c:DictionaryCommandConverter x:Key="commandConverter" />
+            <c:BoolVisibilityConverter x:Key="visibilityConverter"/>
         </Grid.Resources>
 
         <StackPanel Grid.Row="0" Grid.Column="0">
             <ToolBarTray x:Name="MainToolBar">
-                <ToolBar Band="1" BandIndex="1" ItemsSource="{Binding ScheduleTypes, Mode=OneWay}">
+                <ToolBar Band="1" BandIndex="1" ItemsSource="{Binding ScheduleTypesMenu, Mode=OneWay}">
                     <ToolBar.ItemTemplate>
                         <DataTemplate>
-                            <Button ToolTip="{Binding Tip}" Background="Transparent" BorderBrush="Transparent" Margin="0,0,10,0">
+                            <Button Style="{StaticResource ButtonStyle}" Margin="0,0,10,0" ToolTip="{Binding Tip}">
                                 <Button.Command>
-                                    <MultiBinding Converter="{StaticResource commandConvertor}" Mode="OneWay">
-                                        <Binding Path="DataContext.ShowScheduleCommands" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type Window}}"/>
+                                    <MultiBinding Converter="{StaticResource commandConverter}" Mode="OneWay">
+                                        <Binding Path="DataContext.ScheduleCommands" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type Window}}"/>
                                         <Binding Path="Name"/>
                                     </MultiBinding>
                                 </Button.Command>
                                 <StackPanel Orientation="Horizontal">
                                     <Image Source="{Binding ImgUrl}"/>
-                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Name}" Style="{StaticResource LabelTextBlockStyle}"/>
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>
+                    </ToolBar.ItemTemplate>
+                </ToolBar>
+                <ToolBar Band="1" BandIndex="2" ItemsSource="{Binding CurrentViewModel.Commands, Mode=OneWay}">
+                    <ToolBar.ItemTemplate>
+                        <DataTemplate>
+                            <Button Style="{StaticResource ButtonStyle}" Command="{Binding}" Margin="0,0,10,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="{Binding ImgUrl}" Width="16" Height="16"/>
+                                    <TextBlock Text="{Binding Name}" Style="{StaticResource LabelTextBlockStyle}"/>
                                 </StackPanel>
                             </Button>
                         </DataTemplate>
@@ -46,50 +60,64 @@
             </ToolBarTray>
         </StackPanel>
 
-        <Border Grid.Row="0" Grid.Column="1" BorderBrush="Gray" BorderThickness="1" CornerRadius="2">
+        <Grid Grid.Row="0" Grid.Column="1" Background="{Binding Path=Background, ElementName=MainToolBar}">
+            <ToggleButton Width="130" 
+                          Margin="0,0,10,0"
+                          Content = "{Binding Theme.Name, Mode=OneWay}" 
+                          Style="{StaticResource ToggleButtonStyle}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Checked">
+                        <command:EventToCommand Command="{Binding ChangeThemeCommand}"/>
+                    </i:EventTrigger>
+                    <i:EventTrigger EventName="Unchecked">
+                        <command:EventToCommand Command="{Binding ChangeThemeCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ToggleButton>
+        </Grid>
+
+        <Border Grid.Row="0" Grid.Column="2" BorderBrush="DimGray" BorderThickness="1" CornerRadius="2">
             <Menu Background="{Binding Path=Background, ElementName=MainToolBar}">
+                <Menu.Resources>
+                    <Image x:Key="ListIcon" x:Shared="False" Source="pack://application:,,,/Images/Toolbar/list.png" />
+                </Menu.Resources>
                 <MenuItem Width="{Binding Path=ActualHeight, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Menu}}}" 
                           Height="{Binding Path=ActualHeight, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Menu}}}" 
-                          ItemsSource="{Binding ListTypes, Mode=OneWay}"
+                          ItemsSource="{Binding ListTypesMenu, Mode=OneWay}"
                           ToolTip="{Binding DictionaryTip, Mode=OneWay}">
                     <MenuItem.Header>
                         <Grid>
-                            <Line X1="0" Y1="0" X2="26" Y2="0" Stroke="Gray" />
-                            <Line X1="0" Y1="6" X2="26" Y2="6" Stroke="Gray" />
-                            <Line X1="0" Y1="12" X2="26" Y2="12" Stroke="Gray" />
+                            <Line X1="0" Y1="3" X2="26" Y2="3" Stroke="DimGray" />
+                            <Line X1="0" Y1="10" X2="26" Y2="10" Stroke="DimGray" />
+                            <Line X1="0" Y1="17" X2="26" Y2="17" Stroke="DimGray" />
                         </Grid>
                     </MenuItem.Header>
                     <MenuItem.ItemTemplate>
                         <DataTemplate>
-                            <MenuItem Header="{Binding Name}" ToolTip="{Binding Tip}">
-                                <MenuItem.Command>
-                                    <MultiBinding Converter="{StaticResource commandConvertor}" Mode="OneWay">
-                                        <Binding Path="DataContext.ShowListCommands" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type Window}}"/>
-                                        <Binding Path="Name"/>
-                                    </MultiBinding>
-                                </MenuItem.Command>
-                            </MenuItem>
+                            <TextBlock Text="{Binding Name}" ToolTip="{Binding Tip}"/>
                         </DataTemplate>
                     </MenuItem.ItemTemplate>
                     <MenuItem.ItemContainerStyle>
                         <Style TargetType="{x:Type MenuItem}">
-                            <Setter Property="Background" Value="{Binding Path=Background, ElementName=MainToolBar}"/>
+                            <Setter Property="Icon" Value="{StaticResource ListIcon}"/>
+                            <Setter Property="Command">
+                                <Setter.Value>
+                                    <MultiBinding Converter="{StaticResource commandConverter}" Mode="OneWay">
+                                        <Binding Path="DataContext.ListCommands" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type Window}}"/>
+                                        <Binding Path="Name"/>
+                                    </MultiBinding>
+                                </Setter.Value>
+                            </Setter>
                         </Style>
                     </MenuItem.ItemContainerStyle>
                 </MenuItem>
             </Menu>
         </Border>
 
-        <Grid Grid.Row="1" Grid.ColumnSpan="2">
-            <Image HorizontalAlignment="Right" VerticalAlignment="Top" Stretch="None" Source="..\Images\Background\big_lemon.png" />
-            <Image HorizontalAlignment="Left" VerticalAlignment="Bottom" Stretch="None" Source="..\Images\Background\small_lemon.png" />
-            <StackPanel>
-                <local:DailySchedule Visibility="{Binding IsVisible, Converter={StaticResource visibilityConvertor}, Mode=OneWay}"/>
-                <local:WeeklySchedule Visibility="{Binding IsVisible, Converter={StaticResource visibilityConvertor}, Mode=OneWay}"/>
-                <local:MonthlySchedule Visibility="{Binding IsVisible, Converter={StaticResource visibilityConvertor}, Mode=OneWay}"/>
-                <local:YearlySchedule Visibility="{Binding IsVisible, Converter={StaticResource visibilityConvertor}, Mode=OneWay}"/>
-                <local:Lists Visibility="{Binding IsVisible, Converter={StaticResource visibilityConvertor}, Mode=OneWay}"/>
-            </StackPanel>
+        <Grid Grid.Row="1" Grid.ColumnSpan="3">
+            <Image Style="{DynamicResource TopPicture}"/>
+            <Image Style="{DynamicResource DownPicture}" />
+            <ContentControl Margin="5" Content="{Binding CurrentViewModel}"/>
         </Grid>
     </Grid>
 </Window>
