@@ -12,9 +12,8 @@
             <ResourceDictionary.MergedDictionaries>
                 <!-- must be first in the list -->
                 <ResourceDictionary Source="pack://application:,,,/Styles/Themes/Tea.xaml"/>
-                
+
                 <ResourceDictionary Source="pack://application:,,,/Styles/TextBlock.xaml"/>
-                <ResourceDictionary Source="pack://application:,,,/Styles/GroupBox.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Styles/ErrorTemplate.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Styles/ToggleButton.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Styles/Button.xaml"/>
@@ -23,6 +22,7 @@
                 <ResourceDictionary Source="pack://application:,,,/Styles/TreeViewItem.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Styles/TextBox.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Styles/CheckBox.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Styles/GroupBox.xaml"/>
                 <ResourceDictionary>
                     <DataTemplate DataType="{x:Type vc:Context}">
                         <v:MainWindow/>

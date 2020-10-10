@@ -134,11 +134,15 @@
     <Compile Include="Converters\BooleanOrConverter.cs" />
     <Compile Include="Converters\CommandConverter.cs" />
     <Compile Include="Converters\RatingConverter.cs" />
+    <Compile Include="Converters\SelectedItemConverter.cs" />
     <Compile Include="Converters\VisibilityConverter.cs" />
     <Compile Include="ViewModels\Common\Command.cs" />
+    <Compile Include="ViewModels\Common\Interfaces\IMessaging.cs" />
+    <Compile Include="ViewModels\Common\DiaryNotificationMessage.cs" />
     <Compile Include="ViewModels\Lists\CategoryDragAndDropAlgorithm.cs" />
     <Compile Include="ViewModels\Lists\Habit.cs" />
     <Compile Include="ViewModels\Lists\Note.cs" />
+    <Compile Include="ViewModels\TimeManagement\Planner.cs" />
     <Compile Include="Views\Controls\DataContextSpy.cs" />
     <Compile Include="ViewModels\Common\Interfaces\IDragAndDrop.cs" />
     <Compile Include="ViewModels\Lists\AbstractListItem.cs" />
@@ -330,6 +334,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="ClassDiagram.cd" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

@@ -1,6 +1,8 @@
 ﻿using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
 using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,8 +16,6 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
 {
     public sealed class ListViewModel<T> : ContentControlViewModel where T : AbstractListItem, new()
     {
-        private readonly string ADD_LIST_ITEM = "Add {0}";
-        private readonly string IMG_URL_LIST_ITEM = "pack://application:,,,/Images/Toolbar/add.png";
         private readonly string _getOperationName;
 
         public ObservableCollection<Category<T>> Data { get; set; }
@@ -29,18 +29,33 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
         public ListViewModel(string getOperationName)
         {
             _getOperationName = getOperationName ?? throw new ArgumentNullException(nameof(getOperationName));
+            
             DragAndDropAlgorithm = new CategoryDragAndDropAlgorithm<T>();
+            
             SelectedCategoryChangedCommand = new RelayCommand<RoutedPropertyChangedEventArgs<object>>(SelectedCategoryChanged, canExecute: e => true);
+
             Commands = new ObservableCollection<Command>
             {
                 new Command(
-                    string.Format(ADD_LIST_ITEM, typeof(T).Name), 
+                    string.Format(ADD_LIST_ITEM, typeof(T).Name),
                     IMG_URL_LIST_ITEM,
-                    AddListItem, 
+                    AddListItem,
                     CanAddListItem)
             };
+
             Data = new ObservableCollection<Category<T>>();
             Data.CollectionChanged += Data_CollectionChanged;
+
+            Messenger.Default.Register<DiaryNotificationMessage>(
+                this,
+                message =>
+                {
+                    if (message.Notification == DAILYSCHEDULE_NOTE && typeof(T) == typeof(Note))
+                    {
+                        IsDataLoaded = false;
+                        return;
+                    }
+                });
         }
 
         ~ListViewModel()
@@ -57,6 +72,12 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
                 {
                     var root = await response.Content.ReadAsAsync<Category<T>>();
                     root.UserId = userId;
+
+                    if (Data.Count > 0)
+                    {
+                        Data.Clear();
+                    }
+
                     Data.Add(root);
                     return;
                 }
@@ -65,18 +86,25 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
             }
         }
 
-        private void Data_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void Data_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            if (e.Action != NotifyCollectionChangedAction.Add)
+            {
+                return;
+            }
+
             foreach (var item in e.NewItems)
             {
-                ((Category<T>)item).GenerateCommands();
+                var category = item as Category<T>;
+                category.SenderPath = nameof(ListViewModel<T>);
+                category.GenerateCommands();
             }
         }
 
         private void SelectedCategoryChanged(RoutedPropertyChangedEventArgs<object> obj)
         {
             SelectedCategory = (Category<T>)obj.NewValue;
-            foreach(var command in Commands)
+            foreach (var command in Commands)
             {
                 command.RaiseCanExecuteChanged();
             }

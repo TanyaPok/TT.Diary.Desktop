@@ -1,15 +1,23 @@
 ﻿using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
 using System;
 using System.Threading.Tasks;
 using TT.Diary.Desktop.ViewModels.Common;
 using TT.Diary.Desktop.ViewModels.Common.Extensions;
+using TT.Diary.Desktop.ViewModels.Common.Interfaces;
 using TT.Diary.Desktop.ViewModels.DataContexts;
 
 namespace TT.Diary.Desktop.ViewModels.Lists
 {
-    public abstract class AbstractListItem : ObservableObjectWithNotifyDataErrorInfo
+    public abstract class AbstractListItem : ObservableObjectWithNotifyDataErrorInfo, IMessaging
     {
+        protected abstract string RemoveOperationContract { get; }
+
         public int Id { get; set; }
+
+        public DateTime? ScheduledStartDate { get; set; }
+
+        public DateTime? ScheduledCompletionDate { get; set; }
 
         public DateTime? CompletionDate { get; set; }
 
@@ -40,10 +48,9 @@ namespace TT.Diary.Desktop.ViewModels.Lists
                 Set(ref _description, value);
             }
         }
-
-        protected abstract string RemoveOperationContract { get; }
-
         public RelayCommand SaveCommand { get; set; }
+
+        public string SenderPath { get; internal set; }
 
         public AbstractListItem()
         {
@@ -55,14 +62,6 @@ namespace TT.Diary.Desktop.ViewModels.Lists
             PropertyChanged -= AbstractListItem_PropertyChanged;
         }
 
-        private void AbstractListItem_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (SaveCommand != null && SaveCommand.CanExecute(this))
-            {
-                SaveCommand.Execute(this);
-            }
-        }
-
         internal virtual bool CanSave()
         {
             return !HasErrors;
@@ -72,8 +71,7 @@ namespace TT.Diary.Desktop.ViewModels.Lists
 
         internal virtual bool CanRemove()
         {
-            //TODO: check for schedule; within schedule task
-            return true;
+            return !ScheduledStartDate.HasValue;
         }
 
         internal virtual async Task<bool> RemoveAsync()
@@ -89,9 +87,30 @@ namespace TT.Diary.Desktop.ViewModels.Lists
                     var errorMessage = await response.Content.ReadAsStringAsync();
                     throw new Exception(string.Format(ErrorMessages.Remove.GetDescription(), Description, errorMessage));
                 }
+
+                TrySendDiaryNotificationMessage();
             }
 
             return true;
+        }
+
+        protected bool TrySendDiaryNotificationMessage()
+        {
+            if (ScheduledStartDate != null)
+            {
+                Messenger.Default.Send(new DiaryNotificationMessage(SenderPath, ScheduledStartDate, ScheduledCompletionDate, CompletionDate));
+                return true;
+            }
+
+            return false;
+        }
+
+        private void AbstractListItem_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (SaveCommand != null && SaveCommand.CanExecute(this))
+            {
+                SaveCommand.Execute(this);
+            }
         }
     }
 }

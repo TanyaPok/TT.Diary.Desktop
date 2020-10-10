@@ -27,7 +27,10 @@ namespace TT.Diary.Desktop.ViewModels.Common
         [Description("{0} cannot be edited\n{1}")]
         Edit,
         [Description("{0} cannot be added\n{1}")]
-        Add
+        Add,
+
+        [Description("Schedule for {0} cannot be got - response with status code ({1}).")]
+        GetSchedule,
     }
 
     public enum ValidationMessages

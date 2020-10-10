@@ -3,10 +3,65 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:system="clr-namespace:System;assembly=mscorlib"
-             xmlns:local="clr-namespace:TT.Diary.Desktop.Views"
+             xmlns:c="clr-namespace:TT.Diary.Desktop.Converters" 
+             xmlns:sys="clr-namespace:System;assembly=System.Runtime"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <c:SelectedItemConverter x:Key="selectedItemConverter"/>
+    </UserControl.Resources>
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,50,0" HorizontalAlignment="Right" Style="{DynamicResource ControlTitleTextBlockStyle}" Text="{Binding Title}"/>
+
+        <DatePicker Grid.Row="0" Grid.Column="1" Style="{DynamicResource DatePickerStyle}" SelectedDate="{Binding SelectedDate, Mode=TwoWay}">
+            <DatePicker.Resources>
+                <sys:String x:Key="DatePicker.Title">Date:</sys:String>
+            </DatePicker.Resources>
+        </DatePicker>
+
+        <GroupBox Grid.Row="1" Grid.ColumnSpan="2" Style="{StaticResource GroupBoxStyle}">
+            <GroupBox.Header>
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="pack://application:,,,/Images/Workspace/note.png" Width="26" Height="26"/>
+                    <TextBlock Style="{DynamicResource TitleTextBlockStyle}" Text="Notes"/>
+                </StackPanel>
+            </GroupBox.Header>
+
+            <DataGrid ItemsSource="{Binding Planner.Notes}" Style="{StaticResource DataGridStyle}">
+                <DataGrid.InputBindings>
+                    <KeyBinding Key="Delete" 
+                                Command="{Binding Planner.DeleteNoteCommand}" 
+                                CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, Converter={StaticResource selectedItemConverter}, ConverterParameter={x:Static CollectionView.NewItemPlaceholder}}"/>
+                </DataGrid.InputBindings>
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Width="*">
+                        <DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate>
+                                <TextBox FocusManager.FocusedElement="{Binding RelativeSource={RelativeSource Self}}" 
+                                         BorderThickness="0" Margin="0" TextWrapping="Wrap" 
+                                         Text="{Binding Description, Mode=TwoWay, ValidatesOnExceptions=True}"
+                                         Validation.ErrorTemplate="{StaticResource errorTemplate}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellEditingTemplate>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Margin="0" Text="{Binding Description, ValidatesOnExceptions=True}" 
+                                           Style="{StaticResource TextBlockStyle}" TextWrapping="Wrap" 
+                                           Validation.ErrorTemplate="{StaticResource errorTemplate}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </GroupBox>
     </Grid>
 </UserControl>

@@ -182,7 +182,7 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
 
         private async Task UpdateContent(ContentControlViewModel viewModel)
         {
-            await viewModel.Initialize(User.Id);
+            await viewModel.InitializeAsync(User.Id);
             CurrentViewModel = viewModel;
         }
     }

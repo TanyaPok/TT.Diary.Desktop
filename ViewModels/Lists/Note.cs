@@ -1,10 +1,15 @@
 ﻿using System;
+using System.Net.Http;
 using TT.Diary.Desktop.ViewModels.Common;
+using TT.Diary.Desktop.ViewModels.Common.Extensions;
+using TT.Diary.Desktop.ViewModels.DataContexts;
 
 namespace TT.Diary.Desktop.ViewModels.Lists
 {
     public class Note : AbstractListItem
     {
+        internal int UserId { get; set; }
+
         protected override string RemoveOperationContract
         {
             get
@@ -13,11 +18,39 @@ namespace TT.Diary.Desktop.ViewModels.Lists
             }
         }
 
-        public DateTime CreationDate { get; set; }
-
-        internal override void SaveAsync()
+        internal override bool CanRemove()
         {
-            throw new NotImplementedException();
+            return true;
+        }
+
+        internal override async void SaveAsync()
+        {
+            var note = new { Id, Description, ScheduleDate = ScheduledStartDate, UserId };
+            HttpResponseMessage response = null;
+            try
+            {
+                response = (Id == 0) ?
+                    await Context.DiaryHttpClient.PostAsJsonAsync(OperationContract.NOTE, note) :
+                    await Context.DiaryHttpClient.PutAsJsonAsync(OperationContract.NOTE, note);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorMessage = await response.Content.ReadAsStringAsync();
+                    var errorMessageFormat = (Id == 0) ? ErrorMessages.Add.GetDescription() : ErrorMessages.Edit.GetDescription();
+                    throw new Exception(string.Format(errorMessageFormat, "Note " + Description, errorMessage));
+                }
+
+                if (Id == 0)
+                {
+                    Id = await response.Content.ReadAsAsync<int>();
+                }
+
+                TrySendDiaryNotificationMessage();
+            }
+            finally
+            {
+                response.Dispose();
+            }
         }
     }
 }

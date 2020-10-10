@@ -11,6 +11,8 @@ namespace TT.Diary.Desktop.ViewModels.Common
     {
         private readonly Dictionary<string, List<string>> _errorsByPropertyName = new Dictionary<string, List<string>>();
 
+        protected string MESSAGING_FORMAT = "{0}.{1}";
+
         public bool HasErrors => _errorsByPropertyName.Any();
 
         public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;

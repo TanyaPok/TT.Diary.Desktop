@@ -6,11 +6,12 @@ using System.Linq;
 using System.Net.Http;
 using TT.Diary.Desktop.ViewModels.Common;
 using TT.Diary.Desktop.ViewModels.Common.Extensions;
+using TT.Diary.Desktop.ViewModels.Common.Interfaces;
 using TT.Diary.Desktop.ViewModels.DataContexts;
 
 namespace TT.Diary.Desktop.ViewModels.Lists
 {
-    public class Category<T> : ObservableObjectWithNotifyDataErrorInfo where T : AbstractListItem, new()
+    public class Category<T> : ObservableObjectWithNotifyDataErrorInfo, IMessaging where T : AbstractListItem, new()
     {
         private int _oldParentId;
 
@@ -28,6 +29,7 @@ namespace TT.Diary.Desktop.ViewModels.Lists
             internal set
             {
                 _userId = value;
+
                 foreach (var child in Subcategories)
                 {
                     child.UserId = value;
@@ -41,6 +43,7 @@ namespace TT.Diary.Desktop.ViewModels.Lists
             set
             {
                 ClearErrors(nameof(Description));
+
                 if (string.IsNullOrEmpty(value) || string.IsNullOrWhiteSpace(value))
                 {
                     AddError(nameof(Description), ValidationMessages.EmptyDescription.GetDescription());
@@ -75,6 +78,24 @@ namespace TT.Diary.Desktop.ViewModels.Lists
         public RelayCommand SaveEditedCategoryCommand { get; private set; }
         public RelayCommand<Category<T>> RemoveCommand { get; private set; }
         public RelayCommand<T> RemoveItemCommand { get; private set; }
+
+        private string _senderPath;
+        public string SenderPath
+        {
+            get
+            {
+                return _senderPath;
+            }
+            set
+            {
+                _senderPath = value;
+
+                foreach (var item in Items)
+                {
+                    item.SenderPath = string.Format(MESSAGING_FORMAT, value, typeof(T).Name);
+                }
+            }
+        }
 
         public Category()
         {
@@ -171,6 +192,7 @@ namespace TT.Diary.Desktop.ViewModels.Lists
                     foreach (var item in e.NewItems)
                     {
                         var category = item as Category<T>;
+                        category.SenderPath = SenderPath;
                         category.UserId = UserId;
                         category.GenerateCommands(this);
                         category.ParentId = Id;
@@ -200,6 +222,7 @@ namespace TT.Diary.Desktop.ViewModels.Lists
                     {
                         var element = (AbstractListItem)item;
                         element.ParentId = Id;
+                        element.SenderPath = string.Format(MESSAGING_FORMAT, SenderPath, typeof(T).Name);
                         element.SaveCommand = new RelayCommand(element.SaveAsync, element.CanSave);
                     }
 
