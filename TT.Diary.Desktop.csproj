@@ -73,6 +73,9 @@
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>packages\NLog.4.7.2\lib\net45\NLog.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationFramework.Aero2, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\PresentationFramework.Aero2.1.0.1\lib\PresentationFramework.Aero2.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -133,8 +136,10 @@
     <Compile Include="Configs\Theme.cs" />
     <Compile Include="Converters\BooleanOrConverter.cs" />
     <Compile Include="Converters\CommandConverter.cs" />
+    <Compile Include="Converters\ProductivityForegroundConverter.cs" />
     <Compile Include="Converters\RatingConverter.cs" />
     <Compile Include="Converters\SelectedItemConverter.cs" />
+    <Compile Include="Converters\ProductivityBackgroundConverter.cs" />
     <Compile Include="Converters\VisibilityConverter.cs" />
     <Compile Include="ViewModels\Common\Command.cs" />
     <Compile Include="ViewModels\Common\Interfaces\IMessaging.cs" />
@@ -143,9 +148,15 @@
     <Compile Include="ViewModels\Lists\Habit.cs" />
     <Compile Include="ViewModels\Lists\Note.cs" />
     <Compile Include="ViewModels\TimeManagement\Planner.cs" />
+    <Compile Include="Views\Controls\Calendar\Cap.cs" />
+    <Compile Include="Views\Controls\Calendar\IMonthCalendarData.cs" />
+    <Compile Include="Views\Controls\Calendar\MonthDay.cs" />
     <Compile Include="Views\Controls\DataContextSpy.cs" />
     <Compile Include="ViewModels\Common\Interfaces\IDragAndDrop.cs" />
     <Compile Include="ViewModels\Lists\AbstractListItem.cs" />
+    <Compile Include="Views\Controls\Calendar\MonthCalendar.xaml.cs">
+      <DependentUpon>MonthCalendar.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Controls\StarRating.xaml.cs">
       <DependentUpon>StarRating.xaml</DependentUpon>
     </Compile>
@@ -207,6 +218,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Styles\ComboBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Styles\DataGrid.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -226,6 +241,10 @@
     <Page Include="Styles\TextBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Controls\Calendar\MonthCalendar.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Controls\StarRating.xaml">
       <SubType>Designer</SubType>

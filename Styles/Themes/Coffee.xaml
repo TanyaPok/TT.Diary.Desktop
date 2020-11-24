@@ -57,4 +57,11 @@
     <SolidColorBrush x:Key="OptionMark.MouseOver.Glyph" Color="SaddleBrown"/>
     <SolidColorBrush x:Key="OptionMark.Disabled.Glyph" Color="Gray"/>
 
+    <SolidColorBrush x:Key="ComboBox.Static.Border" Color="Gold"/>
+    <SolidColorBrush x:Key="ComboBox.MouseOver.Editable.Border" Color="#FF7EB4EA"/>
+    <SolidColorBrush x:Key="ComboBox.MouseOver.Editable.Button.Border" Color="#FF7EB4EA"/>
+    <SolidColorBrush x:Key="ComboBox.Pressed.Editable.Border" Color="#FF569DE5"/>
+    <SolidColorBrush x:Key="ComboBox.Pressed.Editable.Button.Border" Color="#FF569DE5"/>
+    <SolidColorBrush x:Key="ComboBox.Static.Glyph" Color="SaddleBrown"/>
+
 </ResourceDictionary>

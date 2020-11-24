@@ -23,6 +23,7 @@
                 <ResourceDictionary Source="pack://application:,,,/Styles/TextBox.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Styles/CheckBox.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Styles/GroupBox.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Styles/ComboBox.xaml"/>
                 <ResourceDictionary>
                     <DataTemplate DataType="{x:Type vc:Context}">
                         <v:MainWindow/>

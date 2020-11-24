@@ -19,5 +19,6 @@
         public const string NOTE = "note";
 
         public const string GET_DAILY_SCHEDULE = "planner";
+        public const string GET_YEARLY_SCHEDULE = "annualproductivity";
     }
 }
