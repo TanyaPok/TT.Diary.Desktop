@@ -3,9 +3,60 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:TT.Diary.Desktop.Views"
+             xmlns:con="clr-namespace:TT.Diary.Desktop.Views.Controls.Calendar" 
+             Margin="50,0,50,0"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
+        <Grid.Resources>
+            <DataTemplate DataType="{x:Type con:ScheduledAppointments}">
+                <Border BorderThickness="2" BorderBrush="{DynamicResource Base.BorderBrush}" Margin="2">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="35"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Row="0" Grid.Column="1" BorderThickness="2,0,0,2" BorderBrush="{DynamicResource Base.BorderBrush}" CornerRadius="1">
+                            <TextBlock Text="{Binding Text}" HorizontalAlignment="Center" Style="{DynamicResource TextBlockStyle}"/>
+                        </Border>
+
+                        <ListView Grid.Row="1" Grid.ColumnSpan="2" ItemsSource="{Binding ScheduledAppointmentsDescriptions}" BorderBrush="Transparent" Background="Transparent" ScrollViewer.CanContentScroll="True">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}"/>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+
+                        <ListView Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding DoneAppointmentsDescriptions}" BorderBrush="Transparent" Background="Transparent" ScrollViewer.CanContentScroll="True">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" TextDecorations="Strikethrough"/>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Grid>
+                </Border>
+            </DataTemplate>
+        </Grid.Resources>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center">
+            <TextBlock Margin="0,0,25,0" Style="{DynamicResource ControlTitleTextBlockStyle}" Text="{Binding Title}"/>
+            <ComboBox VerticalAlignment="Bottom" Height="30" Style="{DynamicResource ComboBoxStyle}" Margin="0,0,5,0" ItemsSource="{Binding Months, Mode=OneWay}" SelectedValue="Key" DisplayMemberPath="Value" SelectedItem="{Binding SelectedMonth, Mode=TwoWay}"/>
+            <ComboBox VerticalAlignment="Bottom" Height="30" Style="{DynamicResource ComboBoxStyle}" ItemsSource="{Binding Years, Mode=OneWay}" SelectedItem="{Binding SelectedYear, Mode=TwoWay}"/>
+        </StackPanel>
+
+        <con:MonthCalendar Grid.Row="1" Days="{Binding Days}"/>
     </Grid>
 </UserControl>

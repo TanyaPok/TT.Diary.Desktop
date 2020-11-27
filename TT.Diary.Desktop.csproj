@@ -135,12 +135,12 @@
     </ApplicationDefinition>
     <Compile Include="Configs\Theme.cs" />
     <Compile Include="Converters\BooleanOrConverter.cs" />
-    <Compile Include="Converters\CommandConverter.cs" />
+    <Compile Include="Converters\DictionaryCommandConverter.cs" />
     <Compile Include="Converters\ProductivityForegroundConverter.cs" />
     <Compile Include="Converters\RatingConverter.cs" />
     <Compile Include="Converters\SelectedItemConverter.cs" />
     <Compile Include="Converters\ProductivityBackgroundConverter.cs" />
-    <Compile Include="Converters\VisibilityConverter.cs" />
+    <Compile Include="Converters\BoolVisibilityConverter.cs" />
     <Compile Include="ViewModels\Common\Command.cs" />
     <Compile Include="ViewModels\Common\Interfaces\IMessaging.cs" />
     <Compile Include="ViewModels\Common\DiaryNotificationMessage.cs" />
@@ -149,6 +149,7 @@
     <Compile Include="ViewModels\Lists\Note.cs" />
     <Compile Include="ViewModels\TimeManagement\Planner.cs" />
     <Compile Include="Views\Controls\Calendar\Cap.cs" />
+    <Compile Include="Views\Controls\Calendar\ScheduledAppointments.cs" />
     <Compile Include="Views\Controls\Calendar\IMonthCalendarData.cs" />
     <Compile Include="Views\Controls\Calendar\MonthDay.cs" />
     <Compile Include="Views\Controls\DataContextSpy.cs" />

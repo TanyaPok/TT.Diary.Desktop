@@ -53,7 +53,7 @@ namespace TT.Diary.Desktop.Views.Controls.Calendar
                 return list;
             }
 
-            var startWeekday = ((MonthDay)list[0]).Date.DayOfWeek;
+            var startWeekday = list[0].DayOfWeek;
 
             list.Insert(0, new Cap() { Text = "Mon" });
             list.Insert(1, new Cap() { Text = "Tue" });

@@ -9,7 +9,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <DataTemplate DataType="{x:Type local:Cap}">
-            <TextBlock Text="{Binding Text}" HorizontalAlignment="Center" Style="{DynamicResource TextBlockStyle}" Background="Transparent"/>
+            <TextBlock Text="{Binding Text}" HorizontalAlignment="Center" VerticalAlignment="Bottom" Style="{DynamicResource TextBlockStyle}" Background="Transparent"/>
         </DataTemplate>
     </UserControl.Resources>
     <Grid>

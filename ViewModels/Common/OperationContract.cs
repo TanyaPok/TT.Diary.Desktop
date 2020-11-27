@@ -20,5 +20,6 @@
 
         public const string GET_DAILY_SCHEDULE = "planner";
         public const string GET_YEARLY_SCHEDULE = "annualproductivity";
+        public const string GET_MONTHLY_SCHEDULE = "scheduledappointments";
     }
 }

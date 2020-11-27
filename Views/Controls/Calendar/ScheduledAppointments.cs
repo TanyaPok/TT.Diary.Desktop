@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace TT.Diary.Desktop.Views.Controls.Calendar
 {
-    public class MonthDay : IMonthCalendarData
+    public class ScheduledAppointments : IMonthCalendarData
     {
         public DateTime Date { get; set; }
 
-        public double Productivity { get; set; }
+        public List<string> ScheduledAppointmentsDescriptions { get; set; }
+
+        public List<string> DoneAppointmentsDescriptions { get; set; }
 
         public string Text
         {
