@@ -8,17 +8,26 @@ namespace TT.Diary.Desktop.ViewModels.Lists
 {
     public class ToDo : AbstractListItem
     {
+        public DateTime? ScheduledStartDateTime { set; get; }
+
+        public DateTime? ScheduledCompletionDate { set; get; }
+
+        public DateTime? CompletionDate { set; get; }
+
+        public bool IsComplited
+        {
+            get
+            {
+                return CompletionDate != null;
+            }
+        }
+
         protected override string RemoveOperationContract
         {
             get
             {
                 return OperationContract.TODO;
             }
-        }
-
-        public ToDo()
-        {
-            Description = "new to-do";
         }
 
         internal override async void SaveAsync()

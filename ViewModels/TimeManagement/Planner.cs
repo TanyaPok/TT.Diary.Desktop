@@ -99,9 +99,9 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement
                         var element = (Lists.Note)item;
                         element.SenderPath = string.Format(MESSAGING_FORMAT, SenderPath, nameof(Lists.Note));
 
-                        if (!element.ScheduledStartDate.HasValue)
+                        if (element.ScheduleDate == DateTime.MinValue)
                         {
-                            element.ScheduledStartDate = StartDate;
+                            element.ScheduleDate = StartDate;
                         }
 
                         element.UserId = UserId;

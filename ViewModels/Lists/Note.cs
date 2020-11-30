@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Threading.Tasks;
 using TT.Diary.Desktop.ViewModels.Common;
 using TT.Diary.Desktop.ViewModels.Common.Extensions;
 using TT.Diary.Desktop.ViewModels.DataContexts;
@@ -9,6 +10,8 @@ namespace TT.Diary.Desktop.ViewModels.Lists
     public class Note : AbstractListItem
     {
         internal int UserId { get; set; }
+
+        public DateTime ScheduleDate { get; set; }
 
         protected override string RemoveOperationContract
         {
@@ -25,7 +28,7 @@ namespace TT.Diary.Desktop.ViewModels.Lists
 
         internal override async void SaveAsync()
         {
-            var note = new { Id, Description, ScheduleDate = ScheduledStartDate, UserId };
+            var note = new { Id, Description, ScheduleDate = ScheduleDate, UserId };
             HttpResponseMessage response = null;
             try
             {
@@ -45,12 +48,24 @@ namespace TT.Diary.Desktop.ViewModels.Lists
                     Id = await response.Content.ReadAsAsync<int>();
                 }
 
-                TrySendDiaryNotificationMessage();
+                SendDiaryNotificationMessage(ScheduleDate);
             }
             finally
             {
                 response.Dispose();
             }
+        }
+
+        internal override async Task<bool> RemoveAsync()
+        {
+            var result = await base.RemoveAsync();
+
+            if (result)
+            {
+                SendDiaryNotificationMessage(ScheduleDate);
+            }
+
+            return result;
         }
     }
 }

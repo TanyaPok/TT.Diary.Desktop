@@ -15,7 +15,6 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition/>
-                            <RowDefinition/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
@@ -26,21 +25,29 @@
                             <TextBlock Text="{Binding Text}" HorizontalAlignment="Center" Style="{DynamicResource TextBlockStyle}"/>
                         </Border>
 
-                        <ListView Grid.Row="1" Grid.ColumnSpan="2" ItemsSource="{Binding ScheduledAppointmentsDescriptions}" BorderBrush="Transparent" Background="Transparent" ScrollViewer.CanContentScroll="True">
-                            <ListView.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding}"/>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
+                        <ScrollViewer Grid.Row="1" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
 
-                        <ListView Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding DoneAppointmentsDescriptions}" BorderBrush="Transparent" Background="Transparent" ScrollViewer.CanContentScroll="True">
-                            <ListView.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding}" TextDecorations="Strikethrough"/>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
+                                <ItemsControl Grid.Row="0" ItemsSource="{Binding ScheduledAppointmentsDescriptions}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding}"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <ItemsControl Grid.Row="1" ItemsSource="{Binding DoneAppointmentsDescriptions}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding}" TextDecorations="Strikethrough"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Grid>
+                        </ScrollViewer>
                     </Grid>
                 </Border>
             </DataTemplate>
@@ -48,7 +55,7 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition/>
+            <RowDefinition />
         </Grid.RowDefinitions>
 
         <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center">

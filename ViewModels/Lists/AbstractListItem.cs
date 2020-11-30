@@ -15,21 +15,7 @@ namespace TT.Diary.Desktop.ViewModels.Lists
 
         public int Id { get; set; }
 
-        public DateTime? ScheduledStartDate { get; set; }
-
-        public DateTime? ScheduledCompletionDate { get; set; }
-
-        public DateTime? CompletionDate { get; set; }
-
         public int ParentId { get; internal set; }
-
-        public bool IsComplited
-        {
-            get
-            {
-                return CompletionDate != null;
-            }
-        }
 
         private string _description;
         public string Description {
@@ -48,6 +34,7 @@ namespace TT.Diary.Desktop.ViewModels.Lists
                 Set(ref _description, value);
             }
         }
+
         public RelayCommand SaveCommand { get; set; }
 
         public string SenderPath { get; internal set; }
@@ -71,7 +58,7 @@ namespace TT.Diary.Desktop.ViewModels.Lists
 
         internal virtual bool CanRemove()
         {
-            return !ScheduledStartDate.HasValue;
+            return true;
         }
 
         internal virtual async Task<bool> RemoveAsync()
@@ -87,22 +74,14 @@ namespace TT.Diary.Desktop.ViewModels.Lists
                     var errorMessage = await response.Content.ReadAsStringAsync();
                     throw new Exception(string.Format(ErrorMessages.Remove.GetDescription(), Description, errorMessage));
                 }
-
-                TrySendDiaryNotificationMessage();
             }
 
             return true;
         }
 
-        protected bool TrySendDiaryNotificationMessage()
+        protected void SendDiaryNotificationMessage(DateTime scheduledStartDate)
         {
-            if (ScheduledStartDate != null)
-            {
-                Messenger.Default.Send(new DiaryNotificationMessage(SenderPath, ScheduledStartDate, ScheduledCompletionDate, CompletionDate));
-                return true;
-            }
-
-            return false;
+            Messenger.Default.Send(new DiaryNotificationMessage(SenderPath, scheduledStartDate));
         }
 
         private void AbstractListItem_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

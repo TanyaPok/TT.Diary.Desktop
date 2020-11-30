@@ -18,6 +18,20 @@ namespace TT.Diary.Desktop.ViewModels.Lists
 
     public class Wish : AbstractListItem
     {
+        public DateTime? ScheduledStartDateTime { set; get; }
+
+        public DateTime? ScheduledCompletionDate { set; get; }
+
+        public DateTime? CompletionDate { set; get; }
+
+        public bool IsComplited
+        {
+            get
+            {
+                return CompletionDate != null;
+            }
+        }
+
         private Rating _rating;
         public Rating Rating
         {
@@ -50,11 +64,6 @@ namespace TT.Diary.Desktop.ViewModels.Lists
             {
                 return OperationContract.WISH;
             }
-        }
-
-        public Wish()
-        {
-            Description = "my new wish";
         }
 
         internal override async void SaveAsync()

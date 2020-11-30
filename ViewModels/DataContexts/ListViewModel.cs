@@ -65,7 +65,7 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
 
         protected override async Task LoadData(int userId)
         {
-            var requestUri = string.Format(OperationContract.REQUEST_FORMAT, _getOperationName, userId);
+            var requestUri = string.Format(_getOperationName, userId);
             using (var response = await Context.DiaryHttpClient.GetAsync(requestUri))
             {
                 if (response.IsSuccessStatusCode)
@@ -79,6 +79,7 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
                     }
 
                     Data.Add(root);
+                    SelectedCategory = Data[0];
                     return;
                 }
 

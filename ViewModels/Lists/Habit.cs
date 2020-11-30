@@ -8,6 +8,20 @@ namespace TT.Diary.Desktop.ViewModels.Lists
 {
     public class Habit : AbstractListItem
     {
+        public DateTime? ScheduledStartDateTime { set; get; }
+
+        public DateTime? ScheduledCompletionDate { set; get; }
+
+        public DateTime? CompletionDate { set; get; }
+        
+        public bool IsComplited
+        {
+            get
+            {
+                return CompletionDate != null;
+            }
+        }
+
         protected override string RemoveOperationContract
         {
             get
@@ -27,11 +41,6 @@ namespace TT.Diary.Desktop.ViewModels.Lists
             {
                 Set(ref _amount, value);
             }
-        }
-
-        public Habit()
-        {
-            Description = "new habit: drink water (glasses)";
         }
 
         internal override async void SaveAsync()

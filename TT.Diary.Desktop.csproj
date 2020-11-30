@@ -141,6 +141,7 @@
     <Compile Include="Converters\SelectedItemConverter.cs" />
     <Compile Include="Converters\ProductivityBackgroundConverter.cs" />
     <Compile Include="Converters\BoolVisibilityConverter.cs" />
+    <Compile Include="Converters\TreeViewRootConverter.cs" />
     <Compile Include="ViewModels\Common\Command.cs" />
     <Compile Include="ViewModels\Common\Interfaces\IMessaging.cs" />
     <Compile Include="ViewModels\Common\DiaryNotificationMessage.cs" />
