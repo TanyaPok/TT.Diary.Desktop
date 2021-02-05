@@ -1,8 +1,11 @@
-using System;
-using System.Net.Http;
+using System.ComponentModel;
+using System.Threading.Tasks;
 using TT.Diary.Desktop.ViewModels.Common;
 using TT.Diary.Desktop.ViewModels.Common.Extensions;
-using TT.Diary.Desktop.ViewModels.DataContexts;
+using TT.Diary.Desktop.ViewModels.Common.Interfaces;
+using TT.Diary.Desktop.ViewModels.Interlayer;
+using TT.Diary.Desktop.ViewModels.Notification;
+using TT.Diary.Desktop.ViewModels.TimeManagement;
 
 namespace TT.Diary.Desktop.ViewModels.Lists
 {
@@ -16,19 +19,13 @@ namespace TT.Diary.Desktop.ViewModels.Lists
         Fire
     }
 
-    public class Wish : AbstractListItem
+    public class Wish<T> : AbstractScheduledItem<T>, IPublisher<DirtyData>, IPublisher<RefreshData<Wish<T>>> where T : AbstractScheduleSettings
     {
-        public DateTime? ScheduledStartDateTime { set; get; }
-
-        public DateTime? ScheduledCompletionDate { set; get; }
-
-        public DateTime? CompletionDate { set; get; }
-
-        public bool IsComplited
+        protected override string RemoveOperationContract
         {
             get
             {
-                return CompletionDate != null;
+                return ServiceOperationContract.WISH;
             }
         }
 
@@ -58,40 +55,82 @@ namespace TT.Diary.Desktop.ViewModels.Lists
             }
         }
 
-        protected override string RemoveOperationContract
+        public void Notify(DirtyData message)
         {
-            get
+            using (var manager = new DirtyDataManager())
             {
-                return OperationContract.WISH;
+                manager.Send(message);
             }
         }
 
-        internal override async void SaveAsync()
+        public void Notify(RefreshData<Wish<T>> message)
         {
-            var wish = new { Id, Description, CategoryId = ParentId, Author, Rating };
-            HttpResponseMessage response = null;
-            try
+            using (var manager = new RefreshDataManager<Wish<T>>())
             {
-                response = (Id == 0) ? 
-                    await Context.DiaryHttpClient.PostAsJsonAsync(OperationContract.WISH, wish) : 
-                    await Context.DiaryHttpClient.PutAsJsonAsync(OperationContract.WISH, wish);
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    var errorMessage = await response.Content.ReadAsStringAsync();
-                    var errorMessageFormat = (Id == 0) ? ErrorMessages.Add.GetDescription() : ErrorMessages.Edit.GetDescription();
-                    throw new Exception(string.Format(errorMessageFormat, "Wish " + Description, errorMessage));
-                }
-
-                if (Id == 0)
-                {
-                    Id = await response.Content.ReadAsAsync<int>();
-                }
+                manager.Send(message);
             }
-            finally
+        }
+
+        internal override bool CanRemove()
+        {
+            return Schedule == null;
+        }
+
+        internal override async Task Remove()
+        {
+            if (State == EntityState.New)
             {
-                response.Dispose();
+                Notify(new DirtyData { Source = this, Operation = OperationType.Remove });
+                return;
             }
+
+            await base.Remove();
+
+            Notify(new DirtyData { Source = this, Operation = OperationType.Remove });
+            Notify(new RefreshData<Wish<T>>());
+        }
+
+        internal override Task Reschedule()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override async Task Save()
+        {
+            await base.Save();
+            Notify(new DirtyData { Source = this, Operation = OperationType.Remove });
+            Notify(new RefreshData<Wish<T>>());
+        }
+
+        protected override void EntityPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            base.EntityPropertyChanged(sender, e);
+            Notify(new DirtyData { Source = this, Operation = OperationType.Add });
+        }
+
+        protected override Request GetCreateRequest()
+        {
+            return new Request
+            {
+                OperationContract = ServiceOperationContract.WISH,
+                Data = new { Description, CategoryId = ParentId, Author, Rating },
+                AdditionalInfo = typeof(Wish<T>).GetNameWithoutGenericArity() + " " + Description
+            };
+        }
+
+        protected override Request GetUpdateRequest()
+        {
+            return new Request
+            {
+                OperationContract = ServiceOperationContract.WISH,
+                Data = new { Id, Description, CategoryId = ParentId, Author, Rating },
+                AdditionalInfo = typeof(Wish<T>).GetNameWithoutGenericArity() + " " + Description
+            };
+        }
+
+        protected override Task RemoveTrackers(AbstractScheduledItem<T> owner)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

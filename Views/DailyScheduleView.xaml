@@ -4,16 +4,22 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:c="clr-namespace:TT.Diary.Desktop.Converters" 
-             xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
+             xmlns:command="http://www.galasoft.ch/mvvmlight" 
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <c:SelectedItemConverter x:Key="selectedItemConverter"/>
+        <c:EnumVisibilityConverter x:Key="enumVisibilityConverter"/>
+        <c:EnumInverseVisibilityConverter x:Key="enumInverseVisibilityConverter"/>
     </UserControl.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -22,13 +28,81 @@
 
         <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,50,0" HorizontalAlignment="Right" Style="{DynamicResource ControlTitleTextBlockStyle}" Text="{Binding Title}"/>
 
-        <DatePicker Grid.Row="0" Grid.Column="1" Style="{DynamicResource DatePickerStyle}" SelectedDate="{Binding SelectedDate, Mode=TwoWay}">
+        <DatePicker Grid.Row="0" Grid.Column="1" Style="{DynamicResource DatePickerStyle}" SelectedDate="{Binding SelectedDate, Mode=TwoWay}"
+                    IsEnabled="{Binding IsConsistentState}">
             <DatePicker.Resources>
                 <sys:String x:Key="DatePicker.Title">Date:</sys:String>
             </DatePicker.Resources>
         </DatePicker>
 
-        <GroupBox Grid.Row="1" Grid.ColumnSpan="2" Style="{StaticResource GroupBoxStyle}">
+        <GroupBox Grid.Row="1" Grid.Column="1" Style="{StaticResource GroupBoxStyle}">
+            <GroupBox.Header>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{DynamicResource TitleTextBlockStyle}" Text="Habits" VerticalAlignment="Center"/>
+                    <Button Command="{Binding HabitPlanner.InitializeItemCreateCommand}" Style="{StaticResource ButtonStyle}" Margin="5,0,0,0">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{Binding HabitPlanner.InitializeItemCreateCommand.ImgUrl}" Width="16" Height="16"/>
+                            <TextBlock Text="{Binding HabitPlanner.InitializeItemCreateCommand.Name}" Style="{StaticResource LabelTextBlockStyle}"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </GroupBox.Header>
+
+            <ListBox ItemsSource="{Binding HabitPlanner.Items}" Style="{StaticResource ListBoxStyle}">
+                <ListBox.Template>
+                    <ControlTemplate>
+                        <DockPanel LastChildFill="True">
+                            <Grid DockPanel.Dock="Top">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="560"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="1" Grid.Row="1" Style="{DynamicResource LabelTextBlockStyle}" HorizontalAlignment="Left"
+                                           Text="{Binding SelectedDate, StringFormat=dddd}" />
+                            </Grid>
+                            <ItemsPresenter></ItemsPresenter>
+                        </DockPanel>
+                    </ControlTemplate>
+                </ListBox.Template>
+                <ListBox.Resources>
+                    <StackPanel x:Shared="false" x:Key="ListBox.ContentPresenterOperations" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Command="{Binding Schedule.CompleteCommand}" Style="{StaticResource ButtonStyle}" Margin="0,0,5,0"
+                                Visibility="{Binding State, Converter={StaticResource enumInverseVisibilityConverter}, ConverterParameter=New}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="{Binding Schedule.CompleteCommand.ImgUrl}" Width="16" Height="16"/>
+                                <TextBlock Text="{Binding Schedule.CompleteCommand.Name}" Style="{StaticResource LabelTextBlockStyle}"/>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="saveCommandButton" Command="{Binding DataContext.HabitPlanner.ItemSaveCommand, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" Style="{StaticResource ButtonStyle}" Margin="0,0,5,0" 
+                                Visibility="{Binding State, Converter={StaticResource enumVisibilityConverter}, ConverterParameter=New}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="{Binding DataContext.HabitPlanner.ItemSaveCommand.ImgUrl, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" Width="16" Height="16"/>
+                                <TextBlock Text="{Binding DataContext.HabitPlanner.ItemSaveCommand.Name, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" Style="{StaticResource LabelTextBlockStyle}"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{Binding DataContext.HabitPlanner.RescheduleItemCommand, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" 
+                                CommandParameter="{Binding}"
+                                Style="{StaticResource ButtonStyle}" Margin="0,0,5,0"
+                                Visibility="{Binding State, Converter={StaticResource enumInverseVisibilityConverter}, ConverterParameter=New}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="{Binding DataContext.HabitPlanner.RescheduleItemCommand.ImgUrl, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" Width="16" Height="16"/>
+                                <TextBlock Text="{Binding DataContext.HabitPlanner.RescheduleItemCommand.Name, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" Style="{StaticResource LabelTextBlockStyle}"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{Binding DataContext.HabitPlanner.ItemDeleteCommand, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" 
+                                CommandParameter="{Binding}"
+                                Style="{StaticResource ButtonStyle}" Margin="0,0,5,0">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="{Binding DataContext.HabitPlanner.ItemDeleteCommand.ImgUrl, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" Width="16" Height="16"/>
+                                <TextBlock Text="{Binding DataContext.HabitPlanner.ItemDeleteCommand.Name, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" Style="{StaticResource LabelTextBlockStyle}"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </ListBox.Resources>
+            </ListBox>
+        </GroupBox>
+
+        <GroupBox Grid.Row="2" Grid.ColumnSpan="2" Style="{StaticResource GroupBoxStyle}">
             <GroupBox.Header>
                 <StackPanel Orientation="Horizontal">
                     <Image Source="pack://application:,,,/Images/Workspace/note.png" Width="26" Height="26"/>
@@ -36,10 +110,10 @@
                 </StackPanel>
             </GroupBox.Header>
 
-            <DataGrid ItemsSource="{Binding Planner.Notes}" Style="{StaticResource DataGridStyle}">
+            <DataGrid ItemsSource="{Binding NotePlanner.Items}" Style="{StaticResource DataGridStyle}">
                 <DataGrid.InputBindings>
                     <KeyBinding Key="Delete" 
-                                Command="{Binding Planner.DeleteNoteCommand}" 
+                                Command="{Binding NotePlanner.ItemDeleteCommand}" 
                                 CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, Converter={StaticResource selectedItemConverter}, ConverterParameter={x:Static CollectionView.NewItemPlaceholder}}"/>
                 </DataGrid.InputBindings>
                 <DataGrid.Columns>
@@ -48,8 +122,14 @@
                             <DataTemplate>
                                 <TextBox FocusManager.FocusedElement="{Binding RelativeSource={RelativeSource Self}}" 
                                          BorderThickness="0" Margin="0" TextWrapping="Wrap" 
-                                         Text="{Binding Description, Mode=TwoWay, ValidatesOnExceptions=True}"
-                                         Validation.ErrorTemplate="{StaticResource errorTemplate}"/>
+                                         Text="{Binding Description, Mode=TwoWay, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}"
+                                         Validation.ErrorTemplate="{StaticResource errorTemplate}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="LostFocus">
+                                            <command:EventToCommand Command="{Binding SaveCommand}" PassEventArgsToCommand="False"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </TextBox>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellEditingTemplate>
                         <DataGridTemplateColumn.CellTemplate>

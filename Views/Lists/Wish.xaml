@@ -10,6 +10,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -17,16 +18,19 @@
             <ColumnDefinition Width="0.4*"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <CheckBox Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" Margin="2,6,0,0" 
-                  IsChecked="{Binding IsComplited, Mode=OneWay}" IsEnabled="False"/>
+        <CheckBox Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" Margin="2,6,0,0" IsChecked="{Binding IsCompleted, Mode=OneWay}" IsEnabled="False"/>
         <TextBlock Grid.Row="0" Grid.Column="1" Style="{DynamicResource TitleTextBlockStyle}" Text="Description" Margin="2,0,0,0"/>
         <TextBox Grid.Row="1" Grid.Column="1" Margin="2,0,0,0"
-                 Text="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=LostFocus, ValidatesOnExceptions=True}" 
+                 Text="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" 
                  Validation.ErrorTemplate="{StaticResource errorTemplate}"
-                 TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+                 TextWrapping="Wrap" AcceptsReturn="True"/>
         <TextBlock Grid.Row="0" Grid.Column="2" Style="{DynamicResource TitleTextBlockStyle}" Text="Author/Creator" Margin="2,0,0,0"/>
-        <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding Author, Mode=TwoWay}" Margin="2,0,0,0"/>
+        <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding Author, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="2,0,0,0"
+                 TextWrapping="Wrap" AcceptsReturn="True"/>
         <r:StarRating Grid.Row="1" Grid.Column="4" Margin="2,0,0,0"
                       RatingValue="{Binding Rating, Mode=TwoWay, Converter={StaticResource ratingConverter}}"/>
+        <StackPanel Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Orientation="Horizontal">
+            <TextBlock Text="{Binding Schedule.TermDatesString}" FontFamily="Comic Sans MS"/>
+        </StackPanel>
     </Grid>
 </UserControl>

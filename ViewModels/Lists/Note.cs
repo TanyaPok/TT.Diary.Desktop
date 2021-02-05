@@ -1,71 +1,101 @@
 ﻿using System;
-using System.Net.Http;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using TT.Diary.Desktop.ViewModels.Common;
-using TT.Diary.Desktop.ViewModels.Common.Extensions;
-using TT.Diary.Desktop.ViewModels.DataContexts;
+using TT.Diary.Desktop.ViewModels.Common.Interfaces;
+using TT.Diary.Desktop.ViewModels.Interlayer;
+using TT.Diary.Desktop.ViewModels.Notification;
 
 namespace TT.Diary.Desktop.ViewModels.Lists
 {
-    public class Note : AbstractListItem
+    public class Note : AbstractListItem, IPublisher<DirtyData>, IPublisher<RefreshData<Note>>
     {
-        internal int UserId { get; set; }
-
-        public DateTime ScheduleDate { get; set; }
+        private DateTime _previousScheduledDate;
 
         protected override string RemoveOperationContract
         {
             get
             {
-                return OperationContract.NOTE;
+                return ServiceOperationContract.NOTE;
             }
         }
 
-        internal override bool CanRemove()
+        private DateTime _scheduleDate = DateTime.Now;
+        public DateTime ScheduleDate
         {
-            return true;
-        }
-
-        internal override async void SaveAsync()
-        {
-            var note = new { Id, Description, ScheduleDate = ScheduleDate, UserId };
-            HttpResponseMessage response = null;
-            try
+            get
             {
-                response = (Id == 0) ?
-                    await Context.DiaryHttpClient.PostAsJsonAsync(OperationContract.NOTE, note) :
-                    await Context.DiaryHttpClient.PutAsJsonAsync(OperationContract.NOTE, note);
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    var errorMessage = await response.Content.ReadAsStringAsync();
-                    var errorMessageFormat = (Id == 0) ? ErrorMessages.Add.GetDescription() : ErrorMessages.Edit.GetDescription();
-                    throw new Exception(string.Format(errorMessageFormat, "Note " + Description, errorMessage));
-                }
-
-                if (Id == 0)
-                {
-                    Id = await response.Content.ReadAsAsync<int>();
-                }
-
-                SendDiaryNotificationMessage(ScheduleDate);
+                return _scheduleDate;
             }
-            finally
+            set
             {
-                response.Dispose();
+                _previousScheduledDate = _scheduleDate;
+                Set(ref _scheduleDate, value);
             }
         }
 
-        internal override async Task<bool> RemoveAsync()
+        public void Notify(RefreshData<Note> message)
         {
-            var result = await base.RemoveAsync();
-
-            if (result)
+            using (var messager = new RefreshDataManager<Note>())
             {
-                SendDiaryNotificationMessage(ScheduleDate);
+                messager.Send(message);
+            }
+        }
+
+        public void Notify(DirtyData message)
+        {
+            using (var messager = new DirtyDataManager())
+            {
+                messager.Send(message);
+            }
+        }
+
+        internal override async Task Remove()
+        {
+            if (State == EntityState.New)
+            {
+                Notify(new DirtyData { Source = this, Operation = OperationType.Remove });
+                return;
             }
 
-            return result;
+            await base.Remove();
+            Notify(new DirtyData { Source = this, Operation = OperationType.Remove });
+            Notify(new RefreshData<Note> { RangeStartDate = ScheduleDate, RangeFinishDate = ScheduleDate });
+            Notify(new RefreshData<Note> { RangeStartDate = _previousScheduledDate, RangeFinishDate = _previousScheduledDate });
+        }
+
+        protected override async Task Save()
+        {
+            await base.Save();
+            Notify(new DirtyData { Source = this, Operation = OperationType.Remove });
+            Notify(new RefreshData<Note> { RangeStartDate = ScheduleDate, RangeFinishDate = ScheduleDate });
+            Notify(new RefreshData<Note> { RangeStartDate = _previousScheduledDate, RangeFinishDate = _previousScheduledDate });
+        }
+
+        protected override void EntityPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            base.EntityPropertyChanged(sender, e);
+            Notify(new DirtyData { Source = this, Operation = OperationType.Add });
+        }
+
+        protected override Request GetCreateRequest()
+        {
+            return new Request
+            {
+                OperationContract = ServiceOperationContract.NOTE,
+                Data = new { Description, ScheduleDate, UserId },
+                AdditionalInfo = "Note " + Description
+            };
+        }
+
+        protected override Request GetUpdateRequest()
+        {
+            return new Request
+            {
+                OperationContract = ServiceOperationContract.NOTE,
+                Data = new { Id, Description, ScheduleDate, UserId },
+                AdditionalInfo = "Note " + Description
+            };
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Configuration;
 using System.Windows.Input;
 using TT.Diary.Desktop.Configs;
 using System;
-using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.CommandWpf;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using TT.Diary.Desktop.ViewModels.Common;
@@ -13,6 +13,9 @@ using System.Linq;
 using TT.Diary.Desktop.ViewModels.Common.Interfaces;
 using TT.Diary.Desktop.ViewModels.Lists;
 using TT.Diary.Desktop.ViewModels.Common.Extensions;
+using TT.Diary.Desktop.ViewModels.TimeManagement;
+using TT.Diary.Desktop.ViewModels.Notification;
+using GalaSoft.MvvmLight.Messaging;
 
 namespace TT.Diary.Desktop.ViewModels.DataContexts
 {
@@ -26,12 +29,17 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
         private readonly WeeklySchedule _weeklyScheduleViewModel;
         private readonly MonthlySchedule _monthlyScheduleViewModel;
         private readonly YearlySchedule _yearlyScheduleViewModel;
-        private readonly ListViewModel<Wish> _wishListViewModel;
-        private readonly ListViewModel<ToDo> _toDoListViewModel;
-        private readonly ListViewModel<Habit> _habitListViewModel;
+        private readonly ListViewModel<Wish<ScheduleSettingsSummary>> _wishListViewModel;
+        private readonly ListViewModel<ToDo<ScheduleSettingsSummary>> _toDoListViewModel;
+        private readonly ListViewModel<Habit<ScheduleSettingsSummary>> _habitListViewModel;
         private readonly ListViewModel<Note> _noteListViewModel;
 
+        private readonly User _user;
+
         internal static readonly HttpClient DiaryHttpClient;
+
+        public const string PRODUCTIVITY = "productivities";
+        public static readonly IDictionary<ProductivityGradation, Productivity> Productivities;
 
         public string DictionaryTip { get { return "Show diary to-do lists"; } }
         public IList<Theme> Themes { get; private set; }
@@ -41,11 +49,10 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
         public IDictionary<string, ICommand> ListCommands { get; private set; }
         public ICommand ChangeThemeCommand { get; private set; }
 
-        public User User { get; private set; }
-        public string WindowTitle { get { return string.Format("{0}'s diary", User.Given_Name); } }
+        public string WindowTitle { get { return string.Format("{0}'s diary", _user.Given_Name); } }
 
-        private ContentControlViewModel _currentViewModel;
-        public ContentControlViewModel CurrentViewModel
+        private AbstractContentControlViewModel _currentViewModel;
+        public AbstractContentControlViewModel CurrentViewModel
         {
             get
             {
@@ -78,39 +85,65 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
                 BaseAddress = new Uri(url)
             };
             DiaryHttpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var productivities = ConfigurationManager.GetSection(PRODUCTIVITY) as IList<Productivity>;
+            Productivities = new Dictionary<ProductivityGradation, Productivity>();
+            foreach (var productivity in productivities)
+            {
+                Productivities.Add(productivity.Gradation, productivity);
+            }
         }
 
         public Context(User user)
         {
-            User = user ?? throw new ArgumentNullException(nameof(user));
+            _user = user ?? throw new ArgumentNullException(nameof(user));
 
             Themes = ConfigurationManager.GetSection(THEMES) as IList<Theme>;
             ScheduleTypesMenu = ConfigurationManager.GetSection(SCHEDULE_TYPES) as IList<ScheduleType>;
             ListTypesMenu = ConfigurationManager.GetSection(LIST_TYPES) as IList<ListType>;
 
-            _dailyScheduleViewModel = new DailySchedule();
+            _dailyScheduleViewModel = new DailySchedule(_user.Id);
             _weeklyScheduleViewModel = new WeeklySchedule();
-            _monthlyScheduleViewModel = new MonthlySchedule();
-            _yearlyScheduleViewModel = new YearlySchedule();
+            _monthlyScheduleViewModel = new MonthlySchedule(_user.Id);
+            _yearlyScheduleViewModel = new YearlySchedule(_user.Id);
 
-            _wishListViewModel = new ListViewModel<Wish>(OperationContract.GET_WISH_LIST);
-            _toDoListViewModel = new ListViewModel<ToDo>(OperationContract.GET_TODO_LIST);
-            _habitListViewModel = new ListViewModel<Habit>(OperationContract.GET_HABITS);
-            _noteListViewModel = new ListViewModel<Note>(OperationContract.GET_NOTES);
+            _wishListViewModel = new ListViewModel<Wish<ScheduleSettingsSummary>>(ServiceOperationContract.GET_WISH_LIST, _user.Id);
+            _toDoListViewModel = new ListViewModel<ToDo<ScheduleSettingsSummary>>(ServiceOperationContract.GET_TODO_LIST, _user.Id);
+            _habitListViewModel = new ListViewModel<Habit<ScheduleSettingsSummary>>(ServiceOperationContract.GET_HABITS, _user.Id);
+            _noteListViewModel = new ListViewModel<Note>(ServiceOperationContract.GET_NOTES, _user.Id);
 
             ChangeThemeCommand = new RelayCommand(ChangeTheme, canExecute: () => true);
             SetScheduleCommands();
             SetListCommands();
 
-            ChangeTheme();
-            ScheduleCommands[ScheduleType.DAY].Execute(_dailyScheduleViewModel);
+            SetDefaultTheme();
+            SetDefaultSchedule();
+            Subscribe();
+        }
+
+        ~Context()
+        {
+            Cleanup();
+        }
+
+        private void SetDefaultSchedule()
+        {
+            if (ScheduleCommands[ScheduleType.DAY].CanExecute(null))
+            {
+                ScheduleCommands[ScheduleType.DAY].Execute(null);
+            }
+        }
+
+        private void SetDefaultTheme()
+        {
+            Theme = Themes.First();
         }
 
         private void ChangeTheme()
         {
             if (Theme == null)
             {
-                Theme = Themes.First();
+                SetDefaultTheme();
             }
             else
             {
@@ -180,10 +213,218 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
             }
         }
 
-        private async Task UpdateContent(ContentControlViewModel viewModel)
+        private async Task UpdateContent(AbstractContentControlViewModel viewModel)
         {
-            await viewModel.InitializeAsync(User.Id);
+            await SaveDirtyEntities();
+            await viewModel.InitializeAsync();
+            await viewModel.PostInitialize();
             CurrentViewModel = viewModel;
+        }
+
+        private async Task SaveDirtyEntities()
+        {
+            if (CurrentViewModel == null)
+            {
+                return;
+            }
+
+            foreach (var entity in CurrentViewModel.DirtyEntities.ToArray())
+            {
+                if (entity.CanAcceptChanges())
+                {
+                    await entity.AcceptChanges();
+                }
+            }
+        }
+
+        private void Subscribe()
+        {
+            Messenger.Default.Register<DirtyData>(
+                this,
+                (message) =>
+                {
+                    CurrentViewModel?.ReceiveMessage(message);
+                });
+
+            Messenger.Default.Register<RefreshData<Note>>(
+                this,
+                (message) =>
+                {
+                    switch (CurrentViewModel)
+                    {
+                        case DailySchedule ds:
+                            _noteListViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                            break;
+                        case ListViewModel<Note> lvm:
+                            _dailyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                            break;
+                        default:
+                            throw new ArgumentException(ErrorMessages.UnexpectedType.GetDescription(), nameof(CurrentViewModel));
+                    }
+                });
+
+            Messenger.Default.Register<RefreshData<ToDo<ScheduleSettingsSummary>>>(
+                this,
+                (message) =>
+                {
+                    switch (CurrentViewModel)
+                    {
+                        case ListViewModel<ToDo<ScheduleSettingsSummary>> lvm:
+                            _dailyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                            _weeklyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                            break;
+                        default:
+                            throw new ArgumentException(ErrorMessages.UnexpectedType.GetDescription(), nameof(CurrentViewModel));
+                    }
+                });
+
+            Messenger.Default.Register<RefreshData<Habit<ScheduleSettingsSummary>>>(
+               this,
+               (message) =>
+               {
+                   switch (CurrentViewModel)
+                   {
+                       case ListViewModel<Habit<ScheduleSettingsSummary>> lvm:
+                           _dailyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                           _weeklyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                           break;
+                       default:
+                           throw new ArgumentException(ErrorMessages.UnexpectedType.GetDescription(), nameof(CurrentViewModel));
+                   }
+               });
+
+            Messenger.Default.Register<RefreshData<Wish<ScheduleSettingsSummary>>>(
+               this,
+               (message) =>
+               {
+                   switch (CurrentViewModel)
+                   {
+                       case ListViewModel<Wish<ScheduleSettingsSummary>> lvm:
+                           _dailyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                           _weeklyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                           break;
+                       default:
+                           throw new ArgumentException(ErrorMessages.UnexpectedType.GetDescription(), nameof(CurrentViewModel));
+                   }
+               });
+
+            Messenger.Default.Register<RefreshData<ToDo<ScheduleSettings>>>(
+                this,
+                (message) =>
+                {
+                    switch (CurrentViewModel)
+                    {
+                        case DailySchedule lvm:
+                            _toDoListViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                            _weeklyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                            break;
+                        default:
+                            throw new ArgumentException(ErrorMessages.UnexpectedType.GetDescription(), nameof(CurrentViewModel));
+                    }
+                });
+
+            Messenger.Default.Register<RefreshData<Habit<ScheduleSettings>>>(
+                this,
+                (message) =>
+                {
+                    switch (CurrentViewModel)
+                    {
+                        case DailySchedule lvm:
+                            _habitListViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                            _weeklyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                            break;
+                        default:
+                            throw new ArgumentException(ErrorMessages.UnexpectedType.GetDescription(), nameof(CurrentViewModel));
+                    }
+                });
+
+            Messenger.Default.Register<RefreshData<Wish<ScheduleSettings>>>(
+               this,
+               (message) =>
+               {
+                   switch (CurrentViewModel)
+                   {
+                       case DailySchedule lvm:
+                           _wishListViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                           _weeklyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                           break;
+                       default:
+                           throw new ArgumentException(ErrorMessages.UnexpectedType.GetDescription(), nameof(CurrentViewModel));
+                   }
+               });
+
+            Messenger.Default.Register<RefreshData<ScheduleSettings>>(
+              this,
+              (message) =>
+              {
+                  if (CurrentViewModel != _dailyScheduleViewModel)
+                  {
+                      throw new ArgumentException(ErrorMessages.UnexpectedType.GetDescription(), nameof(CurrentViewModel));
+                  }
+
+                  switch (message.OwnerType)
+                  {
+                      case OwnerTypes.ToDo:
+                          _toDoListViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                          _weeklyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                          _yearlyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                          break;
+                      case OwnerTypes.Habit:
+                          _habitListViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                          _weeklyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                          break;
+                      case OwnerTypes.Wish:
+                          _wishListViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                          _weeklyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                          break;
+                      default:
+                          throw new ArgumentException(ErrorMessages.UnexpectedType.GetDescription(), nameof(message.OwnerType));
+                  }
+              });
+
+            Messenger.Default.Register<RefreshData<Tracker>>(
+              this,
+              (message) =>
+              {
+                  if (CurrentViewModel == _dailyScheduleViewModel)
+                  {
+                      switch (message.OwnerType)
+                      {
+                          case OwnerTypes.ToDo:
+                              _weeklyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                              _yearlyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                              break;
+                          case OwnerTypes.Habit:
+                              _weeklyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                              _habitListViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                              break;
+                          default:
+                              throw new ArgumentException(ErrorMessages.UnexpectedType.GetDescription(), nameof(message.OwnerType));
+                      }
+
+                      return;
+                  }
+
+                  if (CurrentViewModel == _weeklyScheduleViewModel)
+                  {
+                      switch (message.OwnerType)
+                      {
+                          case OwnerTypes.ToDo:
+                              _dailyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                              _yearlyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                              break;
+                          case OwnerTypes.Habit:
+                              _dailyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                              break;
+                          default:
+                              throw new ArgumentException(ErrorMessages.UnexpectedType.GetDescription(), nameof(message.OwnerType));
+                      }
+
+                      return;
+                  }
+
+                  throw new ArgumentException(ErrorMessages.UnexpectedType.GetDescription(), nameof(CurrentViewModel));
+              });
         }
     }
 }

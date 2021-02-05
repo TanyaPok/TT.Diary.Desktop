@@ -1,16 +1,17 @@
-﻿using GalaSoft.MvvmLight.Messaging;
-using System;
+﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using TT.Diary.Desktop.ViewModels.Common;
 using TT.Diary.Desktop.ViewModels.Common.Extensions;
 using TT.Diary.Desktop.ViewModels.TimeManagement;
+using TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames;
 
 namespace TT.Diary.Desktop.ViewModels.DataContexts
 {
-    public class DailySchedule : ContentControlViewModel
+    public class DailySchedule : AbstractContentControlViewModel
     {
-        private int _userId;
+        private readonly int _userId;
 
         public string Title
         {
@@ -20,7 +21,7 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
             }
         }
 
-        private DateTime _selectedDate;
+        private DateTime _selectedDate = DateTime.Now;
         public DateTime SelectedDate
         {
             get
@@ -29,70 +30,106 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
             }
             set
             {
-                var oldValue = _selectedDate;
-                Set(ref _selectedDate, value);
-
-                if (oldValue != value && IsDataLoaded)
+                if (_selectedDate == value)
                 {
-                    IsDataLoaded = false;
-                    Initialize(_userId);
+                    return;
                 }
+
+                Set(ref _selectedDate, value);
+                RefreshData();
             }
         }
 
-        private Planner _planner;
-        public Planner Planner 
+        private ScheduledHabitPlannerFrame _habitPlanner;
+        public ScheduledHabitPlannerFrame HabitPlanner
         {
             get
             {
-                return _planner;
+                return _habitPlanner;
             }
             set
             {
-                Set(ref _planner, value);
+                Set(ref _habitPlanner, value);
             }
         }
 
-        public DailySchedule()
+        private NotePlannerFrame _notePlanner;
+        public NotePlannerFrame NotePlanner
         {
-            SelectedDate = DateTime.Now;
-
-            Messenger.Default.Register<DiaryNotificationMessage>(
-               this,
-               message =>
-               {
-                   if (message.Notification == LISTVIEWMODEL_NOTE && SelectedDate.Date == message.ScheduledStartDate.Value.Date)
-                   {
-                       IsDataLoaded = false;
-                       return;
-                   }
-               });
+            get
+            {
+                return _notePlanner;
+            }
+            set
+            {
+                Set(ref _notePlanner, value);
+            }
         }
 
-        protected override async Task LoadData(int userId)
+        public DailySchedule(int userId)
         {
-            _userId = userId;
+            _userId = userId == INITIALIZATION_IDENTIFIER ? throw new ArgumentOutOfRangeException(nameof(userId)) : userId;
+
+            NotePlanner = new NotePlannerFrame(_userId);
+            NotePlanner.GenerateCommands();
+
+            HabitPlanner = new ScheduledHabitPlannerFrame(_userId, ServiceOperationContract.GET_UNSCHEDULED_HABITS);
+            HabitPlanner.GenerateCommands();
+        }
+
+        protected override bool InRangeDates(DateTime rangeStartDate, DateTime rangeFinishDate)
+        {
+            return rangeStartDate.Date <= SelectedDate.Date && rangeFinishDate.Date >= SelectedDate.Date;
+        }
+
+        protected override async Task LoadData()
+        {
             var requestUri = string.Format(
-               OperationContract.SCHEDULE_REQUEST_FORMAT,
-               OperationContract.GET_DAILY_SCHEDULE,
+               ServiceOperationContract.SCHEDULE_REQUEST_FORMAT,
+               ServiceOperationContract.GET_DAILY_SCHEDULE,
                _userId,
-               SelectedDate.Date.ToString(DATE_FORMAT),
-               SelectedDate.Date.ToString(DATE_FORMAT));
+               SelectedDate.Date.ToString(ServiceOperationContract.DATE_FORMAT),
+               SelectedDate.Date.ToString(ServiceOperationContract.DATE_FORMAT));
 
             using (var response = await Context.DiaryHttpClient.GetAsync(requestUri))
             {
                 if (response.IsSuccessStatusCode)
                 {
-                    Planner = await response.Content.ReadAsAsync<Planner>();
-                    Planner.SenderPath = nameof(DailySchedule);
-                    Planner.StartDate = SelectedDate;
-                    Planner.FinishDate = SelectedDate;
-                    Planner.UserId = _userId;
+                    using (var planner = await response.Content.ReadAsAsync<Planner>())
+                    {
+                        foreach (var habit in HabitPlanner.Items.ToArray())
+                        {
+                            HabitPlanner.Items.Remove(habit);
+                        }
+
+                        foreach (var habit in planner.Habits)
+                        {
+                            HabitPlanner.Items.Add(habit);
+                        }
+
+                        foreach (var note in NotePlanner.Items.ToArray())
+                        {
+                            NotePlanner.Items.Remove(note);
+                        }
+
+                        foreach (var note in planner.Notes)
+                        {
+                            NotePlanner.Items.Add(note);
+                        }
+                    }
+
                     return;
                 }
 
                 throw new Exception(string.Format(ErrorMessages.GetSchedule.GetDescription(), SelectedDate, response.StatusCode));
             }
+        }
+
+        protected override async Task DataSetting()
+        {
+            NotePlanner.PlannerDate = SelectedDate;
+            HabitPlanner.PlannerDate = SelectedDate;
+            await HabitPlanner.SetUnscheduledData();
         }
     }
 }

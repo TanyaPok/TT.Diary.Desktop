@@ -17,7 +17,7 @@ namespace TT.Diary.Desktop.Views.Controls
         public static readonly DependencyProperty RatingColorProperty = DependencyProperty.Register(
             "RatingColor",
             typeof(SolidColorBrush),
-            typeof(StarRating), 
+            typeof(StarRating),
             new FrameworkPropertyMetadata(new SolidColorBrush(Colors.Gold)));
 
         public SolidColorBrush RatingColor

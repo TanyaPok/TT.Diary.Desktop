@@ -1,8 +1,8 @@
-﻿using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Messaging;
+﻿using GalaSoft.MvvmLight.CommandWpf;
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,9 +14,11 @@ using TT.Diary.Desktop.ViewModels.Lists;
 
 namespace TT.Diary.Desktop.ViewModels.DataContexts
 {
-    public sealed class ListViewModel<T> : ContentControlViewModel where T : AbstractListItem, new()
+    public sealed class ListViewModel<T> : AbstractContentControlViewModel where T : AbstractListItem, new()
     {
-        private readonly string _getOperationName;
+        private readonly int _userId;
+
+        private readonly string _listGettingOperationName;
 
         public ObservableCollection<Category<T>> Data { get; set; }
 
@@ -24,38 +26,17 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
 
         public ICommand SelectedCategoryChangedCommand { get; private set; }
 
-        public Category<T> SelectedCategory { get; set; }
-
-        public ListViewModel(string getOperationName)
+        public ListViewModel(string listGettingOperationName, int userId)
         {
-            _getOperationName = getOperationName ?? throw new ArgumentNullException(nameof(getOperationName));
-            
-            DragAndDropAlgorithm = new CategoryDragAndDropAlgorithm<T>();
-            
-            SelectedCategoryChangedCommand = new RelayCommand<RoutedPropertyChangedEventArgs<object>>(SelectedCategoryChanged, canExecute: e => true);
+            _userId = userId == INITIALIZATION_IDENTIFIER ? throw new ArgumentOutOfRangeException(nameof(userId)) : userId;
+            _listGettingOperationName = listGettingOperationName ?? throw new ArgumentNullException(nameof(listGettingOperationName));
 
-            Commands = new ObservableCollection<Command>
-            {
-                new Command(
-                    string.Format(ADD_LIST_ITEM, typeof(T).Name),
-                    IMG_URL_LIST_ITEM,
-                    AddListItem,
-                    CanAddListItem)
-            };
+            DragAndDropAlgorithm = new CategoryDragAndDropAlgorithm<T>();
+
+            SelectedCategoryChangedCommand = new RelayCommand<RoutedPropertyChangedEventArgs<object>>(SelectedCategoryChanged, canExecute: e => true);
 
             Data = new ObservableCollection<Category<T>>();
             Data.CollectionChanged += Data_CollectionChanged;
-
-            Messenger.Default.Register<DiaryNotificationMessage>(
-                this,
-                message =>
-                {
-                    if (message.Notification == DAILYSCHEDULE_NOTE && typeof(T) == typeof(Note))
-                    {
-                        IsDataLoaded = false;
-                        return;
-                    }
-                });
         }
 
         ~ListViewModel()
@@ -63,15 +44,14 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
             Data.CollectionChanged -= Data_CollectionChanged;
         }
 
-        protected override async Task LoadData(int userId)
+        protected override async Task LoadData()
         {
-            var requestUri = string.Format(_getOperationName, userId);
+            var requestUri = string.Format(_listGettingOperationName, _userId);
             using (var response = await Context.DiaryHttpClient.GetAsync(requestUri))
             {
                 if (response.IsSuccessStatusCode)
                 {
                     var root = await response.Content.ReadAsAsync<Category<T>>();
-                    root.UserId = userId;
 
                     if (Data.Count > 0)
                     {
@@ -79,12 +59,17 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
                     }
 
                     Data.Add(root);
-                    SelectedCategory = Data[0];
                     return;
                 }
 
-                throw new Exception(string.Format(ErrorMessages.GetList.GetDescription(), _getOperationName, response.StatusCode));
+                throw new Exception(string.Format(ErrorMessages.GetList.GetDescription(), _listGettingOperationName, response.StatusCode));
             }
+        }
+
+        protected override Task DataSetting()
+        {
+            SelectedCategoryChanged(new RoutedPropertyChangedEventArgs<object>(null, Data[0]));
+            return Task.CompletedTask;
         }
 
         private void Data_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -96,29 +81,21 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
 
             foreach (var item in e.NewItems)
             {
-                var category = item as Category<T>;
-                category.SenderPath = nameof(ListViewModel<T>);
-                category.GenerateCommands();
+                ((Category<T>)item).GenerateCategoryCommands();
             }
         }
 
-        private void SelectedCategoryChanged(RoutedPropertyChangedEventArgs<object> obj)
+        private void SelectedCategoryChanged(RoutedPropertyChangedEventArgs<object> category)
         {
-            SelectedCategory = (Category<T>)obj.NewValue;
-            foreach (var command in Commands)
+            var selectedCategory = (Category<T>)category.NewValue;
+
+            if (selectedCategory == null)
             {
-                command.RaiseCanExecuteChanged();
+                return;
             }
-        }
 
-        private bool CanAddListItem()
-        {
-            return SelectedCategory != null;
-        }
-
-        private void AddListItem()
-        {
-            SelectedCategory.AddItem();
+            Commands.Clear();
+            Commands.Add(selectedCategory.InitializeAddCategoryItemCommand);
         }
     }
 }

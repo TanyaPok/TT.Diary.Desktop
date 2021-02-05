@@ -18,7 +18,7 @@ namespace TT.Diary.Desktop.ViewModels.Common.Extensions
 
             if (item == null)
             {
-                throw new ArgumentException(string.Format(ErrorMessages.UnexpectedType.GetDescription(), obj));
+                throw new ArgumentException(ErrorMessages.UnexpectedType.GetDescription(), nameof(obj));
             }
 
             return item.Header;

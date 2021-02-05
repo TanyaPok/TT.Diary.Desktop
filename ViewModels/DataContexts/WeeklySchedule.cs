@@ -3,7 +3,7 @@ using TT.Diary.Desktop.ViewModels.Common;
 
 namespace TT.Diary.Desktop.ViewModels.DataContexts
 {
-    public class WeeklySchedule : ContentControlViewModel
+    public class WeeklySchedule : AbstractContentControlViewModel
     {
         public string Title
         {
@@ -13,7 +13,12 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
             }
         }
 
-        protected override Task LoadData(int userId)
+        protected override Task LoadData()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override async Task DataSetting()
         {
             throw new System.NotImplementedException();
         }

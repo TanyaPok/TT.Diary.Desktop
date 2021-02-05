@@ -1,5 +1,6 @@
-﻿using GalaSoft.MvvmLight.Command;
+﻿using GalaSoft.MvvmLight.CommandWpf;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using TT.Diary.Desktop.ViewModels.Common.Extensions;
@@ -21,7 +22,7 @@ namespace TT.Diary.Desktop.ViewModels.Lists
         {
             MouseMoveObjectCommand = new RelayCommand<MouseEventArgs>(MouseMoveCategory, canExecute: e => true);
             DragEnterOverLeaveObjectCommand = new RelayCommand<DragEventArgs>(DragEnterCategory, canExecute: e => true);
-            DropObjectCommand = new RelayCommand<DragEventArgs>(DropCategory, canExecute: e => true);
+            DropObjectCommand = new RelayCommand<DragEventArgs>(async (e) => { await DropCategory(e); }, canExecute: e => true, true);
         }
 
         private void MouseMoveCategory(MouseEventArgs e)
@@ -31,7 +32,7 @@ namespace TT.Diary.Desktop.ViewModels.Lists
                 var control = ((DependencyObject)e.OriginalSource).FindParentAsTreeViewItem();
                 if (control == null)
                     return;
-                
+
                 var data = control.GetTreeViewItemData() as Category<T>;
                 if (!data.IsReadOnlyMode)
                     return;
@@ -69,7 +70,7 @@ namespace TT.Diary.Desktop.ViewModels.Lists
             }
         }
 
-        private void DropCategory(DragEventArgs e)
+        private async Task DropCategory(DragEventArgs e)
         {
             var control = ((DependencyObject)e.OriginalSource).FindParentAsTreeViewItem();
             if (control == null || !e.Data.GetDataPresent(DRAG_FORMAT))
@@ -83,7 +84,7 @@ namespace TT.Diary.Desktop.ViewModels.Lists
 
             if (!sourceData.Value.HasErrors)
             {
-                sourceData.Value.Edit(targetData, sourceData.Key);
+                await sourceData.Value.Move(targetData, sourceData.Key);
             }
         }
     }

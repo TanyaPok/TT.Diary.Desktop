@@ -5,8 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
              xmlns:command="http://www.galasoft.ch/mvvmlight" 
-             xmlns:s="clr-namespace:TT.Diary.Desktop.Views.Controls" 
-             xmlns:c="clr-namespace:TT.Diary.Desktop.Converters"
+             xmlns:s="clr-namespace:TT.Diary.Desktop.Views.Controls"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -65,28 +64,28 @@
                                         </TextBlock.Resources>
                                         <TextBlock.ContextMenu>
                                             <ContextMenu>
-                                                <MenuItem Header="Add" Command="{Binding AddCommand}">
+                                                <MenuItem Header="{Binding InitializeNestedEntityCreateCommand.Name}" Command="{Binding InitializeNestedEntityCreateCommand}">
                                                     <MenuItem.Icon>
-                                                        <Image Source="pack://application:,,,/Images/Toolbar/add.png"/>
+                                                        <Image Source="{Binding InitializeNestedEntityCreateCommand.ImgUrl}"/>
                                                     </MenuItem.Icon>
                                                 </MenuItem>
-                                                <MenuItem Header="Edit" Command="{Binding EditCommand}">
+                                                <MenuItem Header="{Binding InitializeNestedEntityUpdateCommand.Name}" Command="{Binding InitializeNestedEntityUpdateCommand}">
                                                     <MenuItem.Icon>
-                                                        <Image Source="pack://application:,,,/Images/Toolbar/edit.png"/>
+                                                        <Image Source="{Binding InitializeNestedEntityUpdateCommand.ImgUrl}"/>
                                                     </MenuItem.Icon>
                                                 </MenuItem>
-                                                <MenuItem Header="Remove"
+                                                <MenuItem Header="{Binding NestedEntityDeleteCommand.Name}"
                                                           DataContext="{Binding DataContext,Source={StaticResource Spy}}"
                                                           CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=DataContext}"
-                                                          Command="{Binding RemoveCommand}">
+                                                          Command="{Binding NestedEntityDeleteCommand}">
                                                     <MenuItem.Icon>
-                                                        <Image Source="pack://application:,,,/Images/Toolbar/remove.png"/>
+                                                        <Image Source="{Binding NestedEntityDeleteCommand.ImgUrl}"/>
                                                     </MenuItem.Icon>
                                                 </MenuItem>
                                             </ContextMenu>
                                         </TextBlock.ContextMenu>
                                     </TextBlock>
-                                    <TextBox Text="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=LostFocus, ValidatesOnExceptions=True}"
+                                    <TextBox Text="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                                              Validation.ErrorTemplate="{StaticResource errorTemplate}"
                                              MinWidth="50">
                                         <TextBox.Resources>
@@ -118,7 +117,7 @@
                                         </TextBox.Resources>
                                         <i:Interaction.Triggers>
                                             <i:EventTrigger EventName="LostFocus">
-                                                <i:InvokeCommandAction Command="{Binding SaveEditedCategoryCommand}"/>
+                                                <i:InvokeCommandAction Command="{Binding SaveCommand}"/>
                                             </i:EventTrigger>
                                         </i:Interaction.Triggers>
                                     </TextBox>
@@ -150,66 +149,34 @@
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Style="{DynamicResource ControlTitleTextBlockStyle}" HorizontalAlignment="Center" TextWrapping="Wrap"
                    Text="{Binding Description}"/>
-            <ListBox Grid.Row="1" ItemsSource="{Binding Items}"
-                     Margin="5,0,0,0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" Background="{DynamicResource Base.Background}" BorderThickness="0">
-                <ListBox.ItemContainerStyle>
-                    <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                        <Setter Property="Background" Value="{DynamicResource Base.Background}"/>
-                        <Setter Property="BorderBrush" Value="{DynamicResource Base.Background}"/>
-                        <Setter Property="BorderThickness" Value="1"/>
-                        <Setter Property="Padding" Value="2,8,2,8"/>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                    <ControlTemplate.Resources>
-                                        <c:BoolVisibilityConverter x:Key="visibilityConverter"/>
-                                    </ControlTemplate.Resources>
-                                    <Border x:Name="Bd" CornerRadius="5" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
-                                        <Grid>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="*"/>
-                                                <RowDefinition Height="Auto"/>
-                                            </Grid.RowDefinitions>
-                                            <ContentPresenter Grid.Row="0" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                                            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Opacity="0.7" Height="46" Margin="0,7,0,0" 
-                                                        Visibility="{Binding IsSelected, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource visibilityConverter}}">
-                                                <Button Command="{Binding DataContext.RemoveItemCommand, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"
-                                                        CommandParameter="{Binding}"
-                                                        Style="{StaticResource ImgButtonStyle}">
-                                                    <Button.Resources>
-                                                        <Image x:Key="Button.MouseOver.Image" Source="pack://application:,,,/Images/Button/btn_focus.png"/>
-                                                        <Image x:Key="Button.Press.Image" Source="pack://application:,,,/Images/Button/btn_pressed.png"/>
-                                                        <Image x:Key="Button.Default.Image" Source="pack://application:,,,/Images/Button/btn_normal.png"/>
-                                                        <TextBlock x:Key="Button.TextBlock" Text="Remove" Style="{StaticResource LabelTextBlockStyle}"/>
-                                                    </Button.Resources>
-                                                </Button>
-                                            </StackPanel>
-                                        </Grid>
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="BorderBrush" Value="{DynamicResource Button.MouseOver.Border}"/>
-                                        </Trigger>
-                                        <MultiTrigger>
-                                            <MultiTrigger.Conditions>
-                                                <Condition Property="Selector.IsSelectionActive" Value="True"/>
-                                                <Condition Property="IsSelected" Value="True"/>
-                                            </MultiTrigger.Conditions>
-                                            <Setter Property="Background" TargetName="Bd" Value="{DynamicResource Button.Pressed.Background}"/>
-                                            <Setter Property="BorderBrush" TargetName="Bd" Value="{DynamicResource Button.Pressed.Border}"/>
-                                        </MultiTrigger>
-                                        <Trigger Property="IsEnabled" Value="False">
-                                            <Setter Property="TextElement.Foreground" TargetName="Bd" Value="{DynamicResource Button.Disabled.Foreground}"/>
-                                        </Trigger>
-                                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
-                                            <Setter Property="IsSelected" Value="True"/>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </ListBox.ItemContainerStyle>
+            <ListBox Grid.Row="1" ItemsSource="{Binding Items}" Style="{StaticResource ListBoxStyle}" Margin="5,0,0,0" >
+                <ListBox.Resources>
+                    <StackPanel x:Shared="false" x:Key="ListBox.ContentPresenterOperations" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Command="{Binding SaveCommand}"
+                                Style="{StaticResource ButtonStyle}" Margin="0,0,5,0">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="{Binding SaveCommand.ImgUrl}" Width="16" Height="16"/>
+                                <TextBlock Text="{Binding SaveCommand.Name}" Style="{StaticResource LabelTextBlockStyle}"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{Binding TrackersRemoveCommand}"
+                                CommandParameter="{Binding}"
+                                Style="{StaticResource ButtonStyle}" Margin="0,0,5,0">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="{Binding TrackersRemoveCommand.ImgUrl}" Width="16" Height="16"/>
+                                <TextBlock Text="{Binding TrackersRemoveCommand.Name}" Style="{StaticResource LabelTextBlockStyle}"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{Binding DataContext.RemoveItemCommand, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"
+                                CommandParameter="{Binding}"
+                                Style="{StaticResource ButtonStyle}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="{Binding DataContext.RemoveItemCommand.ImgUrl, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" Width="16" Height="16"/>
+                                <TextBlock Text="{Binding DataContext.RemoveItemCommand.Name, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" Style="{StaticResource LabelTextBlockStyle}"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </ListBox.Resources>
             </ListBox>
         </Grid>
     </Grid>

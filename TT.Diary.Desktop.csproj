@@ -133,22 +133,54 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Configs\Productivity.cs" />
     <Compile Include="Configs\Theme.cs" />
     <Compile Include="Converters\BooleanOrConverter.cs" />
     <Compile Include="Converters\DictionaryCommandConverter.cs" />
+    <Compile Include="Converters\DoubleBoolConverter.cs" />
+    <Compile Include="Converters\EnumInverseVisibilityConverter.cs" />
+    <Compile Include="Converters\EnumVisibilityConverter.cs" />
     <Compile Include="Converters\ProductivityForegroundConverter.cs" />
     <Compile Include="Converters\RatingConverter.cs" />
     <Compile Include="Converters\SelectedItemConverter.cs" />
     <Compile Include="Converters\ProductivityBackgroundConverter.cs" />
     <Compile Include="Converters\BoolVisibilityConverter.cs" />
     <Compile Include="Converters\TreeViewRootConverter.cs" />
-    <Compile Include="ViewModels\Common\Command.cs" />
-    <Compile Include="ViewModels\Common\Interfaces\IMessaging.cs" />
-    <Compile Include="ViewModels\Common\DiaryNotificationMessage.cs" />
+    <Compile Include="ViewModels\Common\Commands\CompleteCommand.cs" />
+    <Compile Include="ViewModels\Common\Commands\DeleteCommand.cs" />
+    <Compile Include="ViewModels\Common\Commands\InitializeCreateCommand.cs" />
+    <Compile Include="ViewModels\Common\Commands\InitializeUpdateCommand.cs" />
+    <Compile Include="ViewModels\Common\Commands\SaveCommand.cs" />
+    <Compile Include="ViewModels\Common\AbstractEntity.cs" />
+    <Compile Include="ViewModels\Common\Extensions\TypeExtension.cs" />
+    <Compile Include="ViewModels\Common\Interfaces\IAttributedCommand.cs" />
+    <Compile Include="ViewModels\Common\Interfaces\IEntityCommands.cs" />
+    <Compile Include="ViewModels\Common\Interfaces\IEntityContainerCommands.cs" />
+    <Compile Include="ViewModels\Common\MTObservableCollection.cs" />
+    <Compile Include="ViewModels\Interlayer\Endpoint.cs" />
+    <Compile Include="ViewModels\Interlayer\Request.cs" />
+    <Compile Include="ViewModels\Common\Interfaces\IManager.cs" />
+    <Compile Include="ViewModels\Notification\DirtyData.cs" />
+    <Compile Include="ViewModels\Notification\DirtyDataManager.cs" />
+    <Compile Include="ViewModels\Common\Interfaces\IMessage.cs" />
+    <Compile Include="ViewModels\Common\Interfaces\IPublisher.cs" />
+    <Compile Include="ViewModels\Notification\RefreshData.cs" />
     <Compile Include="ViewModels\Lists\CategoryDragAndDropAlgorithm.cs" />
     <Compile Include="ViewModels\Lists\Habit.cs" />
     <Compile Include="ViewModels\Lists\Note.cs" />
+    <Compile Include="ViewModels\Notification\RefreshDataManager.cs" />
+    <Compile Include="ViewModels\Lists\AbstractScheduledItem.cs" />
+    <Compile Include="ViewModels\TimeManagement\AbstractScheduleSettings.cs" />
     <Compile Include="ViewModels\TimeManagement\Planner.cs" />
+    <Compile Include="ViewModels\TimeManagement\PlannerFrames\AbstractItemPlannerFrame.cs" />
+    <Compile Include="ViewModels\TimeManagement\PlannerFrames\AbstractScheduledItemPlannerFrame.cs" />
+    <Compile Include="ViewModels\TimeManagement\PlannerFrames\NotePlannerFrame.cs" />
+    <Compile Include="ViewModels\TimeManagement\PlannerFrames\ScheduledHabitPlannerFrame.cs" />
+    <Compile Include="ViewModels\TimeManagement\ScheduleSettings.cs" />
+    <Compile Include="ViewModels\TimeManagement\ScheduleSettingsSummary.cs" />
+    <Compile Include="ViewModels\TimeManagement\Tracker.cs" />
+    <Compile Include="ViewModels\TimeManagement\UnscheduledSummaries\UnscheduledItemSummary.cs" />
+    <Compile Include="ViewModels\TimeManagement\UnscheduledSummaries\UnscheduledHabitSummary.cs" />
     <Compile Include="Views\Controls\Calendar\Cap.cs" />
     <Compile Include="Views\Controls\Calendar\ScheduledAppointments.cs" />
     <Compile Include="Views\Controls\Calendar\IMonthCalendarData.cs" />
@@ -169,7 +201,7 @@
     <Compile Include="ViewModels\Common\Extensions\EnumExtension.cs" />
     <Compile Include="ViewModels\Common\Messages.cs" />
     <Compile Include="ViewModels\Common\ObservableObjectWithNotifyDataErrorInfo.cs" />
-    <Compile Include="ViewModels\Common\OperationContract.cs" />
+    <Compile Include="ViewModels\Common\ServiceOperationContract.cs" />
     <Compile Include="ViewModels\DataContexts\ListViewModel.cs" />
     <Compile Include="ViewModels\Common\Extensions\GenericExtension.cs" />
     <Compile Include="ViewModels\Lists\ToDo.cs" />
@@ -190,7 +222,7 @@
     <Compile Include="ViewModels\DataContexts\Context.cs" />
     <Compile Include="ViewModels\Common\Interfaces\IWindowService.cs" />
     <Compile Include="ViewModels\DataContexts\DailySchedule.cs" />
-    <Compile Include="ViewModels\Common\ContentControlViewModel.cs" />
+    <Compile Include="ViewModels\Common\AbstractContentControlViewModel.cs" />
     <Compile Include="ViewModels\DataContexts\MonthlySchedule.cs" />
     <Compile Include="ViewModels\DataContexts\WeeklySchedule.cs" />
     <Compile Include="ViewModels\DataContexts\YearlySchedule.cs" />
@@ -206,6 +238,12 @@
     </Compile>
     <Compile Include="Views\Lists\ToDo.xaml.cs">
       <DependentUpon>ToDo.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TimeManagement\NewScheduledHabit.xaml.cs">
+      <DependentUpon>NewScheduledHabit.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TimeManagement\ScheduledHabit.xaml.cs">
+      <DependentUpon>ScheduledHabit.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\WeeklyScheduleView.xaml.cs">
       <DependentUpon>WeeklyScheduleView.xaml</DependentUpon>
@@ -237,6 +275,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Styles\GroupBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\ListBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -294,7 +336,7 @@
     </Compile>
     <Compile Include="Configs\ScheduleType.cs" />
     <Compile Include="Configs\ListType.cs" />
-    <Compile Include="Configs\AbstractMenuItem.cs" />
+    <Compile Include="Configs\AbstractSectionItem.cs" />
     <Compile Include="Configs\Section.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -321,6 +363,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Lists\ToDo.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\TimeManagement\NewScheduledHabit.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\TimeManagement\ScheduledHabit.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -355,12 +405,12 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="ClassDiagram.cd" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="ViewModels\ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -424,6 +474,13 @@
   <ItemGroup>
     <Resource Include="Images\Themes\Coffee\Background\top.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Toolbar\done.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Toolbar\save.png" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

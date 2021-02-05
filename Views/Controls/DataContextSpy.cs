@@ -28,7 +28,7 @@ namespace TT.Diary.Desktop.Views.Controls
 
         public object DataContext
         {
-            get { return (object)GetValue(DataContextProperty); }
+            get { return GetValue(DataContextProperty); }
             set { SetValue(DataContextProperty, value); }
         }
 

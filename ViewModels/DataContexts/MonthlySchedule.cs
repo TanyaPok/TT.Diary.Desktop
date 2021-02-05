@@ -10,9 +10,9 @@ using TT.Diary.Desktop.Views.Controls.Calendar;
 
 namespace TT.Diary.Desktop.ViewModels.DataContexts
 {
-    public class MonthlySchedule : ContentControlViewModel
+    public class MonthlySchedule : AbstractContentControlViewModel
     {
-        private int _userId;
+        private readonly int _userId;
         private List<ScheduledAppointments> _data;
 
         public string Title
@@ -71,8 +71,10 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
             }
         }
 
-        public MonthlySchedule()
+        public MonthlySchedule(int userId)
         {
+            _userId = userId == INITIALIZATION_IDENTIFIER ? throw new ArgumentOutOfRangeException(nameof(userId)) : userId;
+
             var startYear = DateTime.Now.AddYears(-5).Year;
             var endYear = DateTime.Now.AddYears(5).Year;
 
@@ -106,15 +108,14 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
             PropertyChanged -= MonthlySchedule_PropertyChanged;
         }
 
-        protected override async Task LoadData(int userId)
+        protected override async Task LoadData()
         {
-            _userId = userId;
             var requestUri = string.Format(
-               OperationContract.SCHEDULE_REQUEST_FORMAT,
-               OperationContract.GET_MONTHLY_SCHEDULE,
-               userId,
-               new DateTime(SelectedYear, SelectedMonth.Key, 1).ToString(DATE_FORMAT),
-               new DateTime(SelectedYear, SelectedMonth.Key, DateTime.DaysInMonth(SelectedYear, SelectedMonth.Key)).ToString(DATE_FORMAT));
+               ServiceOperationContract.SCHEDULE_REQUEST_FORMAT,
+               ServiceOperationContract.GET_MONTHLY_SCHEDULE,
+               _userId,
+               new DateTime(SelectedYear, SelectedMonth.Key, 1).ToString(ServiceOperationContract.DATE_FORMAT),
+               new DateTime(SelectedYear, SelectedMonth.Key, DateTime.DaysInMonth(SelectedYear, SelectedMonth.Key)).ToString(ServiceOperationContract.DATE_FORMAT));
 
             using (var response = await Context.DiaryHttpClient.GetAsync(requestUri))
             {
@@ -128,15 +129,19 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
             }
         }
 
-        private async void MonthlySchedule_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        protected override async Task DataSetting()
+        {
+            await LoadData();
+        }
+
+        private void MonthlySchedule_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName != nameof(SelectedYear) && e.PropertyName != nameof(SelectedMonth))
             {
                 return;
             }
 
-            await LoadData(_userId);
-
+            Task.Run(() => DataSetting()).ConfigureAwait(true).GetAwaiter().GetResult();
             RaisePropertyChanged(nameof(Days));
         }
 

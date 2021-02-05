@@ -31,6 +31,7 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
         private readonly string ACCEPT = "Accept=text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
 
         public RelayCommand<IWindowService> SignInCommand { get; }
+
         public RelayCommand<IWindowService> CloseWindowCommand { get; }
 
         public Authorization()
@@ -129,7 +130,7 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
 
         private async Task<int> SetUser(User userInfo)
         {
-            using (var response = await Context.DiaryHttpClient.PostAsJsonAsync(OperationContract.SET_USER, userInfo))
+            using (var response = await Context.DiaryHttpClient.PostAsJsonAsync(ServiceOperationContract.SET_USER, userInfo))
             {
                 if (response.IsSuccessStatusCode)
                 {

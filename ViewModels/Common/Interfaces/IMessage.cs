@@ -1,7 +1,6 @@
 ﻿namespace TT.Diary.Desktop.ViewModels.Common.Interfaces
 {
-    public interface IMessaging
+    public interface IMessage
     {
-        string SenderPath { get; }
     }
 }

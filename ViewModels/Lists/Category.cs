@@ -1,39 +1,25 @@
-﻿using GalaSoft.MvvmLight.Command;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
-using System.Net.Http;
+using System.Threading.Tasks;
 using TT.Diary.Desktop.ViewModels.Common;
+using TT.Diary.Desktop.ViewModels.Common.Commands;
 using TT.Diary.Desktop.ViewModels.Common.Extensions;
 using TT.Diary.Desktop.ViewModels.Common.Interfaces;
-using TT.Diary.Desktop.ViewModels.DataContexts;
+using TT.Diary.Desktop.ViewModels.Interlayer;
+using TT.Diary.Desktop.ViewModels.Notification;
 
 namespace TT.Diary.Desktop.ViewModels.Lists
 {
-    public class Category<T> : ObservableObjectWithNotifyDataErrorInfo, IMessaging where T : AbstractListItem, new()
+    public class Category<T> : AbstractEntity, IEntityContainerCommands, IPublisher<DirtyData> where T : AbstractListItem, new()
     {
-        private int _oldParentId;
-
-        public int Id { get; set; }
-
-        public int ParentId { get; set; }
-
-        private int _userId;
-        public int UserId
+        protected override string RemoveOperationContract
         {
             get
             {
-                return _userId;
-            }
-            internal set
-            {
-                _userId = value;
-
-                foreach (var child in Subcategories)
-                {
-                    child.UserId = value;
-                }
+                return ServiceOperationContract.CATEGORY;
             }
         }
 
@@ -71,43 +57,33 @@ namespace TT.Diary.Desktop.ViewModels.Lists
         }
 
         public ObservableCollection<Category<T>> Subcategories { get; private set; }
-        public ObservableCollection<T> Items { get; set; }
 
-        public RelayCommand AddCommand { get; private set; }
-        public RelayCommand EditCommand { get; private set; }
-        public RelayCommand SaveEditedCategoryCommand { get; private set; }
-        public RelayCommand<Category<T>> RemoveCommand { get; private set; }
-        public RelayCommand<T> RemoveItemCommand { get; private set; }
+        public ObservableCollection<T> Items { get; private set; }
 
-        private string _senderPath;
-        public string SenderPath
-        {
-            get
-            {
-                return _senderPath;
-            }
-            set
-            {
-                _senderPath = value;
+        #region ICUDCommands
+        public IAttributedCommand InitializeNestedEntityCreateCommand { get; private set; }
 
-                foreach (var item in Items)
-                {
-                    item.SenderPath = string.Format(MESSAGING_FORMAT, value, typeof(T).Name);
-                }
-            }
-        }
+        public IAttributedCommand InitializeNestedEntityUpdateCommand { get; private set; }
+
+        public IAttributedCommand NestedEntityDeleteCommand { get; private set; }
+        #endregion
+
+        public IAttributedCommand InitializeAddCategoryItemCommand { get; private set; }
+
+        public IAttributedCommand RemoveItemCommand { get; private set; }
 
         public Category()
         {
-            Description = "New Category";
+            Description = string.Empty;
             Subcategories = new ObservableCollection<Category<T>>();
             Subcategories.CollectionChanged += Subcategories_CollectionChanged;
             Items = new ObservableCollection<T>();
             Items.CollectionChanged += Items_CollectionChanged;
         }
 
-        ~Category()
+        public override void Dispose()
         {
+            base.Dispose();
             Subcategories.CollectionChanged -= Subcategories_CollectionChanged;
             Items.CollectionChanged -= Items_CollectionChanged;
         }
@@ -117,71 +93,99 @@ namespace TT.Diary.Desktop.ViewModels.Lists
             return Subcategories.GetFlatSequence(c => c.Subcategories).Any(c => c == category);
         }
 
-        internal void GenerateCommands(Category<T> parent = null)
+        public void Notify(DirtyData message)
         {
-            AddCommand = new RelayCommand(() =>
+            using (var manager = new DirtyDataManager())
             {
-                Subcategories.Add(new Category<T> { IsReadOnlyMode = false });
-            });
+                manager.Send(message);
+            }
+        }
 
-            EditCommand = new RelayCommand(() => { IsReadOnlyMode = false; }, () => { return ParentId > 0; });
+        internal void GenerateCategoryCommands(Category<T> parent = null)
+        {
+            GenerateCommands();
 
-            SaveEditedCategoryCommand = new RelayCommand(() =>
-            {
-                if (Id == 0)
+            InitializeAddCategoryItemCommand = new InitializeCreateCommand(
+                () =>
                 {
-                    Add();
-                }
-                else
-                {
-                    Edit();
-                }
+                    var newItem = new T();
+                    Items.Add(newItem);
+                },
+                () => { return true; },
+                typeof(T).GetNameWithoutGenericArity());
 
-                IsReadOnlyMode = true;
-            },
-            () =>
-            {
-                return !HasErrors;
-            });
+            InitializeNestedEntityCreateCommand = new InitializeCreateCommand(
+                () =>
+                {
+                    Subcategories.Add(new Category<T> { IsReadOnlyMode = false });
+                },
+                () => { return true; },
+                typeof(Category<T>).GetNameWithoutGenericArity());
+
+            InitializeNestedEntityUpdateCommand = new InitializeUpdateCommand(
+                () =>
+                {
+                    IsReadOnlyMode = false;
+                },
+                () => { return ParentId > INITIALIZATION_IDENTIFIER; },
+                typeof(Category<T>).GetNameWithoutGenericArity());
 
             if (parent == null)
             {
-                RemoveCommand = new RelayCommand<Category<T>>((item) => { }, item => false);
+                NestedEntityDeleteCommand = new DeleteCommand<Category<T>>((item) => { throw new NotImplementedException(); }, item => false, typeof(Category<T>).GetNameWithoutGenericArity());
             }
             else
             {
-                RemoveCommand = new RelayCommand<Category<T>>(parent.Remove, CanRemove);
+                NestedEntityDeleteCommand = new DeleteCommand<Category<T>>(async (child) => { await parent.Remove(child); }, CanRemove, typeof(Category<T>).GetNameWithoutGenericArity(), true);
             }
 
-            RemoveItemCommand = new RelayCommand<T>(RemoveItem, CanRemoveItem);
+            RemoveItemCommand = new DeleteCommand<T>(async (item) => { await RemoveItem(item); }, (item) => { return item != null && item.CanRemove(); }, string.Empty, true);
         }
 
-        internal void AddItem()
+        internal async Task Move(Category<T> parent, Category<T> oldParent)
         {
-            Items.Add(new T());
+            await Endpoint.UpdateEntity(
+                 new Request
+                 {
+                     OperationContract = ServiceOperationContract.CATEGORY,
+                     Data = new { Id, Description, OldCategoryId = oldParent.Id, CategoryId = parent.Id },
+                     AdditionalInfo = "Category " + Description
+                 });
+            oldParent.Subcategories.Remove(this);
+            parent.Subcategories.Add(this);
         }
 
-        internal async void Edit(Category<T> parent = null, Category<T> oldParent = null)
+        protected async override Task Save()
         {
-            var category = new { Id, Description, OldCategoryId = oldParent?.Id ?? _oldParentId, CategoryId = parent?.Id ?? ParentId };
-            using (var response = await Context.DiaryHttpClient.PutAsJsonAsync(OperationContract.CATEGORY, category))
+            await base.Save();
+            IsReadOnlyMode = true;
+            Notify(new DirtyData { Source = this, Operation = OperationType.Remove });
+        }
+
+        protected override Request GetCreateRequest()
+        {
+            return new Request
             {
-                if (!response.IsSuccessStatusCode)
-                {
-                    var errorMessage = await response.Content.ReadAsStringAsync();
-                    throw new Exception(string.Format(ErrorMessages.Edit.GetDescription(), "Category " + Description, errorMessage));
-                }
+                OperationContract = ServiceOperationContract.CATEGORY,
+                Data = new { Description, CategoryId = ParentId, UserId },
+                AdditionalInfo = "Category " + Description
+            };
+        }
 
-                if (oldParent != null)
-                {
-                    oldParent.Subcategories.Remove(this);
-                }
+        protected override Request GetUpdateRequest()
+        {
+            return new Request
+            {
+                OperationContract = ServiceOperationContract.CATEGORY,
+                Data = new { Id, Description, CategoryId = ParentId },
+                AdditionalInfo = "Category " + Description
+            };
+        }
 
-                if (parent != null)
-                {
-                    parent.Subcategories.Add(this);
-                }
-            }
+        protected override void EntityPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            base.EntityPropertyChanged(sender, e);
+            Notify(new DirtyData { Source = this, Operation = OperationType.Add });
         }
 
         private void Subcategories_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -191,25 +195,24 @@ namespace TT.Diary.Desktop.ViewModels.Lists
                 case NotifyCollectionChangedAction.Add:
                     foreach (var item in e.NewItems)
                     {
-                        var category = item as Category<T>;
-                        category.SenderPath = SenderPath;
+                        var category = (Category<T>)item;
                         category.UserId = UserId;
-                        category.GenerateCommands(this);
                         category.ParentId = Id;
+                        category.GenerateCategoryCommands(this);
+                        category.SubscribeToPropertyChanging();
                     }
 
-                    RemoveCommand?.RaiseCanExecuteChanged();
+                    NestedEntityDeleteCommand?.RaiseCanExecuteChanged();
                     break;
                 case NotifyCollectionChangedAction.Remove:
                     foreach (var item in e.OldItems)
                     {
-                        var category = item as Category<T>;
-                        category._oldParentId = Id;
+                        ((Category<T>)item).Dispose();
                     }
 
-                    RemoveCommand?.RaiseCanExecuteChanged();
+                    NestedEntityDeleteCommand?.RaiseCanExecuteChanged();
                     break;
-                default: throw new NotImplementedException();
+                default: throw new ArgumentException(ErrorMessages.UnexpectedType.GetDescription(), nameof(e.Action));
             }
         }
 
@@ -220,34 +223,24 @@ namespace TT.Diary.Desktop.ViewModels.Lists
                 case NotifyCollectionChangedAction.Add:
                     foreach (var item in e.NewItems)
                     {
-                        var element = (AbstractListItem)item;
+                        var element = (T)item;
                         element.ParentId = Id;
-                        element.SenderPath = string.Format(MESSAGING_FORMAT, SenderPath, typeof(T).Name);
-                        element.SaveCommand = new RelayCommand(element.SaveAsync, element.CanSave);
+                        element.UserId = UserId;
+                        element.GenerateCommands();
+                        element.SubscribeToPropertyChanging();
                     }
 
-                    RemoveCommand?.RaiseCanExecuteChanged();
+                    NestedEntityDeleteCommand?.RaiseCanExecuteChanged();
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    RemoveCommand?.RaiseCanExecuteChanged();
+                    foreach (var item in e.OldItems)
+                    {
+                        ((T)item).Dispose();
+                    }
+
+                    NestedEntityDeleteCommand?.RaiseCanExecuteChanged();
                     break;
-                default: throw new NotImplementedException();
-            }
-        }
-
-        private async void Add()
-        {
-            var category = new { Description, CategoryId = ParentId, UserId };
-            using (var response = await Context.DiaryHttpClient.PostAsJsonAsync(OperationContract.CATEGORY, category))
-            {
-                if (response.IsSuccessStatusCode)
-                {
-                    Id = await response.Content.ReadAsAsync<int>();
-                    return;
-                }
-
-                var errorMessage = await response.Content.ReadAsStringAsync();
-                throw new Exception(string.Format(ErrorMessages.Add.GetDescription(), "Category " + Description, errorMessage));
+                default: throw new ArgumentException(ErrorMessages.UnexpectedType.GetDescription(), nameof(e.Action));
             }
         }
 
@@ -256,33 +249,16 @@ namespace TT.Diary.Desktop.ViewModels.Lists
             return !(category.Items?.Count > 0 || category.Subcategories?.Count > 0);
         }
 
-        private async void Remove(Category<T> category)
+        private async Task Remove(Category<T> category)
         {
-            var requestUri = string.Format(OperationContract.REQUEST_FORMAT, OperationContract.CATEGORY, category.Id);
-            using (var response = await Context.DiaryHttpClient.DeleteAsync(requestUri))
-            {
-                if (response.IsSuccessStatusCode)
-                {
-                    Subcategories.Remove(category);
-                    return;
-                }
-
-                var errorMessage = await response.Content.ReadAsStringAsync();
-                throw new Exception(string.Format(ErrorMessages.Remove.GetDescription(), "Category " + category.Description, errorMessage));
-            }
+            await category.Remove();
+            Subcategories.Remove(category);
         }
 
-        private bool CanRemoveItem(T item)
+        private async Task RemoveItem(T item)
         {
-            return item == null || item.CanRemove();
-        }
-
-        private async void RemoveItem(T item)
-        {
-            if (await item.RemoveAsync())
-            {
-                Items.Remove((T)item);
-            }
+            await item.Remove();
+            Items.Remove(item);
         }
     }
 }

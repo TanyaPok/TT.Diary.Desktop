@@ -10,10 +10,10 @@ using TT.Diary.Desktop.Views.Controls.Calendar;
 
 namespace TT.Diary.Desktop.ViewModels.DataContexts
 {
-    public class YearlySchedule : ContentControlViewModel
+    public class YearlySchedule : AbstractContentControlViewModel
     {
+        private readonly int _userId;
         private readonly int NO_TODO = -1;
-        private int _userId;
         private List<MonthDay> _data;
 
         public string Title
@@ -161,8 +161,10 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
         }
         #endregion
 
-        public YearlySchedule()
+        public YearlySchedule(int userId)
         {
+            _userId = userId == INITIALIZATION_IDENTIFIER ? throw new ArgumentOutOfRangeException(nameof(userId)) : userId;
+
             var startYear = DateTime.Now.AddYears(-5).Year;
             var endYear = DateTime.Now.AddYears(5).Year;
 
@@ -180,14 +182,41 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
             PropertyChanged -= YearlySchedule_PropertyChanged;
         }
 
-        private async void YearlySchedule_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        protected override async Task LoadData()
+        {
+            var finishDate = DateTime.Now.Year == SelectedYear ? DateTime.Now.AddDays(-1) : new DateTime(DateTime.Now.Year, 12, 31);
+            var requestUri = string.Format(
+               ServiceOperationContract.SCHEDULE_REQUEST_FORMAT,
+               ServiceOperationContract.GET_YEARLY_SCHEDULE,
+               _userId,
+               new DateTime(SelectedYear, 1, 1).ToString(ServiceOperationContract.DATE_FORMAT),
+               finishDate.ToString(ServiceOperationContract.DATE_FORMAT));
+
+            using (var response = await Context.DiaryHttpClient.GetAsync(requestUri))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    _data = await response.Content.ReadAsAsync<List<MonthDay>>();
+                    return;
+                }
+
+                throw new Exception(string.Format(ErrorMessages.GetSchedule.GetDescription(), SelectedYear, response.StatusCode));
+            }
+        }
+
+        protected override async Task DataSetting()
+        {
+            await LoadData();
+        }
+
+        private void YearlySchedule_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName != nameof(SelectedYear))
             {
                 return;
             }
 
-            await LoadData(_userId);
+            Task.Run(() => DataSetting()).ConfigureAwait(true).GetAwaiter().GetResult();
             RaisePropertyChanged(nameof(January));
             RaisePropertyChanged(nameof(February));
             RaisePropertyChanged(nameof(March));
@@ -200,29 +229,6 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
             RaisePropertyChanged(nameof(October));
             RaisePropertyChanged(nameof(November));
             RaisePropertyChanged(nameof(December));
-        }
-
-        protected override async Task LoadData(int userId)
-        {
-            _userId = userId;
-            var finishDate = DateTime.Now.Year == SelectedYear ? DateTime.Now.AddDays(-1) : new DateTime(DateTime.Now.Year, 12, 31);
-            var requestUri = string.Format(
-               OperationContract.SCHEDULE_REQUEST_FORMAT,
-               OperationContract.GET_YEARLY_SCHEDULE,
-               userId,
-               new DateTime(SelectedYear, 1, 1).ToString(DATE_FORMAT),
-               finishDate.ToString(DATE_FORMAT));
-
-            using (var response = await Context.DiaryHttpClient.GetAsync(requestUri))
-            {
-                if (response.IsSuccessStatusCode)
-                {
-                    _data = await response.Content.ReadAsAsync<List<MonthDay>>();
-                    return;
-                }
-
-                throw new Exception(string.Format(ErrorMessages.GetSchedule.GetDescription(), SelectedYear, response.StatusCode));
-            }
         }
 
         private void FormMonth(ObservableCollection<IMonthCalendarData> days, int month)

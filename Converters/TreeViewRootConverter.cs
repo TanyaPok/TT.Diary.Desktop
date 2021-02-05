@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using TT.Diary.Desktop.ViewModels.Common.Extensions;
@@ -18,7 +17,7 @@ namespace TT.Diary.Desktop.Converters
                 return false;
             }
 
-            var tree = DependencyObjectExtension.FindAnchestor<TreeView>((DependencyObject)item, 0);
+            var tree = DependencyObjectExtension.FindAnchestor<TreeView>(item, 0);
 
             if (tree == null)
             {

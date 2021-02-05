@@ -1,24 +1,13 @@
-﻿using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Messaging;
-using System;
-using System.Threading.Tasks;
-using TT.Diary.Desktop.ViewModels.Common;
+﻿using TT.Diary.Desktop.ViewModels.Common;
 using TT.Diary.Desktop.ViewModels.Common.Extensions;
-using TT.Diary.Desktop.ViewModels.Common.Interfaces;
-using TT.Diary.Desktop.ViewModels.DataContexts;
 
 namespace TT.Diary.Desktop.ViewModels.Lists
 {
-    public abstract class AbstractListItem : ObservableObjectWithNotifyDataErrorInfo, IMessaging
+    public abstract class AbstractListItem : AbstractEntity
     {
-        protected abstract string RemoveOperationContract { get; }
-
-        public int Id { get; set; }
-
-        public int ParentId { get; internal set; }
-
         private string _description;
-        public string Description {
+        public string Description
+        {
             get
             {
                 return _description;
@@ -35,61 +24,9 @@ namespace TT.Diary.Desktop.ViewModels.Lists
             }
         }
 
-        public RelayCommand SaveCommand { get; set; }
-
-        public string SenderPath { get; internal set; }
-
         public AbstractListItem()
         {
-            PropertyChanged += AbstractListItem_PropertyChanged;
-        }
-
-        ~AbstractListItem()
-        {
-            PropertyChanged -= AbstractListItem_PropertyChanged;
-        }
-
-        internal virtual bool CanSave()
-        {
-            return !HasErrors;
-        }
-
-        internal abstract void SaveAsync();
-
-        internal virtual bool CanRemove()
-        {
-            return true;
-        }
-
-        internal virtual async Task<bool> RemoveAsync()
-        {
-            if (Id == 0)
-                return true;
-
-            var requestUri = string.Format(OperationContract.REQUEST_FORMAT, RemoveOperationContract, Id);
-            using (var response = await Context.DiaryHttpClient.DeleteAsync(requestUri))
-            {
-                if (!response.IsSuccessStatusCode)
-                {
-                    var errorMessage = await response.Content.ReadAsStringAsync();
-                    throw new Exception(string.Format(ErrorMessages.Remove.GetDescription(), Description, errorMessage));
-                }
-            }
-
-            return true;
-        }
-
-        protected void SendDiaryNotificationMessage(DateTime scheduledStartDate)
-        {
-            Messenger.Default.Send(new DiaryNotificationMessage(SenderPath, scheduledStartDate));
-        }
-
-        private void AbstractListItem_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (SaveCommand != null && SaveCommand.CanExecute(this))
-            {
-                SaveCommand.Execute(this);
-            }
+            Description = string.Empty;
         }
     }
 }

@@ -1,61 +1,99 @@
-﻿using System;
-using System.Net.Http;
+﻿using System.ComponentModel;
+using System.Threading.Tasks;
 using TT.Diary.Desktop.ViewModels.Common;
 using TT.Diary.Desktop.ViewModels.Common.Extensions;
-using TT.Diary.Desktop.ViewModels.DataContexts;
+using TT.Diary.Desktop.ViewModels.Common.Interfaces;
+using TT.Diary.Desktop.ViewModels.Interlayer;
+using TT.Diary.Desktop.ViewModels.Notification;
+using TT.Diary.Desktop.ViewModels.TimeManagement;
 
 namespace TT.Diary.Desktop.ViewModels.Lists
 {
-    public class ToDo : AbstractListItem
+    public class ToDo<T> : AbstractScheduledItem<T>, IPublisher<DirtyData>, IPublisher<RefreshData<ToDo<T>>> where T : AbstractScheduleSettings
     {
-        public DateTime? ScheduledStartDateTime { set; get; }
-
-        public DateTime? ScheduledCompletionDate { set; get; }
-
-        public DateTime? CompletionDate { set; get; }
-
-        public bool IsComplited
-        {
-            get
-            {
-                return CompletionDate != null;
-            }
-        }
-
         protected override string RemoveOperationContract
         {
             get
             {
-                return OperationContract.TODO;
+                return ServiceOperationContract.TODO;
             }
         }
 
-        internal override async void SaveAsync()
+        public void Notify(DirtyData message)
         {
-            var todo = new { Id, Description, CategoryId = ParentId };
-            HttpResponseMessage response = null;
-            try
+            using (var manager = new DirtyDataManager())
             {
-                response = (Id == 0) ?
-                    await Context.DiaryHttpClient.PostAsJsonAsync(OperationContract.TODO, todo) :
-                    await Context.DiaryHttpClient.PutAsJsonAsync(OperationContract.TODO, todo);
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    var errorMessage = await response.Content.ReadAsStringAsync();
-                    var errorMessageFormat = (Id == 0) ? ErrorMessages.Add.GetDescription() : ErrorMessages.Edit.GetDescription();
-                    throw new Exception(string.Format(errorMessageFormat, "To-do " + Description, errorMessage));
-                }
-
-                if (Id == 0)
-                {
-                    Id = await response.Content.ReadAsAsync<int>();
-                }
+                manager.Send(message);
             }
-            finally
+        }
+
+        public void Notify(RefreshData<ToDo<T>> message)
+        {
+            using (var manager = new RefreshDataManager<ToDo<T>>())
             {
-                response.Dispose();
+                manager.Send(message);
             }
+        }
+
+        internal override bool CanRemove()
+        {
+            return Schedule == null;
+        }
+
+        internal override async Task Remove()
+        {
+            if (State == EntityState.New)
+            {
+                Notify(new DirtyData { Source = this, Operation = OperationType.Remove });
+                return;
+            }
+
+            await base.Remove();
+            Notify(new DirtyData { Source = this, Operation = OperationType.Remove });
+            Notify(new RefreshData<ToDo<T>>());
+        }
+
+        internal override Task Reschedule()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override async Task Save()
+        {
+            await base.Save();
+            Notify(new DirtyData { Source = this, Operation = OperationType.Remove });
+            Notify(new RefreshData<ToDo<T>>());
+        }
+
+        protected override void EntityPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            base.EntityPropertyChanged(sender, e);
+            Notify(new DirtyData { Source = this, Operation = OperationType.Add });
+        }
+
+        protected override Request GetCreateRequest()
+        {
+            return new Request
+            {
+                OperationContract = ServiceOperationContract.TODO,
+                Data = new { Description, CategoryId = ParentId },
+                AdditionalInfo = typeof(ToDo<T>).GetNameWithoutGenericArity() + " " + Description
+            };
+        }
+
+        protected override Request GetUpdateRequest()
+        {
+            return new Request
+            {
+                OperationContract = ServiceOperationContract.TODO,
+                Data = new { Id, Description, CategoryId = ParentId },
+                AdditionalInfo = typeof(ToDo<T>).GetNameWithoutGenericArity() + " " + Description
+            };
+        }
+
+        protected override Task RemoveTrackers(AbstractScheduledItem<T> owner)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

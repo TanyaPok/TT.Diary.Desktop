@@ -2,6 +2,8 @@
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
+using TT.Diary.Desktop.Configs;
+using TT.Diary.Desktop.ViewModels.DataContexts;
 
 namespace TT.Diary.Desktop.Converters
 {
@@ -10,28 +12,33 @@ namespace TT.Diary.Desktop.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var productivity = (double)value;
-            
-            if (productivity >= 0 && productivity < 0.3)
+
+            if (productivity >= Context.Productivities[ProductivityGradation.Horrible].Begin
+                && productivity < Context.Productivities[ProductivityGradation.Horrible].End)
             {
                 return Brushes.Firebrick;
             }
 
-            if (productivity >= 0.3 && productivity < 0.4)
+            if (productivity >= Context.Productivities[ProductivityGradation.Bad].Begin
+                && productivity < Context.Productivities[ProductivityGradation.Bad].End)
             {
                 return Brushes.OrangeRed;
             }
 
-            if (productivity >= 0.4 && productivity < 0.7)
+            if (productivity >= Context.Productivities[ProductivityGradation.Normal].Begin
+                && productivity < Context.Productivities[ProductivityGradation.Normal].End)
             {
                 return Brushes.DarkOrange;
             }
 
-            if (productivity >= 0.7 && productivity < 0.9)
+            if (productivity >= Context.Productivities[ProductivityGradation.Good].Begin
+                && productivity < Context.Productivities[ProductivityGradation.Good].End)
             {
                 return Brushes.OliveDrab;
             }
 
-            if (productivity >= 0.9 && productivity <= 1)
+            if (productivity >= Context.Productivities[ProductivityGradation.Excellent].Begin
+                && productivity <= Context.Productivities[ProductivityGradation.Excellent].End)
             {
                 return Brushes.DarkGreen;
             }

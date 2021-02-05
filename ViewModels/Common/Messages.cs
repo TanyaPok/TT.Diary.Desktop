@@ -36,6 +36,12 @@ namespace TT.Diary.Desktop.ViewModels.Common
     public enum ValidationMessages
     {
         [Description("Empty description")]
-        EmptyDescription
+        EmptyDescription,
+        [Description("Incorrect owner")]
+        IncorrectOwner,
+        [Description("Incorrect {0} range")]
+        IncorrectRange,
+        [Description("Must be greater than 0")]
+        IncorrectGap
     }
 }

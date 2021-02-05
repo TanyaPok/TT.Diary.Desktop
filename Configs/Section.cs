@@ -4,8 +4,7 @@ using System.Xml;
 
 namespace TT.Diary.Desktop.Configs
 {
-    public class Section<T> : IConfigurationSectionHandler
-        where T : AbstractMenuItem, new()
+    public class Section<T> : IConfigurationSectionHandler where T : AbstractSectionItem, new()
     {
         public object Create(object parent, object configContext, XmlNode section)
         {

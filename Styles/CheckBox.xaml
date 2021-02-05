@@ -20,6 +20,7 @@
     <SolidColorBrush x:Key="OptionMark.Pressed.Border" Color="#FF3C77DD"/>
 
     <Style TargetType="{x:Type CheckBox}">
+        <Setter Property="IsThreeState" Value="False"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type CheckBox}">

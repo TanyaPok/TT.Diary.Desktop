@@ -3,9 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vc="clr-namespace:TT.Diary.Desktop.ViewModels.DataContexts"
              xmlns:vm="clr-namespace:TT.Diary.Desktop.ViewModels.Lists"
+             xmlns:tm="clr-namespace:TT.Diary.Desktop.ViewModels.TimeManagement"
              xmlns:v="clr-namespace:TT.Diary.Desktop.Views"
              xmlns:lv="clr-namespace:TT.Diary.Desktop.Views.Lists"
-             xmlns:e="clr-namespace:TT.Diary.Desktop.ViewModels.Common.Extensions"
+             xmlns:tv="clr-namespace:TT.Diary.Desktop.Views.TimeManagement"
+             xmlns:e="clr-namespace:TT.Diary.Desktop.ViewModels.Common.Extensions" 
+             xmlns:c="clr-namespace:TT.Diary.Desktop.Converters"
              StartupUri="./Views/OAuth.xaml">
     <Application.Resources>
         <ResourceDictionary>
@@ -24,39 +27,63 @@
                 <ResourceDictionary Source="pack://application:,,,/Styles/CheckBox.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Styles/GroupBox.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Styles/ComboBox.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Styles/ListBox.xaml"/>
                 <ResourceDictionary>
                     <DataTemplate DataType="{x:Type vc:Context}">
                         <v:MainWindow/>
                     </DataTemplate>
-                    
-                    <DataTemplate DataType="{x:Type vm:Wish}">
+
+                    <e:Generic x:Key="WishViewModel" TypeName="TT.Diary.Desktop.ViewModels.Lists.Wish`1">
+                        <x:Type TypeName="tm:ScheduleSettingsSummary" />
+                    </e:Generic>
+                    <DataTemplate DataType="{StaticResource WishViewModel}">
                         <lv:Wish/>
                     </DataTemplate>
                     <e:Generic x:Key="WishListViewModel" TypeName="TT.Diary.Desktop.ViewModels.DataContexts.ListViewModel`1">
-                        <x:Type TypeName="vm:Wish" />
+                        <x:Type Type="{StaticResource WishViewModel}" />
                     </e:Generic>
                     <DataTemplate DataType="{StaticResource WishListViewModel}">
                         <lv:TreeListView />
                     </DataTemplate>
 
-                    <DataTemplate DataType="{x:Type vm:ToDo}">
+                    <e:Generic x:Key="ToDoViewModel" TypeName="TT.Diary.Desktop.ViewModels.Lists.ToDo`1">
+                        <x:Type TypeName="tm:ScheduleSettingsSummary"/>
+                    </e:Generic>
+                    <DataTemplate DataType="{StaticResource ToDoViewModel}">
                         <lv:ToDo/>
                     </DataTemplate>
                     <e:Generic x:Key="ToDoListViewModel" TypeName="TT.Diary.Desktop.ViewModels.DataContexts.ListViewModel`1">
-                        <x:Type TypeName="vm:ToDo" />
+                        <x:Type Type="{StaticResource ToDoViewModel}" />
                     </e:Generic>
                     <DataTemplate DataType="{StaticResource ToDoListViewModel}">
                         <lv:TreeListView />
                     </DataTemplate>
 
-                    <DataTemplate DataType="{x:Type vm:Habit}">
+                    <e:Generic x:Key="HabitViewModel" TypeName="TT.Diary.Desktop.ViewModels.Lists.Habit`1">
+                        <x:Type TypeName="tm:ScheduleSettingsSummary"/>
+                    </e:Generic>
+                    <DataTemplate DataType="{StaticResource HabitViewModel}">
                         <lv:Habit/>
                     </DataTemplate>
                     <e:Generic x:Key="HabitListViewModel" TypeName="TT.Diary.Desktop.ViewModels.DataContexts.ListViewModel`1">
-                        <x:Type TypeName="vm:Habit" />
+                        <x:Type Type="{StaticResource HabitViewModel}" />
                     </e:Generic>
                     <DataTemplate DataType="{StaticResource HabitListViewModel}">
                         <lv:TreeListView />
+                    </DataTemplate>
+
+                    <e:Generic x:Key="ScheduledHabitViewModel" TypeName="TT.Diary.Desktop.ViewModels.Lists.Habit`1">
+                        <x:Type TypeName="tm:ScheduleSettings"/>
+                    </e:Generic>
+                    <DataTemplate DataType="{StaticResource ScheduledHabitViewModel}">
+                        <Grid>
+                            <Grid.Resources>
+                                <c:EnumVisibilityConverter x:Key="enumVisibilityConverter"/>
+                                <c:EnumInverseVisibilityConverter x:Key="enumInverseVisibilityConverter"/>
+                            </Grid.Resources>
+                            <tv:NewScheduledHabit Visibility="{Binding State, Converter={StaticResource enumVisibilityConverter}, ConverterParameter=New}"/>
+                            <tv:ScheduledHabit Visibility="{Binding State, Converter={StaticResource enumInverseVisibilityConverter}, ConverterParameter=New}"/>
+                        </Grid>
                     </DataTemplate>
 
                     <DataTemplate DataType="{x:Type vm:Note}">
