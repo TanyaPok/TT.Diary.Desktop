@@ -186,7 +186,6 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
         {
             var finishDate = DateTime.Now.Year == SelectedYear ? DateTime.Now.AddDays(-1) : new DateTime(DateTime.Now.Year, 12, 31);
             var requestUri = string.Format(
-               ServiceOperationContract.SCHEDULE_REQUEST_FORMAT,
                ServiceOperationContract.GET_YEARLY_SCHEDULE,
                _userId,
                new DateTime(SelectedYear, 1, 1).ToString(ServiceOperationContract.DATE_FORMAT),

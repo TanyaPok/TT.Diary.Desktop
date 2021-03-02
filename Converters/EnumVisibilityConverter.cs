@@ -16,14 +16,24 @@ namespace TT.Diary.Desktop.Converters
                 return Visibility.Collapsed;
             }
 
-            var param = Enum.Parse(current.GetType(), parameter.ToString()) as Enum;
+            var parameters = parameter.ToString().Split('|');
 
-            if (param == null)
+            foreach (var param in parameters)
             {
-                return Visibility.Collapsed;
+                var candidate = Enum.Parse(current.GetType(), param.ToString()) as Enum;
+
+                if (candidate == null)
+                {
+                    return Visibility.Collapsed;
+                }
+
+                if (Enum.Equals(current, candidate))
+                {
+                    return Visibility.Visible;
+                }
             }
 
-            return Enum.Equals(current, param) ? Visibility.Visible : Visibility.Collapsed;
+            return Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -1,10 +1,12 @@
-﻿using System;
+﻿using GalaSoft.MvvmLight.CommandWpf;
+using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using TT.Diary.Desktop.ViewModels.Common;
-using TT.Diary.Desktop.ViewModels.Common.Commands;
 using TT.Diary.Desktop.ViewModels.Common.Extensions;
 using TT.Diary.Desktop.ViewModels.Common.Interfaces;
 using TT.Diary.Desktop.ViewModels.Interlayer;
@@ -72,12 +74,20 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement
             set
             {
                 Set(ref _repeat, value);
-                Every = Every;
+                Verify(nameof(Every));
+                Verify(nameof(Weekdays));
+                Verify(nameof(Months));
+
+                if (Repeat.None == value)
+                {
+                    ScheduledCompletionDate = ScheduledStartDateTime.Date.AddMinutes(1439);
+                    return;
+                }
             }
         }
 
-        private uint _every;
-        public uint Every
+        private uint? _every;
+        public uint? Every
         {
             get
             {
@@ -85,14 +95,8 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement
             }
             set
             {
-                ClearErrors(nameof(Every));
-
-                if (value < 1 && Repeat != Repeat.None)
-                {
-                    AddError(nameof(Every), ValidationMessages.IncorrectGap.GetDescription());
-                }
-
-                Set(ref _every, value);
+                Set(ref _every, value ?? 0);
+                Verify(nameof(Every));
             }
         }
 
@@ -105,14 +109,8 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement
             }
             set
             {
-                ClearErrors(nameof(Months));
-
-                if (value == 0 && Repeat == Repeat.Yearly)
-                {
-                    AddError(nameof(Months), string.Format(ValidationMessages.IncorrectRange.GetDescription(), nameof(Months)));
-                }
-
                 Set(ref _months, value);
+                Verify(nameof(Months));
             }
         }
 
@@ -125,20 +123,13 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement
             }
             set
             {
-                ClearErrors(nameof(Weekdays));
-
-                if (value == 0 && Repeat == Repeat.Weekly)
-                {
-                    AddError(nameof(Weekdays), string.Format(ValidationMessages.IncorrectRange.GetDescription(), nameof(Weekdays)));
-                }
-
                 Set(ref _weekdays, value);
+                Verify(nameof(Weekdays));
             }
-
         }
 
-        private uint _daysAmount;
-        public uint DaysAmount
+        private uint? _daysAmount;
+        public uint? DaysAmount
         {
             get
             {
@@ -146,13 +137,13 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement
             }
             set
             {
-                Set(ref _daysAmount, value);
+                Set(ref _daysAmount, value ?? 0);
             }
         }
 
-        public IAttributedCommand CompleteCommand { get; protected set; }
-
         public ObservableCollection<Tracker> Trackers { get; private set; }
+
+        public ICommand EveryValidationCommand { get; private set; }
 
         public ScheduleSettings()
         {
@@ -184,13 +175,7 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement
 
         public override bool CanAcceptChanges()
         {
-            return base.CanAcceptChanges() && ParentId > INITIALIZATION_IDENTIFIER;
-        }
-
-        internal override void GenerateCommands()
-        {
-            base.GenerateCommands();
-            CompleteCommand = new CompleteCommand(async () => { await Complete(); }, CanComplete, true);
+            return base.CanAcceptChanges() && ParentId != INITIALIZATION_IDENTIFIER;
         }
 
         internal override async Task Remove()
@@ -204,6 +189,12 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement
             await base.Remove();
 
             Notify(new DirtyData { Source = this, Operation = OperationType.Remove });
+        }
+
+        internal override void GenerateCommands()
+        {
+            base.GenerateCommands();
+            EveryValidationCommand = new RelayCommand<TextCompositionEventArgs>(EveryValidation, canExecute: e => true);
         }
 
         protected override void EntityPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -234,7 +225,7 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement
             return new Request()
             {
                 OperationContract = OperationContract,
-                Data = new { OwnerId = ParentId, ScheduledStartDateTime, ScheduledCompletionDate, CompletionDate, Repeat, Every, Months, Weekdays, DaysAmount },
+                Data = new { OwnerId = ParentId, ScheduledStartDateTime, ScheduledCompletionDate, CompletionDate, Repeat, Every = Every ?? 0, Months, Weekdays, DaysAmount = DaysAmount ?? 0 },
                 AdditionalInfo = nameof(ScheduleSettings)
             };
         }
@@ -267,18 +258,48 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement
             }
         }
 
-        private bool CanComplete()
+        private void EveryValidation(TextCompositionEventArgs e)
         {
-            return !CompletionDate.HasValue;
+            Regex regex = new Regex("^[0-9]+$");
+            e.Handled = !regex.IsMatch(e.Text);
         }
 
-        private async Task Complete()
+        private void Verify(string propertyName)
         {
-            CompletionDate = CalculateCompletionDate();
-
-            if (CanAcceptChanges())
+            if (propertyName == nameof(Every))
             {
-                await AcceptChanges();
+                ClearErrors(nameof(Every));
+
+                if ((!Every.HasValue || Every.Value == 0) && Repeat != Repeat.None)
+                {
+                    AddError(nameof(Every), ValidationMessages.IncorrectGap.GetDescription());
+                }
+
+                return;
+            }
+
+            if (propertyName == nameof(Months))
+            {
+                ClearErrors(nameof(Months));
+
+                if (Months == 0 && Repeat == Repeat.Yearly)
+                {
+                    AddError(nameof(Months), string.Format(ValidationMessages.IncorrectRange.GetDescription(), nameof(Months)));
+                }
+
+                return;
+            }
+
+            if (propertyName == nameof(Weekdays))
+            {
+                ClearErrors(nameof(Weekdays));
+
+                if (Weekdays == 0 && Repeat == Repeat.Weekly)
+                {
+                    AddError(nameof(Weekdays), string.Format(ValidationMessages.IncorrectRange.GetDescription(), nameof(Weekdays)));
+                }
+
+                return;
             }
         }
     }

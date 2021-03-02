@@ -23,12 +23,12 @@
 
         <TextBlock Grid.Row="0" Grid.Column="0" Style="{DynamicResource TitleTextBlockStyle}" Text="Description" Margin="5,0,0,0"/>
         <ComboBox Grid.Row="1" Grid.Column="0" Margin="5,0,0,0" IsEditable="True" Style="{DynamicResource ComboBoxStyle}"
-                  Text="{Binding DataContext.HabitPlanner.NewItemDescription, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type ContentPresenter}, AncestorLevel=3}, UpdateSourceTrigger=PropertyChanged}"
-                  ItemsSource="{Binding Path=DataContext.HabitPlanner.UnscheduledItemSummaries, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type ContentPresenter}, AncestorLevel=3}}"
+                  Text="{Binding DataContext.NewItemDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource AncestorType={x:Type ItemsPresenter}}}"
+                  ItemsSource="{Binding Path=DataContext.UnscheduledItemSummaries, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type ItemsPresenter}}}"
                   DisplayMemberPath="Description">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="SelectionChanged">
-                    <command:EventToCommand Command="{Binding DataContext.HabitPlanner.TemplateChangeCommand, RelativeSource={RelativeSource AncestorType={x:Type ContentPresenter}, AncestorLevel=3}}" PassEventArgsToCommand="True"/>
+                    <command:EventToCommand Command="{Binding DataContext.TemplateChangeCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsPresenter}}}" PassEventArgsToCommand="True"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </ComboBox>

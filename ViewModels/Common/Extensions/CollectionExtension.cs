@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using TT.Diary.Desktop.ViewModels.Lists;
 
 namespace TT.Diary.Desktop.ViewModels.Common.Extensions
 {
@@ -15,6 +16,20 @@ namespace TT.Diary.Desktop.ViewModels.Common.Extensions
                 yield return next;
                 foreach (var child in childSelector(next))
                     stack.Push(child);
+            }
+        }
+
+        public static void OverFill<T>(this MTObservableCollection<T> collection, IEnumerable<T> data)
+            where T : AbstractListItem
+        {
+            foreach (var item in collection.ToArray())
+            {
+                collection.Remove(item);
+            }
+
+            foreach (var item in data)
+            {
+                collection.Add(item);
             }
         }
     }

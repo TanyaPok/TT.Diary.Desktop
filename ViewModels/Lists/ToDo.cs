@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using TT.Diary.Desktop.ViewModels.Common;
 using TT.Diary.Desktop.ViewModels.Common.Extensions;
 using TT.Diary.Desktop.ViewModels.Common.Interfaces;
@@ -9,21 +8,13 @@ using TT.Diary.Desktop.ViewModels.TimeManagement;
 
 namespace TT.Diary.Desktop.ViewModels.Lists
 {
-    public class ToDo<T> : AbstractScheduledItem<T>, IPublisher<DirtyData>, IPublisher<RefreshData<ToDo<T>>> where T : AbstractScheduleSettings
+    public class ToDo<T> : AbstractScheduledItem<T>, IPublisher<RefreshData<ToDo<T>>> where T : AbstractScheduleSettings
     {
         protected override string RemoveOperationContract
         {
             get
             {
                 return ServiceOperationContract.TODO;
-            }
-        }
-
-        public void Notify(DirtyData message)
-        {
-            using (var manager = new DirtyDataManager())
-            {
-                manager.Send(message);
             }
         }
 
@@ -35,40 +26,29 @@ namespace TT.Diary.Desktop.ViewModels.Lists
             }
         }
 
-        internal override bool CanRemove()
-        {
-            return Schedule == null;
-        }
-
         internal override async Task Remove()
         {
-            if (State == EntityState.New)
-            {
-                Notify(new DirtyData { Source = this, Operation = OperationType.Remove });
-                return;
-            }
-
             await base.Remove();
-            Notify(new DirtyData { Source = this, Operation = OperationType.Remove });
             Notify(new RefreshData<ToDo<T>>());
         }
 
-        internal override Task Reschedule()
+        internal override async Task Reschedule()
         {
-            throw new System.NotImplementedException();
+            await base.Reschedule();
+            ((IPublisher<RefreshData<ScheduleSettings>>)Schedule).Notify(new RefreshData<ScheduleSettings> { OwnerType = OwnerTypes.ToDo });
+            Schedule = null;
         }
 
         protected override async Task Save()
         {
             await base.Save();
-            Notify(new DirtyData { Source = this, Operation = OperationType.Remove });
-            Notify(new RefreshData<ToDo<T>>());
-        }
 
-        protected override void EntityPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            base.EntityPropertyChanged(sender, e);
-            Notify(new DirtyData { Source = this, Operation = OperationType.Add });
+            if (Schedule == null)
+            {
+                return;
+            }
+
+            Notify(new RefreshData<ToDo<T>> { RangeStartDate = Schedule.ScheduledStartDateTime, RangeFinishDate = Schedule.PredictableCompletionDate });
         }
 
         protected override Request GetCreateRequest()
@@ -91,9 +71,24 @@ namespace TT.Diary.Desktop.ViewModels.Lists
             };
         }
 
-        protected override Task RemoveTrackers(AbstractScheduledItem<T> owner)
+        protected override async Task RemoveTrackers(AbstractScheduledItem<T> owner)
         {
-            throw new System.NotImplementedException();
+            var requestUri = string.Format(ServiceOperationContract.TODO_TRACKERS, Id);
+            await Endpoint.RemoveEntity(new Request { OperationContract = requestUri });
+            IsTracked = false;
+
+            if (Schedule == null)
+            {
+                return;
+            }
+
+            Notify(new RefreshData<ToDo<T>> { RangeStartDate = Schedule.ScheduledStartDateTime, RangeFinishDate = Schedule.PredictableCompletionDate });
+        }
+
+        internal override async Task Complete()
+        {
+            await base.Complete();
+            ((IPublisher<RefreshData<ScheduleSettings>>)Schedule).Notify(new RefreshData<ScheduleSettings> { OwnerType = OwnerTypes.ToDo });
         }
     }
 }

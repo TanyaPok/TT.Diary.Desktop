@@ -111,7 +111,6 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
         protected override async Task LoadData()
         {
             var requestUri = string.Format(
-               ServiceOperationContract.SCHEDULE_REQUEST_FORMAT,
                ServiceOperationContract.GET_MONTHLY_SCHEDULE,
                _userId,
                new DateTime(SelectedYear, SelectedMonth.Key, 1).ToString(ServiceOperationContract.DATE_FORMAT),

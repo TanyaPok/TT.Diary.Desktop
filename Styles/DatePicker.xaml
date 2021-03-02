@@ -1,9 +1,9 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:c="clr-namespace:TT.Diary.Desktop.Converters">
 
     <Style x:Key="DateTextBoxStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
         <Setter Property="BorderThickness" Value="0,0,0,2"/>
-        <Setter Property="IsReadOnly" Value="True"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="BorderBrush" Value="{DynamicResource Base.BorderBrush}"/>
         <Setter Property="Foreground" Value="{DynamicResource Title.Foreground}"/>
@@ -21,14 +21,17 @@
         </Setter>
     </Style>
 
+    <c:NullableDateConverter x:Key="nullableDateConverter"/>
+
     <Style x:Key="DatePickerStyle" TargetType="{x:Type DatePicker}" BasedOn="{StaticResource {x:Type DatePicker}}">
         <Style.Resources>
-            <Style TargetType="{x:Type DatePickerTextBox}">
+            <Style TargetType="{x:Type DatePickerTextBox}" BasedOn="{StaticResource {x:Type DatePickerTextBox}}">
                 <Setter Property="Control.Template">
                     <Setter.Value>
                         <ControlTemplate>
-                            <TextBox x:Name="PART_TextBox" Style="{DynamicResource DateTextBoxStyle}"
-                                     Text="{Binding Path=SelectedDate, RelativeSource={RelativeSource AncestorType={x:Type DatePicker}}, StringFormat=dd.MM.yyyy}"/>
+                            <TextBox x:Name="PART_TextBox" Style="{DynamicResource DateTextBoxStyle}" IsReadOnly="True"
+                                     Text="{Binding Path=SelectedDate, RelativeSource={RelativeSource AncestorType={x:Type DatePicker}}, ValidatesOnExceptions=True, Converter={StaticResource nullableDateConverter}}" 
+                                     Validation.ErrorTemplate="{StaticResource errorTemplate}"/>
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
@@ -39,5 +42,21 @@
         <Setter Property="VerticalAlignment" Value="Bottom"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Focusable" Value="False"/>
+    </Style>
+
+    <Style x:Key="EditableDatePickerStyle" TargetType="{x:Type DatePicker}" BasedOn="{StaticResource DatePickerStyle}">
+        <Style.Resources>
+            <Style TargetType="{x:Type DatePickerTextBox}" BasedOn="{StaticResource {x:Type DatePickerTextBox}}">
+                <Setter Property="Control.Template">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <TextBox x:Name="PART_TextBox" Style="{DynamicResource DateTextBoxStyle}" IsReadOnly="False"
+                                     Text="{Binding Path=SelectedDate, RelativeSource={RelativeSource AncestorType={x:Type DatePicker}}, ValidatesOnExceptions=True, Converter={StaticResource nullableDateConverter}}" 
+                                     Validation.ErrorTemplate="{StaticResource errorTemplate}"/>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </Style.Resources>
     </Style>
 </ResourceDictionary>

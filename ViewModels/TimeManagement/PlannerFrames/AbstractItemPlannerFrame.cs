@@ -3,12 +3,14 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using TT.Diary.Desktop.ViewModels.Common;
+using TT.Diary.Desktop.ViewModels.Common.Commands;
 using TT.Diary.Desktop.ViewModels.Common.Interfaces;
 using TT.Diary.Desktop.ViewModels.Lists;
+using TT.Diary.Desktop.Views.Controls.TimeManagement;
 
 namespace TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames
 {
-    public abstract class AbstractItemPlannerFrame<T> where T : AbstractListItem, IDisposable
+    public abstract class AbstractItemPlannerFrame<T> : ObservableObjectWithNotifyDataErrorInfo where T : AbstractListItem, IDisposable
     {
         protected readonly int INITIALIZATION_IDENTIFIER = 0;
 
@@ -22,7 +24,22 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames
             }
         }
 
-        internal DateTime PlannerDate { get; set; }
+        public string NewItemDescription
+        {
+            get
+            {
+                return NewItem?.Description;
+            }
+            set
+            {
+                if (NewItem == null)
+                {
+                    return;
+                }
+
+                NewItem.Description = value;
+            }
+        }
 
         public MTObservableCollection<T> Items { get; private set; }
 
@@ -30,9 +47,12 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames
 
         public IAttributedCommand ItemDeleteCommand { get; protected set; }
 
+        public DateRange DateRange { get; private set; }
+
         public AbstractItemPlannerFrame(int userId)
         {
             UserId = userId == INITIALIZATION_IDENTIFIER ? throw new ArgumentOutOfRangeException(nameof(userId)) : userId;
+            DateRange = new DateRange();
             Items = new MTObservableCollection<T>();
             Items.CollectionChanged += Items_CollectionChanged;
         }
@@ -42,16 +62,33 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames
             Items.CollectionChanged -= Items_CollectionChanged;
         }
 
-        public abstract void GenerateCommands();
+        internal virtual void GenerateCommands()
+        {
+            ItemSaveCommand = new SaveCommand(async () => { await SaveItem(); }, CanSaveItem, true);
+            ItemDeleteCommand = new DeleteCommand<T>(async (item) => { await DeleteItem(item); }, CanDeleteItem, string.Empty, true);
+        }
 
         protected abstract void Items_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e);
 
-        protected abstract bool CanDeleteItem(T item);
+        protected virtual bool CanDeleteItem(T item)
+        {
+            return item != null && item.CanRemove();
+        }
 
-        protected abstract Task DeleteItem(T item);
+        protected virtual async Task DeleteItem(T item)
+        {
+            await item.Remove();
+            Items.Remove(item);
+        }
 
-        protected abstract bool CanSaveItem();
+        protected virtual bool CanSaveItem()
+        {
+            return NewItem != null && NewItem.CanAcceptChanges();
+        }
 
-        protected abstract Task SaveItem();
+        protected virtual async Task SaveItem()
+        {
+            await NewItem.AcceptChanges();
+        }
     }
 }

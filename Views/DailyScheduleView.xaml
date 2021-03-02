@@ -18,7 +18,8 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="0.7*"/>
+            <RowDefinition Height="0.3*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -35,74 +36,11 @@
             </DatePicker.Resources>
         </DatePicker>
 
-        <GroupBox Grid.Row="1" Grid.Column="1" Style="{StaticResource GroupBoxStyle}">
-            <GroupBox.Header>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{DynamicResource TitleTextBlockStyle}" Text="Habits" VerticalAlignment="Center"/>
-                    <Button Command="{Binding HabitPlanner.InitializeItemCreateCommand}" Style="{StaticResource ButtonStyle}" Margin="5,0,0,0">
-                        <StackPanel Orientation="Horizontal">
-                            <Image Source="{Binding HabitPlanner.InitializeItemCreateCommand.ImgUrl}" Width="16" Height="16"/>
-                            <TextBlock Text="{Binding HabitPlanner.InitializeItemCreateCommand.Name}" Style="{StaticResource LabelTextBlockStyle}"/>
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
-            </GroupBox.Header>
+        <ContentControl Grid.Row="1" Grid.Column="1" Content="{Binding ToDoPlanner}"/>
 
-            <ListBox ItemsSource="{Binding HabitPlanner.Items}" Style="{StaticResource ListBoxStyle}">
-                <ListBox.Template>
-                    <ControlTemplate>
-                        <DockPanel LastChildFill="True">
-                            <Grid DockPanel.Dock="Top">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"></ColumnDefinition>
-                                    <ColumnDefinition Width="560"></ColumnDefinition>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="1" Grid.Row="1" Style="{DynamicResource LabelTextBlockStyle}" HorizontalAlignment="Left"
-                                           Text="{Binding SelectedDate, StringFormat=dddd}" />
-                            </Grid>
-                            <ItemsPresenter></ItemsPresenter>
-                        </DockPanel>
-                    </ControlTemplate>
-                </ListBox.Template>
-                <ListBox.Resources>
-                    <StackPanel x:Shared="false" x:Key="ListBox.ContentPresenterOperations" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Command="{Binding Schedule.CompleteCommand}" Style="{StaticResource ButtonStyle}" Margin="0,0,5,0"
-                                Visibility="{Binding State, Converter={StaticResource enumInverseVisibilityConverter}, ConverterParameter=New}">
-                            <StackPanel Orientation="Horizontal">
-                                <Image Source="{Binding Schedule.CompleteCommand.ImgUrl}" Width="16" Height="16"/>
-                                <TextBlock Text="{Binding Schedule.CompleteCommand.Name}" Style="{StaticResource LabelTextBlockStyle}"/>
-                            </StackPanel>
-                        </Button>
-                        <Button x:Name="saveCommandButton" Command="{Binding DataContext.HabitPlanner.ItemSaveCommand, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" Style="{StaticResource ButtonStyle}" Margin="0,0,5,0" 
-                                Visibility="{Binding State, Converter={StaticResource enumVisibilityConverter}, ConverterParameter=New}">
-                            <StackPanel Orientation="Horizontal">
-                                <Image Source="{Binding DataContext.HabitPlanner.ItemSaveCommand.ImgUrl, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" Width="16" Height="16"/>
-                                <TextBlock Text="{Binding DataContext.HabitPlanner.ItemSaveCommand.Name, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" Style="{StaticResource LabelTextBlockStyle}"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Command="{Binding DataContext.HabitPlanner.RescheduleItemCommand, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" 
-                                CommandParameter="{Binding}"
-                                Style="{StaticResource ButtonStyle}" Margin="0,0,5,0"
-                                Visibility="{Binding State, Converter={StaticResource enumInverseVisibilityConverter}, ConverterParameter=New}">
-                            <StackPanel Orientation="Horizontal">
-                                <Image Source="{Binding DataContext.HabitPlanner.RescheduleItemCommand.ImgUrl, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" Width="16" Height="16"/>
-                                <TextBlock Text="{Binding DataContext.HabitPlanner.RescheduleItemCommand.Name, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" Style="{StaticResource LabelTextBlockStyle}"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Command="{Binding DataContext.HabitPlanner.ItemDeleteCommand, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" 
-                                CommandParameter="{Binding}"
-                                Style="{StaticResource ButtonStyle}" Margin="0,0,5,0">
-                            <StackPanel Orientation="Horizontal">
-                                <Image Source="{Binding DataContext.HabitPlanner.ItemDeleteCommand.ImgUrl, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" Width="16" Height="16"/>
-                                <TextBlock Text="{Binding DataContext.HabitPlanner.ItemDeleteCommand.Name, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" Style="{StaticResource LabelTextBlockStyle}"/>
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
-                </ListBox.Resources>
-            </ListBox>
-        </GroupBox>
+        <ContentControl Grid.Row="2" Grid.Column="1" Content="{Binding HabitPlanner}"/>
 
-        <GroupBox Grid.Row="2" Grid.ColumnSpan="2" Style="{StaticResource GroupBoxStyle}">
+        <GroupBox Grid.Row="3" Grid.ColumnSpan="2" Style="{StaticResource GroupBoxStyle}">
             <GroupBox.Header>
                 <StackPanel Orientation="Horizontal">
                     <Image Source="pack://application:,,,/Images/Workspace/note.png" Width="26" Height="26"/>

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using TT.Diary.Desktop.ViewModels.Common;
@@ -40,6 +39,20 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
             }
         }
 
+        private ScheduledToDoPlannerFrame _toDoPlanner;
+        public ScheduledToDoPlannerFrame ToDoPlanner
+        {
+            get
+            {
+                return _toDoPlanner;
+            }
+            set
+            {
+                Set(ref _toDoPlanner, value);
+            }
+        }
+
+
         private ScheduledHabitPlannerFrame _habitPlanner;
         public ScheduledHabitPlannerFrame HabitPlanner
         {
@@ -75,6 +88,9 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
 
             HabitPlanner = new ScheduledHabitPlannerFrame(_userId, ServiceOperationContract.GET_UNSCHEDULED_HABITS);
             HabitPlanner.GenerateCommands();
+
+            ToDoPlanner = new ScheduledToDoPlannerFrame(_userId, ServiceOperationContract.GET_UNSCHEDULED_TODO_LIST);
+            ToDoPlanner.GenerateCommands();
         }
 
         protected override bool InRangeDates(DateTime rangeStartDate, DateTime rangeFinishDate)
@@ -85,7 +101,6 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
         protected override async Task LoadData()
         {
             var requestUri = string.Format(
-               ServiceOperationContract.SCHEDULE_REQUEST_FORMAT,
                ServiceOperationContract.GET_DAILY_SCHEDULE,
                _userId,
                SelectedDate.Date.ToString(ServiceOperationContract.DATE_FORMAT),
@@ -97,25 +112,9 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
                 {
                     using (var planner = await response.Content.ReadAsAsync<Planner>())
                     {
-                        foreach (var habit in HabitPlanner.Items.ToArray())
-                        {
-                            HabitPlanner.Items.Remove(habit);
-                        }
-
-                        foreach (var habit in planner.Habits)
-                        {
-                            HabitPlanner.Items.Add(habit);
-                        }
-
-                        foreach (var note in NotePlanner.Items.ToArray())
-                        {
-                            NotePlanner.Items.Remove(note);
-                        }
-
-                        foreach (var note in planner.Notes)
-                        {
-                            NotePlanner.Items.Add(note);
-                        }
+                        ToDoPlanner.Items.OverFill(planner.ToDoList);
+                        HabitPlanner.Items.OverFill(planner.Habits);
+                        NotePlanner.Items.OverFill(planner.Notes);
                     }
 
                     return;
@@ -127,9 +126,11 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
 
         protected override async Task DataSetting()
         {
-            NotePlanner.PlannerDate = SelectedDate;
-            HabitPlanner.PlannerDate = SelectedDate;
+            NotePlanner.DateRange.StartDate = SelectedDate;
+            HabitPlanner.DateRange.StartDate = SelectedDate;
             await HabitPlanner.SetUnscheduledData();
+            ToDoPlanner.DateRange.StartDate = SelectedDate;
+            await ToDoPlanner.SetUnscheduledData();
         }
     }
 }

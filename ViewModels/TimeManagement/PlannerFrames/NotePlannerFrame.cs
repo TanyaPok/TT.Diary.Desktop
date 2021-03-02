@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
-using System.Threading.Tasks;
 using TT.Diary.Desktop.ViewModels.Common;
-using TT.Diary.Desktop.ViewModels.Common.Commands;
 using TT.Diary.Desktop.ViewModels.Common.Extensions;
 using TT.Diary.Desktop.ViewModels.Lists;
 
@@ -12,24 +10,6 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames
     {
         public NotePlannerFrame(int userId) : base(userId)
         {
-
-        }
-
-        public override void GenerateCommands()
-        {
-            ItemSaveCommand = new SaveCommand(async () => { await SaveItem(); }, CanSaveItem, true);
-            ItemDeleteCommand = new DeleteCommand<Note>(async (item) => { await DeleteItem(item); }, CanDeleteItem, string.Empty, true);
-        }
-
-        protected override bool CanDeleteItem(Note note)
-        {
-            return note != null && note.CanRemove();
-        }
-
-        protected override async Task DeleteItem(Note note)
-        {
-            await note.Remove();
-            Items.Remove(note);
         }
 
         protected override void Items_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -43,7 +23,7 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames
 
                         if (element.ScheduleDate == DateTime.MinValue)
                         {
-                            element.ScheduleDate = PlannerDate;
+                            element.ScheduleDate = DateRange.StartDate;
                         }
 
                         element.UserId = UserId;
@@ -58,18 +38,9 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames
                         element.Dispose();
                     }
                     break;
-                default: throw new ArgumentException(ErrorMessages.UnexpectedType.GetDescription(), nameof(e.Action));
+                default:
+                    throw new ArgumentException(ErrorMessages.UnexpectedType.GetDescription(), nameof(e.Action));
             }
-        }
-
-        protected override bool CanSaveItem()
-        {
-            return NewItem != null && NewItem.CanAcceptChanges();
-        }
-
-        protected override async Task SaveItem()
-        {
-            await NewItem.AcceptChanges();
         }
     }
 }

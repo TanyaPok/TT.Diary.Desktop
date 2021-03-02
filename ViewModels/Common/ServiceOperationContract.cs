@@ -8,8 +8,9 @@
 
         public const string GET_WISH_LIST = "wishlist?userid={0}";
         public const string GET_TODO_LIST = "todolist?userid={0}";
-        public const string GET_HABITS = "habits?userid={0}&onlyunscheduled=false";
-        public const string GET_UNSCHEDULED_HABITS = "habits?userid={0}&onlyunscheduled=true";
+        public const string GET_UNSCHEDULED_TODO_LIST = "unscheduledtodolist?userid={0}";
+        public const string GET_HABITS = "habits?userid={0}";
+        public const string GET_UNSCHEDULED_HABITS = "unscheduledhabits?userid={0}";
         public const string GET_NOTES = "notes?userid={0}";
 
         public const string REQUEST_FORMAT = "{0}/{1}";
@@ -21,11 +22,14 @@
 
         public const string HABIT_SCHEDULE = "habitschedule";
         public const string HABIT_TRACKER = "habittracker";
-        public const string HABIT_TRACKERS = "habittrackers";
+        public const string HABIT_TRACKERS = "habittrackers/{0}";
 
-        public const string SCHEDULE_REQUEST_FORMAT = "{0}?userid={1}&startdate={2}&finishdate={3}";
-        public const string GET_DAILY_SCHEDULE = "planner";
-        public const string GET_YEARLY_SCHEDULE = "annualproductivity";
-        public const string GET_MONTHLY_SCHEDULE = "scheduledappointments";
+        public const string TODO_SCHEDULE = "todoschedule";
+        public const string TODO_TRACKER = "todotracker";
+        public const string TODO_TRACKERS = "todotrackers/{0}";
+
+        public const string GET_DAILY_SCHEDULE = "planner?userid={0}&startdate={1}&finishdate={2}";
+        public const string GET_YEARLY_SCHEDULE = "annualproductivity?userid={0}&startdate={1}&finishdate={2}";
+        public const string GET_MONTHLY_SCHEDULE = "scheduledappointments?userid={0}&startdate={1}&finishdate={2}";
     }
 }

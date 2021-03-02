@@ -13,17 +13,31 @@
         <x:Static x:Key="empty" Member="sys:String.Empty" />
         <c:BoolVisibilityConverter x:Key="boolVisibilityConverter"/>
         <c:DoubleBoolConverter x:Key="doubleBoolConverter"/>
+        <c:BoolInverseConverter x:Key="boolInverseConverter"/>
     </UserControl.Resources>
 
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="560"/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Column="0" Margin="2,0,0,0" Style="{StaticResource TextBlockStyle}" Text="{Binding Description}" TextWrapping="Wrap" VerticalAlignment="Bottom"/>
+        <TextBlock Grid.Column="0" Margin="2,0,0,0" Text="{Binding Description, Mode=OneWay}" TextWrapping="Wrap" VerticalAlignment="Bottom">
+            <TextBlock.Resources>
+                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsCompleted}" Value="True">
+                            <Setter Property="TextDecorations" Value="Strikethrough" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsCompleted}" Value="False">
+                            <Setter Property="TextDecorations" Value="None" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Resources>
+        </TextBlock>
 
-        <ItemsControl x:Name="trackerItemsControl" Grid.Column="1" ItemsSource="{Binding Schedule.Trackers}">
+        <ItemsControl x:Name="trackerItemsControl" Grid.Column="1" ItemsSource="{Binding Schedule.Trackers}" IsEnabled="{Binding IsCompleted, Converter={StaticResource boolInverseConverter}}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Grid>

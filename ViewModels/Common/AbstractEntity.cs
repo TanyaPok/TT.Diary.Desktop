@@ -61,6 +61,11 @@ namespace TT.Diary.Desktop.ViewModels.Common
 
         public IAttributedCommand SaveCommand { get; private set; }
 
+        //TODO: bad idea, think
+        internal delegate void BeforeSaving();
+
+        internal BeforeSaving PreSave { get; set; }
+
         public virtual bool CanAcceptChanges()
         {
             return IsChanged && !HasErrors;
@@ -68,6 +73,11 @@ namespace TT.Diary.Desktop.ViewModels.Common
 
         public async Task AcceptChanges()
         {
+            if (PreSave != null)
+            {
+                PreSave();
+            }
+
             await Save();
             IsChanged = false;
             SaveCommand?.RaiseCanExecuteChanged();

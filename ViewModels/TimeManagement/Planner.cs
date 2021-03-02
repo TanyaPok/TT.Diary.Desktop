@@ -10,6 +10,8 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement
 
         public IEnumerable<Habit<ScheduleSettings>> Habits { get; set; }
 
+        public IEnumerable<ToDo<ScheduleSettings>> ToDoList { get; set; }
+
         public void Dispose()
         {
         }

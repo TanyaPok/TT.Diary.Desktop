@@ -1,5 +1,4 @@
 ﻿using GalaSoft.MvvmLight.CommandWpf;
-using System.ComponentModel;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -12,7 +11,7 @@ using TT.Diary.Desktop.ViewModels.TimeManagement;
 
 namespace TT.Diary.Desktop.ViewModels.Lists
 {
-    public class Habit<T> : AbstractScheduledItem<T>, IPublisher<DirtyData>, IPublisher<RefreshData<Habit<T>>> where T : AbstractScheduleSettings
+    public class Habit<T> : AbstractScheduledItem<T>, IPublisher<RefreshData<Habit<T>>> where T : AbstractScheduleSettings
     {
         protected override string RemoveOperationContract
         {
@@ -46,14 +45,6 @@ namespace TT.Diary.Desktop.ViewModels.Lists
 
         public ICommand AmountValidationCommand { get; private set; }
 
-        public void Notify(DirtyData message)
-        {
-            using (var manager = new DirtyDataManager())
-            {
-                manager.Send(message);
-            }
-        }
-
         public void Notify(RefreshData<Habit<T>> message)
         {
             using (var manager = new RefreshDataManager<Habit<T>>())
@@ -62,69 +53,29 @@ namespace TT.Diary.Desktop.ViewModels.Lists
             }
         }
 
-        public override bool CanAcceptChanges()
-        {
-            return base.CanAcceptChanges() && ParentId != INITIALIZATION_IDENTIFIER;
-        }
-
         internal override void GenerateCommands()
         {
             base.GenerateCommands();
             AmountValidationCommand = new RelayCommand<TextCompositionEventArgs>(AmountValidation, canExecute: e => true);
         }
 
-        internal override bool CanRemove()
-        {
-            return Schedule == null || Schedule.State == EntityState.New;
-        }
-
         internal override async Task Remove()
         {
-            if (Schedule != null && Schedule.State == EntityState.New && Schedule.CanRemove())
-            {
-                await Schedule.Remove();
-                Schedule = null;
-            }
-
-            if (State == EntityState.New)
-            {
-                Notify(new DirtyData { Source = this, Operation = OperationType.Remove });
-                return;
-            }
-
             await base.Remove();
-
-            Notify(new DirtyData { Source = this, Operation = OperationType.Remove });
             Notify(new RefreshData<Habit<T>>());
         }
 
         internal override async Task Reschedule()
         {
-            if (!Schedule.CanRemove())
-            {
-                return;
-            }
-
-            await Schedule.Remove();
+            await base.Reschedule();
             ((IPublisher<RefreshData<ScheduleSettings>>)Schedule).Notify(new RefreshData<ScheduleSettings> { OwnerType = OwnerTypes.Habit });
             Schedule = null;
         }
 
-        protected override void EntityPropertyChanged(object sender, PropertyChangedEventArgs e)
+        internal override async Task Complete()
         {
-            if (e.PropertyName == nameof(IsTracked))
-            {
-                return;
-            }
-
-            base.EntityPropertyChanged(sender, e);
-
-            if (e.PropertyName == nameof(Schedule) && Schedule == null)
-            {
-                return;
-            }
-
-            Notify(new DirtyData { Source = this, Operation = OperationType.Add });
+            await base.Complete();
+            ((IPublisher<RefreshData<ScheduleSettings>>)Schedule).Notify(new RefreshData<ScheduleSettings> { OwnerType = OwnerTypes.Habit });
         }
 
         protected override Request GetCreateRequest()
@@ -151,18 +102,9 @@ namespace TT.Diary.Desktop.ViewModels.Lists
         {
             await base.Save();
 
-            Notify(new DirtyData { Source = this, Operation = OperationType.Remove });
-
             if (Schedule == null)
             {
                 return;
-            }
-
-            Schedule.ParentId = Id;
-
-            if (Schedule.CanAcceptChanges())
-            {
-                await Schedule.AcceptChanges();
             }
 
             Notify(new RefreshData<Habit<T>> { RangeStartDate = Schedule.ScheduledStartDateTime, RangeFinishDate = Schedule.PredictableCompletionDate });
@@ -170,9 +112,15 @@ namespace TT.Diary.Desktop.ViewModels.Lists
 
         protected override async Task RemoveTrackers(AbstractScheduledItem<T> owner)
         {
-            var requestUri = string.Format(ServiceOperationContract.REQUEST_FORMAT, ServiceOperationContract.HABIT_TRACKERS, Id);
+            var requestUri = string.Format(ServiceOperationContract.HABIT_TRACKERS, Id);
             await Endpoint.RemoveEntity(new Request { OperationContract = requestUri });
             IsTracked = false;
+
+            if (Schedule == null)
+            {
+                return;
+            }
+
             Notify(new RefreshData<Habit<T>> { RangeStartDate = Schedule.ScheduledStartDateTime, RangeFinishDate = Schedule.PredictableCompletionDate });
         }
 

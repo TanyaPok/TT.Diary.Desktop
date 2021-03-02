@@ -21,7 +21,7 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement
             {
                 ClearErrors(nameof(ScheduledCompletionDate));
 
-                if (value.HasValue && value.Value < ScheduledStartDateTime.Date)
+                if (!CheckDateRange(value))
                 {
                     AddError(nameof(ScheduledCompletionDate), string.Format(ValidationMessages.IncorrectRange.GetDescription(), "date"));
                 }
@@ -41,7 +41,7 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement
             {
                 ClearErrors(nameof(CompletionDate));
 
-                if (value.HasValue && value.Value < ScheduledStartDateTime.Date)
+                if (!CheckDateRange(value))
                 {
                     AddError(nameof(CompletionDate), string.Format(ValidationMessages.IncorrectRange.GetDescription(), "date"));
                 }
@@ -68,7 +68,7 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement
             }
         }
 
-        protected DateTime CalculateCompletionDate()
+        internal DateTime CalculateCompletionDate()
         {
             if (!ScheduledCompletionDate.HasValue)
             {
@@ -81,6 +81,11 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement
             }
 
             return DateTime.Now;
+        }
+
+        internal bool CheckDateRange(DateTime? value)
+        {
+            return !(value.HasValue && value.Value < ScheduledStartDateTime.Date);
         }
     }
 }

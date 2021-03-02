@@ -67,6 +67,7 @@ namespace TT.Diary.Desktop.ViewModels.Common
                 return;
             }
 
+            DirtyEntities.Clear();
             await LoadData();
             _isDataLoaded = true;
         }
@@ -78,6 +79,7 @@ namespace TT.Diary.Desktop.ViewModels.Common
 
         protected void RefreshData()
         {
+            DirtyEntities.Clear();
             Task.Run(() => LoadData()).ConfigureAwait(true).GetAwaiter().GetResult();
             Task.Run(() => DataSetting()).ConfigureAwait(true).GetAwaiter().GetResult();
         }
