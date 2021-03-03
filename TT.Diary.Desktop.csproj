@@ -181,14 +181,17 @@
     <Compile Include="ViewModels\TimeManagement\Planner.cs" />
     <Compile Include="ViewModels\TimeManagement\PlannerFrames\AbstractItemPlannerFrame.cs" />
     <Compile Include="ViewModels\TimeManagement\PlannerFrames\AbstractScheduledItemPlannerFrame.cs" />
+    <Compile Include="ViewModels\TimeManagement\PlannerFrames\AbstractTrackedItemPlannerFrame.cs" />
     <Compile Include="ViewModels\TimeManagement\PlannerFrames\NotePlannerFrame.cs" />
     <Compile Include="ViewModels\TimeManagement\PlannerFrames\ScheduledHabitPlannerFrame.cs" />
     <Compile Include="ViewModels\TimeManagement\PlannerFrames\ScheduledToDoPlannerFrame.cs" />
+    <Compile Include="ViewModels\TimeManagement\PlannerFrames\ScheduledWishPlannerFrame.cs" />
     <Compile Include="ViewModels\TimeManagement\ScheduleSettings.cs" />
     <Compile Include="ViewModels\TimeManagement\ScheduleSettingsSummary.cs" />
     <Compile Include="ViewModels\TimeManagement\Tracker.cs" />
     <Compile Include="ViewModels\TimeManagement\UnscheduledSummaries\UnscheduledItemSummary.cs" />
     <Compile Include="ViewModels\TimeManagement\UnscheduledSummaries\UnscheduledHabitSummary.cs" />
+    <Compile Include="ViewModels\TimeManagement\UnscheduledSummaries\UnscheduledWishSummary.cs" />
     <Compile Include="Views\Controls\Calendar\Cap.cs" />
     <Compile Include="Views\Controls\Calendar\ScheduledAppointments.cs" />
     <Compile Include="Views\Controls\Calendar\IMonthCalendarData.cs" />
@@ -255,6 +258,9 @@
     <Compile Include="Views\TimeManagement\NewScheduledToDo.xaml.cs">
       <DependentUpon>NewScheduledToDo.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\TimeManagement\NewScheduledWish.xaml.cs">
+      <DependentUpon>NewScheduledWish.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\TimeManagement\ScheduledHabit.xaml.cs">
       <DependentUpon>ScheduledHabit.xaml</DependentUpon>
     </Compile>
@@ -263,6 +269,9 @@
     </Compile>
     <Compile Include="Views\TimeManagement\ScheduledToDo.xaml.cs">
       <DependentUpon>ScheduledToDo.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TimeManagement\ScheduledWish.xaml.cs">
+      <DependentUpon>ScheduledWish.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\TimeManagement\ScheduleSettingsView.xaml.cs">
       <DependentUpon>ScheduleSettingsView.xaml</DependentUpon>
@@ -400,6 +409,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\TimeManagement\NewScheduledWish.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\TimeManagement\ScheduledHabit.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -409,6 +422,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\TimeManagement\ScheduledToDo.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\TimeManagement\ScheduledWish.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

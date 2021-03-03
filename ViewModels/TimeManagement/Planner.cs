@@ -12,6 +12,8 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement
 
         public IEnumerable<ToDo<ScheduleSettings>> ToDoList { get; set; }
 
+        public IEnumerable<Wish<ScheduleSettings>> WishList { get; set; }
+
         public void Dispose()
         {
         }

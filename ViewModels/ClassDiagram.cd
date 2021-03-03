@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="TT.Diary.Desktop.ViewModels.Lists.Category&lt;T&gt;">
-    <Position X="16.25" Y="9.25" Width="1.5" />
+    <Position X="17" Y="9.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>ABEBAIAAgaggCQAEAAQABECAACAAAABEgEACAQAACAA=</HashCode>
       <FileName>ViewModels\Lists\Category.cs</FileName>
@@ -12,7 +12,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="TT.Diary.Desktop.ViewModels.Lists.Habit&lt;T&gt;">
-    <Position X="7.25" Y="18" Width="1.5" />
+    <Position X="8" Y="18" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAIAAgAAAAAIAEAAABACAACQAAIBAgEBCBAAAAAA=</HashCode>
       <FileName>ViewModels\Lists\Habit.cs</FileName>
@@ -20,7 +20,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="TT.Diary.Desktop.ViewModels.Lists.Note">
-    <Position X="14" Y="12.25" Width="1.5" />
+    <Position X="14.75" Y="12.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAQAIAAAAgAAAAAAAAABAAAACAAAABAkAACAAgAAAA=</HashCode>
       <FileName>ViewModels\Lists\Note.cs</FileName>
@@ -28,14 +28,14 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="TT.Diary.Desktop.ViewModels.Lists.AbstractListItem">
-    <Position X="10.75" Y="9.25" Width="1.5" />
+    <Position X="11.25" Y="9.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAgAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>ViewModels\Lists\AbstractListItem.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="TT.Diary.Desktop.ViewModels.TimeManagement.AbstractScheduleSettings">
-    <Position X="4" Y="9.25" Width="1.5" />
+    <Position X="4.25" Y="9.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>BAAAgAJAAAAAAAFAAAAAAAAAAgAAAAAAAAgAAAAAEAA=</HashCode>
       <FileName>ViewModels\TimeManagement\AbstractScheduleSettings.cs</FileName>
@@ -68,7 +68,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="TT.Diary.Desktop.ViewModels.Common.AbstractEntity">
-    <Position X="8.5" Y="2" Width="1.5" />
+    <Position X="8.75" Y="2" Width="1.5" />
     <NestedTypes>
       <Delegate Name="TT.Diary.Desktop.ViewModels.Common.AbstractEntity.BeforeSaving" Collapsed="true">
         <TypeIdentifier>
@@ -83,7 +83,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="TT.Diary.Desktop.ViewModels.Common.ObservableObjectWithNotifyDataErrorInfo" Collapsed="true">
-    <Position X="11.75" Y="0.5" Width="1.5" />
+    <Position X="13.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAABAAAAAAAAAAAAAAAIABAAAAAhoAA=</HashCode>
       <FileName>ViewModels\Common\ObservableObjectWithNotifyDataErrorInfo.cs</FileName>
@@ -91,7 +91,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="TT.Diary.Desktop.ViewModels.Lists.ToDo&lt;T&gt;">
-    <Position X="9.5" Y="18" Width="1.5" />
+    <Position X="10.25" Y="18" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAIAAgAAAAAIAAAAABAAAACQAAABAgAACAAAAAAA=</HashCode>
       <FileName>ViewModels\Lists\ToDo.cs</FileName>
@@ -99,7 +99,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="TT.Diary.Desktop.ViewModels.Lists.Wish&lt;T&gt;">
-    <Position X="11.75" Y="18" Width="1.5" />
+    <Position X="12.5" Y="18" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAIABgAAAAAIAgAAABAAAACQAAAFAgAACAAAAAIA=</HashCode>
       <FileName>ViewModels\Lists\Wish.cs</FileName>
@@ -107,7 +107,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="TT.Diary.Desktop.ViewModels.Lists.AbstractScheduledItem&lt;T&gt;">
-    <Position X="9.5" Y="12.25" Width="1.5" />
+    <Position X="10.25" Y="12.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAIAAgAgAgAYAAAAABAAAAkQAABBABEAAAACAAAA=</HashCode>
       <FileName>ViewModels\Lists\AbstractScheduledItem.cs</FileName>
@@ -115,14 +115,14 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames.AbstractItemPlannerFrame&lt;T&gt;">
-    <Position X="20.5" Y="2" Width="2.25" />
+    <Position X="22.25" Y="2" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AABAAUAAAiEACQCAASAAAAgAAAAAAAAAAGAIAAAAAAA=</HashCode>
       <FileName>ViewModels\TimeManagement\PlannerFrames\AbstractItemPlannerFrame.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames.AbstractScheduledItemPlannerFrame&lt;T, P&gt;">
-    <Position X="22" Y="7.75" Width="1.5" />
+    <Position X="23.75" Y="7.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AQgAAEAAAEIAoQCACAAIAAAQIgAAAAIBAEAAAWAAABg=</HashCode>
       <FileName>ViewModels\TimeManagement\PlannerFrames\AbstractScheduledItemPlannerFrame.cs</FileName>
@@ -130,24 +130,38 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames.NotePlannerFrame">
-    <Position X="18.5" Y="7.75" Width="1.5" />
+    <Position X="19.25" Y="7.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>ViewModels\TimeManagement\PlannerFrames\NotePlannerFrame.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames.ScheduledHabitPlannerFrame">
-    <Position X="20.75" Y="15.5" Width="1.5" />
+    <Position X="21.5" Y="18" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAACAAAAAAAAAIAAAAAAAAAAAAAAAAAg=</HashCode>
       <FileName>ViewModels\TimeManagement\PlannerFrames\ScheduledHabitPlannerFrame.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames.ScheduledToDoPlannerFrame">
-    <Position X="23" Y="15.5" Width="1.5" />
+    <Position X="23.75" Y="18" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>ViewModels\TimeManagement\PlannerFrames\ScheduledToDoPlannerFrame.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames.AbstractTrackedItemPlannerFrame&lt;T, P&gt;">
+    <Position X="22.5" Y="15.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAQAAAAAAAAAQAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\TimeManagement\PlannerFrames\AbstractTrackedItemPlannerFrame.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames.ScheduledWishPlannerFrame" Collapsed="true">
+    <Position X="26" Y="15.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\TimeManagement\PlannerFrames\ScheduledWishPlannerFrame.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="10" />

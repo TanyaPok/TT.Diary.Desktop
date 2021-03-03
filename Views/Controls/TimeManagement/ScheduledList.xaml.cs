@@ -25,6 +25,18 @@ namespace TT.Diary.Desktop.Views.Controls.TimeManagement
             set => SetValue(TitleProperty, value);
         }
 
+        public static readonly DependencyProperty WeekdaysVisibilityProperty = DependencyProperty.Register(
+            nameof(WeekdaysVisibility),
+            typeof(Visibility),
+            typeof(ScheduledList),
+            new FrameworkPropertyMetadata(Visibility.Visible));
+
+        public Visibility WeekdaysVisibility
+        {
+            get => (Visibility)GetValue(WeekdaysVisibilityProperty);
+            set => SetValue(WeekdaysVisibilityProperty, value);
+        }
+
         public static readonly DependencyProperty IconProperty = DependencyProperty.Register(
            nameof(Icon),
            typeof(Image),

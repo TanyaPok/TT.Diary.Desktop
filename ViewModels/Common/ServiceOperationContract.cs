@@ -7,6 +7,7 @@
         public const string SET_USER = "user";
 
         public const string GET_WISH_LIST = "wishlist?userid={0}";
+        public const string GET_UNSCHEDULED_WISH_LIST = "unscheduledwishlist?userid={0}";
         public const string GET_TODO_LIST = "todolist?userid={0}";
         public const string GET_UNSCHEDULED_TODO_LIST = "unscheduledtodolist?userid={0}";
         public const string GET_HABITS = "habits?userid={0}";
@@ -27,6 +28,8 @@
         public const string TODO_SCHEDULE = "todoschedule";
         public const string TODO_TRACKER = "todotracker";
         public const string TODO_TRACKERS = "todotrackers/{0}";
+
+        public const string WISH_SCHEDULE = "wishschedule";
 
         public const string GET_DAILY_SCHEDULE = "planner?userid={0}&startdate={1}&finishdate={2}";
         public const string GET_YEARLY_SCHEDULE = "annualproductivity?userid={0}&startdate={1}&finishdate={2}";

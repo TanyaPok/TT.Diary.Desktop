@@ -103,6 +103,20 @@
                         </Grid>
                     </DataTemplate>
 
+                    <e:Generic x:Key="ScheduledWishViewModel" TypeName="TT.Diary.Desktop.ViewModels.Lists.Wish`1">
+                        <x:Type TypeName="tm:ScheduleSettings"/>
+                    </e:Generic>
+                    <DataTemplate DataType="{StaticResource ScheduledWishViewModel}">
+                        <Grid>
+                            <Grid.Resources>
+                                <c:EnumVisibilityConverter x:Key="enumVisibilityConverter"/>
+                                <c:EnumInverseVisibilityConverter x:Key="enumInverseVisibilityConverter"/>
+                            </Grid.Resources>
+                            <tv:NewScheduledWish Visibility="{Binding State, Converter={StaticResource enumVisibilityConverter}, ConverterParameter=New}"/>
+                            <tv:ScheduledWish Visibility="{Binding State, Converter={StaticResource enumInverseVisibilityConverter}, ConverterParameter=New}"/>
+                        </Grid>
+                    </DataTemplate>
+
                     <DataTemplate DataType="{x:Type vm:Note}">
                         <lv:Note/>
                     </DataTemplate>
@@ -122,6 +136,9 @@
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type pf:ScheduledHabitPlannerFrame}">
                         <ctm:ScheduledList Title="Habits"/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type pf:ScheduledWishPlannerFrame}">
+                        <ctm:ScheduledList Title="Wish list" WeekdaysVisibility="Collapsed"/>
                     </DataTemplate>
 
                     <DataTemplate DataType="{x:Type vc:DailySchedule}">

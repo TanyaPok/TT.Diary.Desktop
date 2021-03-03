@@ -7,23 +7,23 @@ using TT.Diary.Desktop.ViewModels.TimeManagement.UnscheduledSummaries;
 
 namespace TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames
 {
-    public class ScheduledHabitPlannerFrame : AbstractTrackedItemPlannerFrame<Habit<ScheduleSettings>, UnscheduledHabitSummary>
+    public class ScheduledWishPlannerFrame : AbstractScheduledItemPlannerFrame<Wish<ScheduleSettings>, UnscheduledWishSummary>
     {
-        public ScheduledHabitPlannerFrame(int userId, string getUnscheduledItemsOperation)
-            : base(userId, getUnscheduledItemsOperation, ServiceOperationContract.HABIT_SCHEDULE, ServiceOperationContract.HABIT_TRACKER)
+        public ScheduledWishPlannerFrame(int userId, string getUnscheduledItemsOperation)
+            : base(userId, getUnscheduledItemsOperation, ServiceOperationContract.WISH_SCHEDULE)
         {
         }
 
-        protected override void FillUnscheduledItemSummaries(IEnumerable<Habit<ScheduleSettings>> data)
+        protected override void FillUnscheduledItemSummaries(IEnumerable<Wish<ScheduleSettings>> data)
         {
             foreach (var item in data)
             {
                 UnscheduledItemSummaries.Add(
-                    new UnscheduledHabitSummary()
+                    new UnscheduledWishSummary()
                     {
                         Id = item.Id,
                         Description = item.Description,
-                        Amount = item.Amount,
+                        Author = item.Author,
                         ParentId = item.ParentId
                     });
             }
@@ -33,26 +33,22 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames
         {
             await SetUnscheduledData();
 
-            var newHabit = new Habit<ScheduleSettings>
+            var newWish = new Wish<ScheduleSettings>
             {
                 PreSave = PreSaveItem
             };
-            Items.Add(newHabit);
+            Items.Add(newWish);
 
             var schedule = new ScheduleSettings();
-            newHabit.Schedule = schedule;
+            newWish.Schedule = schedule;
 
-            schedule.OperationContract = ServiceOperationContract.HABIT_SCHEDULE;
+            schedule.OperationContract = ServiceOperationContract.WISH_SCHEDULE;
             schedule.GenerateCommands();
             schedule.SubscribeToPropertyChanging();
 
             schedule.ScheduledStartDateTime = DateRange.StartDate;
             schedule.Repeat = Repeat.Daily;
             schedule.Every = 1;
-
-            var tracker = new Tracker() { ScheduledDate = DateRange.StartDate };
-            tracker.OperationContract = ServiceOperationContract.HABIT_TRACKER;
-            schedule.Trackers.Add(tracker);
         }
 
         protected override void TemplateChange(SelectionChangedEventArgs e)
@@ -64,7 +60,7 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames
                 return;
             }
 
-            NewItem.Amount = Template?.Amount;
+            NewItem.Author = Template?.Author;
         }
     }
 }

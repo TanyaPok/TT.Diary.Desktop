@@ -23,7 +23,6 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames
         where P : UnscheduledItemSummary, new()
     {
         private readonly string _getUnscheduledItemsOperation;
-        private readonly string _getTrackerOperation;
         private readonly string _getScheduleOperation;
 
         protected int RootCategoryId { get; set; }
@@ -40,7 +39,7 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames
 
         public ICommand TemplateChangeCommand { get; protected set; }
 
-        public AbstractScheduledItemPlannerFrame(int userId, string getUnscheduledItemsOperation, string getScheduleOperation, string getTrackerOperation) : base(userId)
+        public AbstractScheduledItemPlannerFrame(int userId, string getUnscheduledItemsOperation, string getScheduleOperation/*, string getTrackerOperation*/) : base(userId)
         {
             _getUnscheduledItemsOperation =
                 string.IsNullOrEmpty(getUnscheduledItemsOperation) || string.IsNullOrWhiteSpace(getUnscheduledItemsOperation) ?
@@ -49,9 +48,6 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames
             _getScheduleOperation = string.IsNullOrEmpty(getScheduleOperation) || string.IsNullOrWhiteSpace(getScheduleOperation) ?
                 throw new ArgumentNullException(nameof(getScheduleOperation)) :
                 getScheduleOperation;
-            _getTrackerOperation = string.IsNullOrEmpty(getTrackerOperation) || string.IsNullOrWhiteSpace(getTrackerOperation) ?
-                throw new ArgumentNullException(nameof(getTrackerOperation)) :
-                getTrackerOperation;
             UnscheduledItemSummaries = new MTObservableCollection<P>();
         }
 
@@ -126,13 +122,6 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames
                         if (element.Schedule != null)
                         {
                             element.Schedule.ParentId = element.Id;
-
-                            foreach (var tracker in element.Schedule.Trackers)
-                            {
-                                tracker.ParentId = element.Id;
-                                tracker.OperationContract = _getTrackerOperation;
-                            }
-
                             element.Schedule.OperationContract = _getScheduleOperation;
                             element.Schedule.GenerateCommands();
                             element.Schedule.SubscribeToPropertyChanging();

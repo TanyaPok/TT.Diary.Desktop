@@ -5,7 +5,7 @@ using TT.Diary.Desktop.ViewModels.TimeManagement.UnscheduledSummaries;
 
 namespace TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames
 {
-    public class ScheduledToDoPlannerFrame : AbstractScheduledItemPlannerFrame<ToDo<ScheduleSettings>, UnscheduledItemSummary>
+    public class ScheduledToDoPlannerFrame : AbstractTrackedItemPlannerFrame<ToDo<ScheduleSettings>, UnscheduledItemSummary>
     {
         public ScheduledToDoPlannerFrame(int userId, string getUnscheduledItemsOperation)
             : base(userId, getUnscheduledItemsOperation, ServiceOperationContract.TODO_SCHEDULE, ServiceOperationContract.TODO_TRACKER)

@@ -30,9 +30,9 @@
 
             <ListBox ItemsSource="{Binding Items}" Style="{StaticResource ListBoxStyle}">
                 <ListBox.Template>
-                    <ControlTemplate>
+                    <ControlTemplate TargetType="{x:Type ListBox}">
                         <DockPanel LastChildFill="True">
-                            <Grid DockPanel.Dock="Top">
+                            <Grid DockPanel.Dock="Top" Visibility="{Binding WeekdaysVisibility, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"></ColumnDefinition>
                                     <ColumnDefinition Width="{Binding TrackersAreaWidth, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"></ColumnDefinition>
@@ -51,7 +51,9 @@
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             </Grid>
-                            <ItemsPresenter></ItemsPresenter>
+                            <ScrollViewer>
+                                <ItemsPresenter></ItemsPresenter>
+                            </ScrollViewer>
                         </DockPanel>
                     </ControlTemplate>
                 </ListBox.Template>

@@ -52,7 +52,6 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
             }
         }
 
-
         private ScheduledHabitPlannerFrame _habitPlanner;
         public ScheduledHabitPlannerFrame HabitPlanner
         {
@@ -63,6 +62,19 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
             set
             {
                 Set(ref _habitPlanner, value);
+            }
+        }
+
+        private ScheduledWishPlannerFrame _wishPlanner;
+        public ScheduledWishPlannerFrame WishPlanner
+        {
+            get
+            {
+                return _wishPlanner;
+            }
+            set
+            {
+                Set(ref _wishPlanner, value);
             }
         }
 
@@ -91,6 +103,9 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
 
             ToDoPlanner = new ScheduledToDoPlannerFrame(_userId, ServiceOperationContract.GET_UNSCHEDULED_TODO_LIST);
             ToDoPlanner.GenerateCommands();
+
+            WishPlanner = new ScheduledWishPlannerFrame(_userId, ServiceOperationContract.GET_UNSCHEDULED_WISH_LIST);
+            WishPlanner.GenerateCommands();
         }
 
         protected override bool InRangeDates(DateTime rangeStartDate, DateTime rangeFinishDate)
@@ -115,6 +130,7 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
                         ToDoPlanner.Items.OverFill(planner.ToDoList);
                         HabitPlanner.Items.OverFill(planner.Habits);
                         NotePlanner.Items.OverFill(planner.Notes);
+                        WishPlanner.Items.OverFill(planner.WishList);
                     }
 
                     return;
@@ -131,6 +147,8 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
             await HabitPlanner.SetUnscheduledData();
             ToDoPlanner.DateRange.StartDate = SelectedDate;
             await ToDoPlanner.SetUnscheduledData();
+            WishPlanner.DateRange.StartDate = SelectedDate;
+            await WishPlanner.SetUnscheduledData();
         }
     }
 }
