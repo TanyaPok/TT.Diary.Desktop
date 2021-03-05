@@ -141,6 +141,7 @@
     <Compile Include="Converters\BooleanOrConverter.cs" />
     <Compile Include="Converters\BoolInverseConverter.cs" />
     <Compile Include="Converters\DateRangeMeasurementConverter.cs" />
+    <Compile Include="Converters\DateTimeConverter.cs" />
     <Compile Include="Converters\DictionaryCommandConverter.cs" />
     <Compile Include="Converters\DoubleBoolConverter.cs" />
     <Compile Include="Converters\EnumInverseBoolConverter.cs" />
@@ -167,6 +168,7 @@
     <Compile Include="ViewModels\Interlayer\Endpoint.cs" />
     <Compile Include="ViewModels\Interlayer\Request.cs" />
     <Compile Include="ViewModels\Common\Interfaces\IManager.cs" />
+    <Compile Include="ViewModels\Lists\Appointment.cs" />
     <Compile Include="ViewModels\Notification\DirtyData.cs" />
     <Compile Include="ViewModels\Notification\DirtyDataManager.cs" />
     <Compile Include="ViewModels\Common\Interfaces\IMessage.cs" />
@@ -183,6 +185,7 @@
     <Compile Include="ViewModels\TimeManagement\PlannerFrames\AbstractScheduledItemPlannerFrame.cs" />
     <Compile Include="ViewModels\TimeManagement\PlannerFrames\AbstractTrackedItemPlannerFrame.cs" />
     <Compile Include="ViewModels\TimeManagement\PlannerFrames\NotePlannerFrame.cs" />
+    <Compile Include="ViewModels\TimeManagement\PlannerFrames\ScheduledAppointmentPlannerFrame.cs" />
     <Compile Include="ViewModels\TimeManagement\PlannerFrames\ScheduledHabitPlannerFrame.cs" />
     <Compile Include="ViewModels\TimeManagement\PlannerFrames\ScheduledToDoPlannerFrame.cs" />
     <Compile Include="ViewModels\TimeManagement\PlannerFrames\ScheduledWishPlannerFrame.cs" />
@@ -252,6 +255,9 @@
     <Compile Include="Views\Lists\ToDo.xaml.cs">
       <DependentUpon>ToDo.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\TimeManagement\NewScheduledAppointment.xaml.cs">
+      <DependentUpon>NewScheduledAppointment.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\TimeManagement\NewScheduledHabit.xaml.cs">
       <DependentUpon>NewScheduledHabit.xaml</DependentUpon>
     </Compile>
@@ -260,6 +266,9 @@
     </Compile>
     <Compile Include="Views\TimeManagement\NewScheduledWish.xaml.cs">
       <DependentUpon>NewScheduledWish.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TimeManagement\ScheduledAppointment.xaml.cs">
+      <DependentUpon>ScheduledAppointment.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\TimeManagement\ScheduledHabit.xaml.cs">
       <DependentUpon>ScheduledHabit.xaml</DependentUpon>
@@ -401,6 +410,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\TimeManagement\NewScheduledAppointment.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\TimeManagement\NewScheduledHabit.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -410,6 +423,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\TimeManagement\NewScheduledWish.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\TimeManagement\ScheduledAppointment.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

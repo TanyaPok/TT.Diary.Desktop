@@ -13,11 +13,14 @@
         public const string GET_HABITS = "habits?userid={0}";
         public const string GET_UNSCHEDULED_HABITS = "unscheduledhabits?userid={0}";
         public const string GET_NOTES = "notes?userid={0}";
+        public const string GET_APPOINTMENTS = "appointments?userid={0}";
+        public const string GET_UNSCHEDULED_APPOINTMENTS = "unscheduledappointments?userid={0}";
 
         public const string REQUEST_FORMAT = "{0}/{1}";
         public const string CATEGORY = "category";
         public const string WISH = "wish";
         public const string TODO = "todo";
+        public const string APPOINTMENT = "appointment";
         public const string HABIT = "habit";
         public const string NOTE = "note";
 
@@ -28,6 +31,10 @@
         public const string TODO_SCHEDULE = "todoschedule";
         public const string TODO_TRACKER = "todotracker";
         public const string TODO_TRACKERS = "todotrackers/{0}";
+
+        public const string APPOINTMENT_SCHEDULE = "appointmentschedule";
+        public const string APPOINTMENT_TRACKER = "appointmenttracker";
+        public const string APPOINTMENT_TRACKERS = "appointmenttrackers/{0}";
 
         public const string WISH_SCHEDULE = "wishschedule";
 

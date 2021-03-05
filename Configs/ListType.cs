@@ -8,6 +8,8 @@ namespace TT.Diary.Desktop.Configs
 
         public const string TODO_LIST = "To-do list";
 
+        public const string APPOINTMENTS = "Appointments";
+
         public const string HABITS = "Habits";
 
         public const string NOTES = "Notes";

@@ -31,6 +31,7 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
         private readonly YearlySchedule _yearlyScheduleViewModel;
         private readonly ListViewModel<Wish<ScheduleSettingsSummary>> _wishListViewModel;
         private readonly ListViewModel<ToDo<ScheduleSettingsSummary>> _toDoListViewModel;
+        private readonly ListViewModel<Appointment<ScheduleSettingsSummary>> _appointmentListViewModel;
         private readonly ListViewModel<Habit<ScheduleSettingsSummary>> _habitListViewModel;
         private readonly ListViewModel<Note> _noteListViewModel;
 
@@ -109,6 +110,7 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
 
             _wishListViewModel = new ListViewModel<Wish<ScheduleSettingsSummary>>(ServiceOperationContract.GET_WISH_LIST, _user.Id);
             _toDoListViewModel = new ListViewModel<ToDo<ScheduleSettingsSummary>>(ServiceOperationContract.GET_TODO_LIST, _user.Id);
+            _appointmentListViewModel = new ListViewModel<Appointment<ScheduleSettingsSummary>>(ServiceOperationContract.GET_APPOINTMENTS, _user.Id);
             _habitListViewModel = new ListViewModel<Habit<ScheduleSettingsSummary>>(ServiceOperationContract.GET_HABITS, _user.Id);
             _noteListViewModel = new ListViewModel<Note>(ServiceOperationContract.GET_NOTES, _user.Id);
 
@@ -175,6 +177,9 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
                         break;
                     case ListType.TODO_LIST:
                         ListCommands.Add(listType.Name, new RelayCommand(async () => { await UpdateContent(_toDoListViewModel); }, true));
+                        break;
+                    case ListType.APPOINTMENTS:
+                        ListCommands.Add(listType.Name, new RelayCommand(async () => { await UpdateContent(_appointmentListViewModel); }, true));
                         break;
                     case ListType.HABITS:
                         ListCommands.Add(listType.Name, new RelayCommand(async () => { await UpdateContent(_habitListViewModel); }, true));
@@ -278,6 +283,22 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
                     }
                 });
 
+            Messenger.Default.Register<RefreshData<Appointment<ScheduleSettingsSummary>>>(
+                this,
+                (message) =>
+                {
+                    switch (CurrentViewModel)
+                    {
+                        case ListViewModel<Appointment<ScheduleSettingsSummary>> lvm:
+                            _dailyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                            _weeklyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                            _monthlyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                            break;
+                        default:
+                            throw new ArgumentException(ErrorMessages.UnexpectedType.GetDescription(), nameof(CurrentViewModel));
+                    }
+                });
+
             Messenger.Default.Register<RefreshData<Habit<ScheduleSettingsSummary>>>(
                this,
                (message) =>
@@ -317,6 +338,22 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
                         case DailySchedule lvm:
                             _toDoListViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
                             _weeklyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                            break;
+                        default:
+                            throw new ArgumentException(ErrorMessages.UnexpectedType.GetDescription(), nameof(CurrentViewModel));
+                    }
+                });
+
+            Messenger.Default.Register<RefreshData<Appointment<ScheduleSettings>>>(
+                this,
+                (message) =>
+                {
+                    switch (CurrentViewModel)
+                    {
+                        case DailySchedule lvm:
+                            _appointmentListViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                            _weeklyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                            _monthlyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
                             break;
                         default:
                             throw new ArgumentException(ErrorMessages.UnexpectedType.GetDescription(), nameof(CurrentViewModel));
@@ -369,6 +406,11 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
                           _weeklyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
                           _yearlyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
                           break;
+                      case OwnerTypes.Appointment:
+                          _appointmentListViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                          _weeklyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                          _monthlyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                          break;
                       case OwnerTypes.Habit:
                           _habitListViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
                           _weeklyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
@@ -394,6 +436,10 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
                               _weeklyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
                               _yearlyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
                               break;
+                          case OwnerTypes.Appointment:
+                              _weeklyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                              _monthlyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                              break;
                           case OwnerTypes.Habit:
                               _weeklyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
                               _habitListViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
@@ -412,6 +458,10 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
                           case OwnerTypes.ToDo:
                               _dailyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
                               _yearlyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                              break;
+                          case OwnerTypes.Appointment:
+                              _dailyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
+                              _monthlyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);
                               break;
                           case OwnerTypes.Habit:
                               _dailyScheduleViewModel.RequestRefreshData(message.RangeStartDate, message.RangeFinishDate);

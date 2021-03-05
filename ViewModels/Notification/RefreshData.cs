@@ -8,6 +8,7 @@ namespace TT.Diary.Desktop.ViewModels.Notification
     {
         Unknown,
         ToDo,
+        Appointment,
         Habit,
         Wish
     }

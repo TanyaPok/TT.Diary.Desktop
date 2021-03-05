@@ -92,7 +92,16 @@ namespace TT.Diary.Desktop.Views.Controls
         private void RatingButtonClickEventHandler(Object sender, RoutedEventArgs e)
         {
             ToggleButton button = sender as ToggleButton;
-            RatingValue = int.Parse((string)button.Tag);
+            var rating = int.Parse((string)button.Tag);
+
+            if (button.IsChecked.HasValue && !button.IsChecked.Value && RatingValue == rating)
+            {
+                RatingValue = 0;
+            }
+            else
+            {
+                RatingValue = rating;
+            }
         }
     }
 }

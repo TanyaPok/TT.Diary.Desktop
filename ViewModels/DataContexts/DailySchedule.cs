@@ -52,6 +52,19 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
             }
         }
 
+        private ScheduledAppointmentPlannerFrame _appointmentPlanner;
+        public ScheduledAppointmentPlannerFrame AppointmentPlanner
+        {
+            get
+            {
+                return _appointmentPlanner;
+            }
+            set
+            {
+                Set(ref _appointmentPlanner, value);
+            }
+        }
+
         private ScheduledHabitPlannerFrame _habitPlanner;
         public ScheduledHabitPlannerFrame HabitPlanner
         {
@@ -104,6 +117,9 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
             ToDoPlanner = new ScheduledToDoPlannerFrame(_userId, ServiceOperationContract.GET_UNSCHEDULED_TODO_LIST);
             ToDoPlanner.GenerateCommands();
 
+            AppointmentPlanner = new ScheduledAppointmentPlannerFrame(_userId, ServiceOperationContract.GET_UNSCHEDULED_APPOINTMENTS);
+            AppointmentPlanner.GenerateCommands();
+
             WishPlanner = new ScheduledWishPlannerFrame(_userId, ServiceOperationContract.GET_UNSCHEDULED_WISH_LIST);
             WishPlanner.GenerateCommands();
         }
@@ -128,6 +144,7 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
                     using (var planner = await response.Content.ReadAsAsync<Planner>())
                     {
                         ToDoPlanner.Items.OverFill(planner.ToDoList);
+                        AppointmentPlanner.Items.OverFill(planner.Appointments);
                         HabitPlanner.Items.OverFill(planner.Habits);
                         NotePlanner.Items.OverFill(planner.Notes);
                         WishPlanner.Items.OverFill(planner.WishList);
@@ -147,6 +164,8 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
             await HabitPlanner.SetUnscheduledData();
             ToDoPlanner.DateRange.StartDate = SelectedDate;
             await ToDoPlanner.SetUnscheduledData();
+            AppointmentPlanner.DateRange.StartDate = SelectedDate;
+            await AppointmentPlanner.SetUnscheduledData();
             WishPlanner.DateRange.StartDate = SelectedDate;
             await WishPlanner.SetUnscheduledData();
         }

@@ -62,6 +62,19 @@
                         <lv:TreeListView />
                     </DataTemplate>
 
+                    <e:Generic x:Key="AppointmentViewModel" TypeName="TT.Diary.Desktop.ViewModels.Lists.Appointment`1">
+                        <x:Type TypeName="tm:ScheduleSettingsSummary"/>
+                    </e:Generic>
+                    <DataTemplate DataType="{StaticResource AppointmentViewModel}">
+                        <lv:ToDo/>
+                    </DataTemplate>
+                    <e:Generic x:Key="AppointmentListViewModel" TypeName="TT.Diary.Desktop.ViewModels.DataContexts.ListViewModel`1">
+                        <x:Type Type="{StaticResource AppointmentViewModel}" />
+                    </e:Generic>
+                    <DataTemplate DataType="{StaticResource AppointmentListViewModel}">
+                        <lv:TreeListView />
+                    </DataTemplate>
+
                     <e:Generic x:Key="HabitViewModel" TypeName="TT.Diary.Desktop.ViewModels.Lists.Habit`1">
                         <x:Type TypeName="tm:ScheduleSettingsSummary"/>
                     </e:Generic>
@@ -103,6 +116,20 @@
                         </Grid>
                     </DataTemplate>
 
+                    <e:Generic x:Key="ScheduledAppointmentViewModel" TypeName="TT.Diary.Desktop.ViewModels.Lists.Appointment`1">
+                        <x:Type TypeName="tm:ScheduleSettings"/>
+                    </e:Generic>
+                    <DataTemplate DataType="{StaticResource ScheduledAppointmentViewModel}">
+                        <Grid>
+                            <Grid.Resources>
+                                <c:EnumVisibilityConverter x:Key="enumVisibilityConverter"/>
+                                <c:EnumInverseVisibilityConverter x:Key="enumInverseVisibilityConverter"/>
+                            </Grid.Resources>
+                            <tv:NewScheduledAppointment Visibility="{Binding State, Converter={StaticResource enumVisibilityConverter}, ConverterParameter=New}"/>
+                            <tv:ScheduledAppointment Visibility="{Binding State, Converter={StaticResource enumInverseVisibilityConverter}, ConverterParameter=New}"/>
+                        </Grid>
+                    </DataTemplate>
+
                     <e:Generic x:Key="ScheduledWishViewModel" TypeName="TT.Diary.Desktop.ViewModels.Lists.Wish`1">
                         <x:Type TypeName="tm:ScheduleSettings"/>
                     </e:Generic>
@@ -131,6 +158,13 @@
                         <ctm:ScheduledList Title="To Do">
                             <ctm:ScheduledList.Icon>
                                 <Image Source="pack://application:,,,/Images/Workspace/alarmclock.png" Width="26" Height="26"/>
+                            </ctm:ScheduledList.Icon>
+                        </ctm:ScheduledList>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type pf:ScheduledAppointmentPlannerFrame}">
+                        <ctm:ScheduledList Title="Events&amp;Appointments">
+                            <ctm:ScheduledList.Icon>
+                                <Image Source="pack://application:,,,/Images/Workspace/date-time.png" Width="26" Height="26"/>
                             </ctm:ScheduledList.Icon>
                         </ctm:ScheduledList>
                     </DataTemplate>
