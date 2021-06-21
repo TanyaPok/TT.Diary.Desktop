@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames.AbstractItemPlannerFrame&lt;T&gt;">
+    <Position X="12" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQQAAAAASQCAAAAABAgAAAAAAAAgIGAIAAAAAAA=</HashCode>
+      <FileName>ViewModels\TimeManagement\PlannerFrames\AbstractItemPlannerFrame.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames.AbstractScheduledItemPlannerFrame&lt;T, TP&gt;" Collapsed="true">
+    <Position X="7.25" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEIAwRCACCAIBAAAIggAAAIAAEAAgWAAAAg=</HashCode>
+      <FileName>ViewModels\TimeManagement\PlannerFrames\AbstractScheduledItemPlannerFrame.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames.AbstractTrackedItemPlannerFrame&lt;T, TP&gt;" Collapsed="true">
+    <Position X="5.75" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAIAQAAAAAAAAAAQAAAIAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\TimeManagement\PlannerFrames\AbstractTrackedItemPlannerFrame.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames.NotePlannerFrame" Collapsed="true">
+    <Position X="14.25" Y="6.25" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQAAAAAAABAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\TimeManagement\PlannerFrames\NotePlannerFrame.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames.ScheduledAppointmentPlannerFrame" Collapsed="true">
+    <Position X="2.5" Y="9.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\TimeManagement\PlannerFrames\ScheduledAppointmentPlannerFrame.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames.ScheduledHabitPlannerFrame" Collapsed="true">
+    <Position X="8" Y="9.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAACAAAAAAAAAIAAAAAAAAAAAAAAAAAg=</HashCode>
+      <FileName>ViewModels\TimeManagement\PlannerFrames\ScheduledHabitPlannerFrame.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames.ScheduledToDoPlannerFrame" Collapsed="true">
+    <Position X="5.5" Y="9.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\TimeManagement\PlannerFrames\ScheduledToDoPlannerFrame.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames.ScheduledWishPlannerFrame" Collapsed="true">
+    <Position X="11" Y="7.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAACAAAAAAAAAIAAAAAAAAAAAAAAAAAg=</HashCode>
+      <FileName>ViewModels\TimeManagement\PlannerFrames\ScheduledWishPlannerFrame.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="10" />
+</ClassDiagram>

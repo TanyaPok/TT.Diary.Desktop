@@ -1,0 +1,130 @@
+﻿<UserControl x:Class="TT.Diary.Desktop.Views.MonthlyScheduleView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:con="clr-namespace:TT.Diary.Desktop.Views.Controls.Calendar"
+             xmlns:c="clr-namespace:TT.Diary.Desktop.Converters"
+             xmlns:convm="clr-namespace:TT.Diary.Desktop.ViewModels.Calendar"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:command="http://www.galasoft.ch/mvvmlight"
+             Margin="50,0,50,0"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.Resources>
+            <c:CurrentDateBoolConverter x:Key="currentDateBoolConverter" />
+            <DataTemplate DataType="{x:Type convm:DailyScheduledAppointments}">
+                <Border BorderThickness="2" BorderBrush="{DynamicResource Base.BorderBrush}" Margin="2">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="35" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Row="0" Grid.Column="1" BorderThickness="2,0,0,2"
+                                BorderBrush="{DynamicResource Base.BorderBrush}" CornerRadius="1">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Style.Triggers>
+                                        <DataTrigger
+                                            Binding="{Binding Date, Converter={StaticResource currentDateBoolConverter}}"
+                                            Value="true">
+                                            <Setter Property="Background" Value="{DynamicResource Base.BorderBrush}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <TextBlock Style="{DynamicResource TextBlockStyle}"
+                                       HorizontalAlignment="Center" Text="{Binding Text}" />
+                        </Border>
+
+                        <ScrollViewer Grid.Row="1" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto"
+                                      HorizontalScrollBarVisibility="Auto">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+
+                                <ItemsControl Grid.Row="0" ItemsSource="{Binding ScheduledAppointments}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding}" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <ItemsControl Grid.Row="1" ItemsSource="{Binding DoneAppointments}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding}" TextDecorations="Strikethrough" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Grid>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+            </DataTemplate>
+        </Grid.Resources>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Center">
+            <TextBlock Margin="0,0,25,0" Style="{DynamicResource ControlTitleTextBlockStyle}" Text="{Binding Title}" />
+            <ComboBox VerticalAlignment="Bottom" Height="30" Style="{DynamicResource ComboBoxStyle}" Margin="0,0,5,0"
+                      ItemsSource="{Binding MonthsViewModel.Months, Mode=OneWay}" SelectedValue="Key"
+                      SelectedItem="{Binding MonthsViewModel.SelectedMonth, Mode=TwoWay}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <DataTemplate.Triggers>
+                            <DataTrigger
+                                Binding="{Binding Path=Key, Converter={StaticResource currentDateBoolConverter}}"
+                                Value="true">
+                                <Setter Property="ItemsControl.Foreground" Value="{DynamicResource Title.Foreground}" />
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                        <TextBlock Text="{Binding Value}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <command:EventToCommand Command="{Binding MonthChangedCommand}"
+                                                PassEventArgsToCommand="False" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ComboBox>
+            <ComboBox VerticalAlignment="Bottom" Height="30" Style="{DynamicResource ComboBoxStyle}"
+                      ItemsSource="{Binding MonthsViewModel.Years, Mode=OneWay}"
+                      SelectedItem="{Binding MonthsViewModel.SelectedYear, Mode=TwoWay}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <DataTemplate.Triggers>
+                            <DataTrigger
+                                Binding="{Binding Path=., Converter={StaticResource currentDateBoolConverter}}"
+                                Value="true">
+                                <Setter Property="ItemsControl.Foreground" Value="{DynamicResource Title.Foreground}" />
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                        <TextBlock Text="{Binding}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <command:EventToCommand Command="{Binding YearChangedCommand}"
+                                                PassEventArgsToCommand="False" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ComboBox>
+        </StackPanel>
+
+        <con:MonthCalendar Grid.Row="1" Days="{Binding Days}" />
+    </Grid>
+</UserControl>

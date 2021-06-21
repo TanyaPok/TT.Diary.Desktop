@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="TT.Diary.Desktop.ViewModels.DataContexts.Authorization" Collapsed="true">
+    <Position X="22.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAECAAAAAAAAAAAABAAABoAAAABICEQABIELAACA=</HashCode>
+      <FileName>ViewModels\DataContexts\Authorization.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.DataContexts.Context">
+    <Position X="4" Y="4" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>ADhnAiBBAEEQAMAQ0AgAICBkCCICAIAAkJAAFAAAAQA=</HashCode>
+      <FileName>ViewModels\DataContexts\Context.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_dailyScheduleViewModel" />
+      <Field Name="_weeklyScheduleViewModel" />
+      <Field Name="_monthlyScheduleViewModel" />
+      <Field Name="_yearlyScheduleViewModel" />
+      <Field Name="_wishListViewModel" />
+      <Field Name="_toDoListViewModel" />
+      <Field Name="_appointmentListViewModel" />
+      <Field Name="_habitListViewModel" />
+      <Field Name="_noteListViewModel" />
+      <Field Name="_currentViewModel" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="GalaSoft.MvvmLight.ViewModelBase" Collapsed="true">
+    <Position X="11" Y="2.5" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.DataContexts.DailySchedule" Collapsed="true">
+    <Position X="15.75" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQEAAAAEEAAAUBAAAQBQAAAgAEgAEAAIEAAAAYIAAE=</HashCode>
+      <FileName>ViewModels\DataContexts\DailySchedule.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_toDoPlanner" />
+      <Field Name="_appointmentPlanner" />
+      <Field Name="_habitPlanner" />
+      <Field Name="_wishPlanner" />
+      <Field Name="_notePlanner" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.DataContexts.ListViewModel&lt;T&gt;">
+    <Position X="8" Y="9.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AIBAAAAAAAAAAAAAAAABAAAAgAAgABQAIAAEAAEAAAA=</HashCode>
+      <FileName>ViewModels\DataContexts\ListViewModel.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="DragAndDropAlgorithm" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Data" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.DataContexts.MonthlySchedule" Collapsed="true">
+    <Position X="11.25" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAABgAAAECAAAEBAAAAgAAgAIAAQABAIAAAAAE=</HashCode>
+      <FileName>ViewModels\DataContexts\MonthlySchedule.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.DataContexts.WeeklySchedule" Collapsed="true">
+    <Position X="18" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEECAAUAAAAEBQABAgAAgAEAAAEJAAAYIABE=</HashCode>
+      <FileName>ViewModels\DataContexts\WeeklySchedule.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_toDoPlanner" />
+      <Field Name="_appointmentPlanner" />
+      <Field Name="_habitPlanner" />
+      <Field Name="_wishPlanner" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.DataContexts.YearlySchedule" Collapsed="true">
+    <Position X="13.5" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAGgAABBRCAUBAAQExgAAAgAIxAKAAAgBgQAAMoAQ=</HashCode>
+      <FileName>ViewModels\DataContexts\YearlySchedule.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.Common.AbstractContentControlViewModel">
+    <Position X="12.25" Y="4" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>EBAAAgAACAAQAEAAAAABAAgQgCAgAAACAAAAAAIAAAA=</HashCode>
+      <FileName>ViewModels\Common\AbstractContentControlViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.Lists.Category&lt;T&gt;" Collapsed="true">
+    <Position X="8.5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gBABAJAAgaAgCQAEAAQABEAIAAAQQEAAgEQCAAAECAA=</HashCode>
+      <FileName>ViewModels\Lists\Category.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames.ScheduledAppointmentPlannerFrame" Collapsed="true">
+    <Position X="20" Y="7.5" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\TimeManagement\PlannerFrames\ScheduledAppointmentPlannerFrame.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames.ScheduledHabitPlannerFrame" Collapsed="true">
+    <Position X="12.5" Y="11.5" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAACAAAAAAAAAIAAAAAAAAAAAAAAAAAg=</HashCode>
+      <FileName>ViewModels\TimeManagement\PlannerFrames\ScheduledHabitPlannerFrame.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames.NotePlannerFrame" Collapsed="true">
+    <Position X="15.75" Y="13.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQAAAAAAABAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\TimeManagement\PlannerFrames\NotePlannerFrame.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames.ScheduledToDoPlannerFrame" Collapsed="true">
+    <Position X="17" Y="11.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\TimeManagement\PlannerFrames\ScheduledToDoPlannerFrame.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames.ScheduledWishPlannerFrame" Collapsed="true">
+    <Position X="17" Y="7.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAACAAAAAAAAAIAAAAAAAAAAAAAAAAAg=</HashCode>
+      <FileName>ViewModels\TimeManagement\PlannerFrames\ScheduledWishPlannerFrame.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="TT.Diary.Desktop.ViewModels.Commands.IDragAndDrop" Collapsed="true">
+    <Position X="8.5" Y="14" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAgAAAAAABAAAAAAAAAAAQAAAAAA=</HashCode>
+      <FileName>ViewModels\Commands\IDragAndDrop.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="10" />
+</ClassDiagram>

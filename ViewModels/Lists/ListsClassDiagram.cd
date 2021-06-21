@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="TT.Diary.Desktop.ViewModels.Lists.AbstractListItem" Collapsed="true">
+    <Position X="9.5" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAIgAAAEAAAAAAAIAAAQAABAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\Lists\AbstractListItem.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.Common.AbstractEntity" Collapsed="true">
+    <Position X="10.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACIAAAACoAABBAAABAEAgAAAAAAABAgkACBAAEAAA=</HashCode>
+      <FileName>ViewModels\Common\AbstractEntity.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.Common.ObservableObjectWithNotifyDataErrorInfo" Collapsed="true">
+    <Position X="10.5" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAAAAAAAABAAAAAAAAAAAAAAAIABAAAAAhoAA=</HashCode>
+      <FileName>ViewModels\Common\ObservableObjectWithNotifyDataErrorInfo.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.Lists.AbstractScheduledItem&lt;T&gt;">
+    <Position X="8.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAEAQAAAABAAAAACAAAA=</HashCode>
+      <FileName>ViewModels\Lists\AbstractScheduledItem.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.Lists.Note" Collapsed="true">
+    <Position X="14" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAAAAAAAAAAAAAAAAIAAAQAABAkAACAAgAAAA=</HashCode>
+      <FileName>ViewModels\Lists\Note.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.Lists.Appointment&lt;T&gt;" Collapsed="true">
+    <Position X="5" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAgAAAAAAAAAIIAgAAAABAgEACAAAAAAA=</HashCode>
+      <FileName>ViewModels\Lists\Appointment.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.Lists.Habit&lt;T&gt;" Collapsed="true">
+    <Position X="7.25" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAgAAAEAAAAAKIAgAAAIBAgEBCAAAAAAA=</HashCode>
+      <FileName>ViewModels\Lists\Habit.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.Lists.ToDo&lt;T&gt;" Collapsed="true">
+    <Position X="9.5" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAgAAAAAAAAAIIAgAAAABAgEACAAAAAAA=</HashCode>
+      <FileName>ViewModels\Lists\ToDo.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.Lists.Wish&lt;T&gt;" Collapsed="true">
+    <Position X="11.75" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAABAAAAAAAAgAAAAAAIAAAAAAFAgAACAAAAAIA=</HashCode>
+      <FileName>ViewModels\Lists\Wish.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.Lists.Category&lt;T&gt;" Collapsed="true">
+    <Position X="16.25" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gBABAJAAgaAgCQAEAAQABEAIAAAQQEAAgEQCAAAECAA=</HashCode>
+      <FileName>ViewModels\Lists\Category.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Subcategories" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.Lists.CategoryDragAndDropAlgorithm&lt;T&gt;" Collapsed="true">
+    <Position X="18.75" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgEAAAAAAAAAAAAAgAAQAAABACAAAAAAAAAQAAAAAA=</HashCode>
+      <FileName>ViewModels\Lists\CategoryDragAndDropAlgorithm.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.DataContexts.ListViewModel&lt;T&gt;">
+    <Position X="2.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIBAAAAAAAAAAAAAAAABAAAAgAAgABQAIAAEAAEAAAA=</HashCode>
+      <FileName>ViewModels\DataContexts\ListViewModel.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="DragAndDropAlgorithm" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="TT.Diary.Desktop.ViewModels.Commands.IDragAndDrop" Collapsed="true">
+    <Position X="5.5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAgAAAAAABAAAAAAAAAAAQAAAAAA=</HashCode>
+      <FileName>ViewModels\Commands\IDragAndDrop.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="10" />
+</ClassDiagram>

@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="TT.Diary.Desktop.ViewModels.TimeManagement.ScheduleSettings" BaseTypeListCollapsed="true">
+    <Position X="3.5" Y="4.75" Width="3" />
+    <TypeIdentifier>
+      <HashCode>BABAggJBACIACQ1EgAAAAAAIAgIQABBEkEIKAABAGIA=</HashCode>
+      <FileName>ViewModels\TimeManagement\ScheduleSettings.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Trackers" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.TimeManagement.ScheduleSettingsSummary" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="9.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAACBABAAAAAAAFCAAAAAAAAAAAAAAACAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\TimeManagement\ScheduleSettingsSummary.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.TimeManagement.Tracker">
+    <Position X="7.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAAAAwAAAAAgAQCAAAAIAAQAIQAgEAiAACACIA=</HashCode>
+      <FileName>ViewModels\TimeManagement\Tracker.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="TT.Diary.Desktop.ViewModels.Common.AbstractEntity" Collapsed="true">
+    <Position X="5.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACIAAAACoAABBAAABAEAgAAAAAAABAgkACBAAEAAA=</HashCode>
+      <FileName>ViewModels\Common\AbstractEntity.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Enum Name="TT.Diary.Desktop.ViewModels.TimeManagement.Repeat">
+    <Position X="11.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAgAAAEAAgA=</HashCode>
+      <FileName>ViewModels\TimeManagement\ScheduleSettings.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="TT.Diary.Desktop.ViewModels.TimeManagement.Weekdays" Collapsed="true">
+    <Position X="9.75" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAIAACAAAAAAAAAAACAAIACAIAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\TimeManagement\ScheduleSettings.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="TT.Diary.Desktop.ViewModels.TimeManagement.Months" Collapsed="true">
+    <Position X="9.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAEgAAABRAAAAAAQAwgAAAAAAQAAAAAAAAAAAEAAA=</HashCode>
+      <FileName>ViewModels\TimeManagement\ScheduleSettings.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="10" />
+</ClassDiagram>

@@ -1,0 +1,95 @@
+﻿<UserControl x:Class="TT.Diary.Desktop.Views.WeeklyScheduleView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:c="clr-namespace:TT.Diary.Desktop.Converters"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:command="http://www.galasoft.ch/mvvmlight"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <c:CurrentDateBoolConverter x:Key="currentDateBoolConverter" />
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal"
+                    HorizontalAlignment="Center">
+            <TextBlock Margin="0,0,25,0" Style="{DynamicResource ControlTitleTextBlockStyle}" Text="{Binding Title}" />
+            <ComboBox VerticalAlignment="Bottom" Height="30" Style="{DynamicResource ComboBoxStyle}" Margin="0,0,5,0"
+                      ItemsSource="{Binding DateRanges, Mode=OneWay}"
+                      SelectedItem="{Binding SelectedDateRange, Mode=TwoWay}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <DataTemplate.Triggers>
+                            <DataTrigger
+                                Binding="{Binding Path=StartDate, Converter={StaticResource currentDateBoolConverter}, ConverterParameter=range}"
+                                Value="true">
+                                <Setter Property="ItemsControl.Foreground" Value="{DynamicResource Title.Foreground}" />
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding StartDate, StringFormat=dd}" />
+                            <TextBlock Text=" - " />
+                            <TextBlock Text="{Binding FinishDate, StringFormat=dd}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <command:EventToCommand Command="{Binding DateRangeChangedCommand}"
+                                                PassEventArgsToCommand="False" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ComboBox>
+            <ComboBox VerticalAlignment="Bottom" Height="30" Style="{DynamicResource ComboBoxStyle}" Margin="0,0,5,0"
+                      ItemsSource="{Binding MonthsViewModel.Months, Mode=OneWay}" SelectedValue="Key"
+                      SelectedItem="{Binding MonthsViewModel.SelectedMonth, Mode=TwoWay}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <DataTemplate.Triggers>
+                            <DataTrigger
+                                Binding="{Binding Path=Key, Converter={StaticResource currentDateBoolConverter}}"
+                                Value="true">
+                                <Setter Property="ItemsControl.Foreground" Value="{DynamicResource Title.Foreground}" />
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                        <TextBlock Text="{Binding Value}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <ComboBox VerticalAlignment="Bottom" Height="30" Style="{DynamicResource ComboBoxStyle}"
+                      ItemsSource="{Binding MonthsViewModel.Years, Mode=OneWay}"
+                      SelectedItem="{Binding MonthsViewModel.SelectedYear, Mode=TwoWay}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <DataTemplate.Triggers>
+                            <DataTrigger
+                                Binding="{Binding Path=., Converter={StaticResource currentDateBoolConverter}}"
+                                Value="true">
+                                <Setter Property="ItemsControl.Foreground" Value="{DynamicResource Title.Foreground}" />
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                        <TextBlock Text="{Binding}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </StackPanel>
+
+        <ContentControl Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" Content="{Binding ToDoPlanner}" />
+        <ContentControl Grid.Row="1" Grid.Column="1" Content="{Binding AppointmentPlanner}" />
+        <ContentControl Grid.Row="2" Grid.Column="1" Content="{Binding HabitPlanner}" />
+        <ContentControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Content="{Binding WishPlanner}" />
+    </Grid>
+</UserControl>

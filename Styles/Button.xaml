@@ -1,0 +1,88 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style x:Key="ImgButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Background" Value="{DynamicResource Base.Background}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border x:Name="border">
+                        <Grid>
+                            <ContentPresenter x:Name="contentPresenter"
+                                              Content="{DynamicResource Button.Default.Image}" />
+                            <ContentControl Content="{DynamicResource Button.TextBlock}" />
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsDefaulted" Value="true">
+                            <Setter Property="Content" TargetName="contentPresenter"
+                                    Value="{DynamicResource Button.Default.Image}" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter Property="Background" TargetName="border"
+                                    Value="{DynamicResource Button.MouseOver.Background}" />
+                            <Setter Property="BorderBrush" TargetName="border"
+                                    Value="{DynamicResource Button.MouseOver.Border}" />
+                            <Setter Property="Content" TargetName="contentPresenter"
+                                    Value="{DynamicResource Button.MouseOver.Image}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="true">
+                            <Setter Property="Content" TargetName="contentPresenter"
+                                    Value="{DynamicResource Button.Press.Image}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Background" TargetName="border"
+                                    Value="{DynamicResource Button.Disabled.Background}" />
+                            <Setter Property="Visibility" TargetName="contentPresenter" Value="Hidden" />
+                            <Setter Property="Foreground" Value="{DynamicResource Button.Disabled.Foreground}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Background" Value="{DynamicResource Base.Background}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Button.BorderBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Background="{TemplateBinding Background}" SnapsToDevicePixels="true">
+                        <ContentPresenter x:Name="contentPresenter" Focusable="False"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          Margin="{TemplateBinding Padding}" RecognizesAccessKey="True"
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter Property="Background" TargetName="border"
+                                    Value="{DynamicResource Button.MouseOver.Background}" />
+                            <Setter Property="BorderBrush" TargetName="border"
+                                    Value="{DynamicResource Button.MouseOver.Border}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="true">
+                            <Setter Property="Background" TargetName="border"
+                                    Value="{DynamicResource Button.Pressed.Background}" />
+                            <Setter Property="BorderBrush" TargetName="border"
+                                    Value="{DynamicResource Button.Pressed.Border}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Background" TargetName="border"
+                                    Value="{DynamicResource Button.Disabled.Background}" />
+                            <Setter Property="BorderBrush" TargetName="border"
+                                    Value="{DynamicResource Button.Disabled.Border}" />
+                            <Setter Property="Foreground" Value="{DynamicResource Button.Disabled.Foreground}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

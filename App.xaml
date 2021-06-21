@@ -1,0 +1,200 @@
+﻿<Application x:Class="TT.Diary.Desktop.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vc="clr-namespace:TT.Diary.Desktop.ViewModels.DataContexts"
+             xmlns:pf="clr-namespace:TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames"
+             xmlns:vm="clr-namespace:TT.Diary.Desktop.ViewModels.Lists"
+             xmlns:tm="clr-namespace:TT.Diary.Desktop.ViewModels.TimeManagement"
+             xmlns:v="clr-namespace:TT.Diary.Desktop.Views"
+             xmlns:lv="clr-namespace:TT.Diary.Desktop.Views.Lists"
+             xmlns:e="clr-namespace:TT.Diary.Desktop.ViewModels.Extensions"
+             xmlns:ctm="clr-namespace:TT.Diary.Desktop.Views.Controls.TimeManagement"
+             xmlns:c="clr-namespace:TT.Diary.Desktop.Converters"
+             xmlns:tv="clr-namespace:TT.Diary.Desktop.Views.TimeManagement"
+             StartupUri="./Views/OAuth.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- must be first in the list -->
+                <ResourceDictionary Source="pack://application:,,,/Styles/Themes/Tea.xaml" />
+
+                <ResourceDictionary Source="pack://application:,,,/Styles/TextBlock.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/ErrorTemplate.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/ToggleButton.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/Button.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/DatePicker.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/DataGrid.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/TreeViewItem.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/TextBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/CheckBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/GroupBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/ComboBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/ListBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/HorizontalListBox.xaml" />
+                <ResourceDictionary>
+                    <DataTemplate DataType="{x:Type vc:Context}">
+                        <v:MainWindow />
+                    </DataTemplate>
+
+                    <e:Generic x:Key="WishViewModel" TypeName="TT.Diary.Desktop.ViewModels.Lists.Wish`1">
+                        <x:Type TypeName="tm:ScheduleSettingsSummary" />
+                    </e:Generic>
+                    <DataTemplate DataType="{StaticResource WishViewModel}">
+                        <lv:Wish />
+                    </DataTemplate>
+                    <e:Generic x:Key="WishListViewModel"
+                               TypeName="TT.Diary.Desktop.ViewModels.DataContexts.ListViewModel`1">
+                        <x:Type Type="{StaticResource WishViewModel}" />
+                    </e:Generic>
+                    <DataTemplate DataType="{StaticResource WishListViewModel}">
+                        <lv:TreeListView />
+                    </DataTemplate>
+
+                    <e:Generic x:Key="ToDoViewModel" TypeName="TT.Diary.Desktop.ViewModels.Lists.ToDo`1">
+                        <x:Type TypeName="tm:ScheduleSettingsSummary" />
+                    </e:Generic>
+                    <DataTemplate DataType="{StaticResource ToDoViewModel}">
+                        <lv:ToDo />
+                    </DataTemplate>
+                    <e:Generic x:Key="ToDoListViewModel"
+                               TypeName="TT.Diary.Desktop.ViewModels.DataContexts.ListViewModel`1">
+                        <x:Type Type="{StaticResource ToDoViewModel}" />
+                    </e:Generic>
+                    <DataTemplate DataType="{StaticResource ToDoListViewModel}">
+                        <lv:TreeListView />
+                    </DataTemplate>
+
+                    <e:Generic x:Key="AppointmentViewModel" TypeName="TT.Diary.Desktop.ViewModels.Lists.Appointment`1">
+                        <x:Type TypeName="tm:ScheduleSettingsSummary" />
+                    </e:Generic>
+                    <DataTemplate DataType="{StaticResource AppointmentViewModel}">
+                        <lv:ToDo />
+                    </DataTemplate>
+                    <e:Generic x:Key="AppointmentListViewModel"
+                               TypeName="TT.Diary.Desktop.ViewModels.DataContexts.ListViewModel`1">
+                        <x:Type Type="{StaticResource AppointmentViewModel}" />
+                    </e:Generic>
+                    <DataTemplate DataType="{StaticResource AppointmentListViewModel}">
+                        <lv:TreeListView />
+                    </DataTemplate>
+
+                    <e:Generic x:Key="HabitViewModel" TypeName="TT.Diary.Desktop.ViewModels.Lists.Habit`1">
+                        <x:Type TypeName="tm:ScheduleSettingsSummary" />
+                    </e:Generic>
+                    <DataTemplate DataType="{StaticResource HabitViewModel}">
+                        <lv:Habit />
+                    </DataTemplate>
+                    <e:Generic x:Key="HabitListViewModel"
+                               TypeName="TT.Diary.Desktop.ViewModels.DataContexts.ListViewModel`1">
+                        <x:Type Type="{StaticResource HabitViewModel}" />
+                    </e:Generic>
+                    <DataTemplate DataType="{StaticResource HabitListViewModel}">
+                        <lv:TreeListView />
+                    </DataTemplate>
+
+                    <DataTemplate DataType="{x:Type vm:Note}">
+                        <lv:Note />
+                    </DataTemplate>
+                    <e:Generic x:Key="NoteListViewModel"
+                               TypeName="TT.Diary.Desktop.ViewModels.DataContexts.ListViewModel`1">
+                        <x:Type TypeName="vm:Note" />
+                    </e:Generic>
+                    <DataTemplate DataType="{StaticResource NoteListViewModel}">
+                        <lv:ListView />
+                    </DataTemplate>
+
+                    <c:EnumVisibilityConverter x:Key="enumVisibilityConverter" />
+                    <c:EnumInverseVisibilityConverter x:Key="enumInverseVisibilityConverter" />
+
+                    <e:Generic x:Key="ScheduledHabitViewModel" TypeName="TT.Diary.Desktop.ViewModels.Lists.Habit`1">
+                        <x:Type TypeName="tm:ScheduleSettings" />
+                    </e:Generic>
+                    <DataTemplate DataType="{StaticResource ScheduledHabitViewModel}">
+                        <Grid>
+                            <tv:NewScheduledHabit
+                                Visibility="{Binding State, Converter={StaticResource enumVisibilityConverter}, ConverterParameter=New}" />
+                            <tv:ScheduledHabit
+                                DateRange="{Binding DataContext.DateRange, RelativeSource={RelativeSource AncestorType=UserControl, AncestorLevel=1}}"
+                                Visibility="{Binding State, Converter={StaticResource enumInverseVisibilityConverter}, ConverterParameter=New}" />
+                        </Grid>
+                    </DataTemplate>
+
+                    <e:Generic x:Key="ScheduledToDoViewModel" TypeName="TT.Diary.Desktop.ViewModels.Lists.ToDo`1">
+                        <x:Type TypeName="tm:ScheduleSettings" />
+                    </e:Generic>
+                    <DataTemplate DataType="{StaticResource ScheduledToDoViewModel}">
+                        <Grid>
+                            <tv:NewScheduledToDo
+                                Visibility="{Binding State, Converter={StaticResource enumVisibilityConverter}, ConverterParameter=New}" />
+                            <tv:ScheduledToDo
+                                DateRange="{Binding DataContext.DateRange, RelativeSource={RelativeSource AncestorType=UserControl, AncestorLevel=1}}"
+                                Visibility="{Binding State, Converter={StaticResource enumInverseVisibilityConverter}, ConverterParameter=New}" />
+                        </Grid>
+                    </DataTemplate>
+
+                    <e:Generic x:Key="ScheduledAppointmentViewModel"
+                               TypeName="TT.Diary.Desktop.ViewModels.Lists.Appointment`1">
+                        <x:Type TypeName="tm:ScheduleSettings" />
+                    </e:Generic>
+                    <DataTemplate DataType="{StaticResource ScheduledAppointmentViewModel}">
+                        <Grid>
+                            <tv:NewScheduledAppointment
+                                Visibility="{Binding State, Converter={StaticResource enumVisibilityConverter}, ConverterParameter=New}" />
+                            <tv:ScheduledAppointment
+                                DateRange="{Binding DataContext.DateRange, RelativeSource={RelativeSource AncestorType=UserControl, AncestorLevel=1}}"
+                                Visibility="{Binding State, Converter={StaticResource enumInverseVisibilityConverter}, ConverterParameter=New}" />
+                        </Grid>
+                    </DataTemplate>
+
+                    <e:Generic x:Key="ScheduledWishViewModel" TypeName="TT.Diary.Desktop.ViewModels.Lists.Wish`1">
+                        <x:Type TypeName="tm:ScheduleSettings" />
+                    </e:Generic>
+                    <DataTemplate DataType="{StaticResource ScheduledWishViewModel}">
+                        <Grid>
+                            <tv:NewScheduledWish
+                                Visibility="{Binding State, Converter={StaticResource enumVisibilityConverter}, ConverterParameter=New}" />
+                            <tv:ScheduledWish
+                                Visibility="{Binding State, Converter={StaticResource enumInverseVisibilityConverter}, ConverterParameter=New}" />
+                        </Grid>
+                    </DataTemplate>
+
+                    <DataTemplate DataType="{x:Type pf:ScheduledToDoPlannerFrame}">
+                        <ctm:ScheduledList Title="To Do">
+                            <ctm:ScheduledList.Icon>
+                                <Image Source="pack://application:,,,/Images/Workspace/alarmclock.png" Width="26"
+                                       Height="26" />
+                            </ctm:ScheduledList.Icon>
+                        </ctm:ScheduledList>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type pf:ScheduledAppointmentPlannerFrame}">
+                        <ctm:ScheduledList Title="Events&amp;Appointments">
+                            <ctm:ScheduledList.Icon>
+                                <Image Source="pack://application:,,,/Images/Workspace/date-time.png" Width="26"
+                                       Height="26" />
+                            </ctm:ScheduledList.Icon>
+                        </ctm:ScheduledList>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type pf:ScheduledHabitPlannerFrame}">
+                        <ctm:ScheduledList Title="Habits" />
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type pf:ScheduledWishPlannerFrame}">
+                        <ctm:ScheduledList Title="Wish list" WeekdaysVisibility="Collapsed" />
+                    </DataTemplate>
+
+                    <DataTemplate DataType="{x:Type vc:DailySchedule}">
+                        <v:DailyScheduleView />
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vc:WeeklySchedule}">
+                        <v:WeeklyScheduleView />
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vc:MonthlySchedule}">
+                        <v:MonthlyScheduleView />
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vc:YearlySchedule}">
+                        <v:YearlyScheduleView />
+                    </DataTemplate>
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

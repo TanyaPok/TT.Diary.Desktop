@@ -1,0 +1,95 @@
+﻿<UserControl x:Class="TT.Diary.Desktop.Views.YearlyScheduleView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:c="clr-namespace:TT.Diary.Desktop.Converters"
+             xmlns:con="clr-namespace:TT.Diary.Desktop.Views.Controls.Calendar"
+             xmlns:convm="clr-namespace:TT.Diary.Desktop.ViewModels.Calendar"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:command="http://www.galasoft.ch/mvvmlight"
+             mc:Ignorable="d"
+             Margin="50,0,50,0"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.Resources>
+            <c:ProductivityBackgroundConverter x:Key="productivityBackgroundConverter" />
+            <c:ProductivityForegroundConverter x:Key="productivityForegroundConverter" />
+            <c:CurrentDateBoolConverter x:Key="currentDateBoolConverter" />
+            <DataTemplate DataType="{x:Type convm:MonthDay}">
+                <Border Background="{Binding Productivity, Converter={StaticResource productivityBackgroundConverter}}"
+                        Margin="2">
+                    <TextBlock HorizontalAlignment="Center" Style="{DynamicResource TextBlockStyle}"
+                               Foreground="{Binding Productivity, Converter={StaticResource productivityForegroundConverter}}"
+                               Text="{Binding Date.Day}" />
+                </Border>
+            </DataTemplate>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+                    HorizontalAlignment="Center">
+            <TextBlock Margin="0,0,25,0" Style="{DynamicResource ControlTitleTextBlockStyle}" Text="{Binding Title}" />
+            <ComboBox VerticalAlignment="Bottom" Height="30" Style="{DynamicResource ComboBoxStyle}"
+                      ItemsSource="{Binding YearsViewModel.Years, Mode=OneWay}"
+                      SelectedItem="{Binding YearsViewModel.SelectedYear, Mode=TwoWay}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <DataTemplate.Triggers>
+                            <DataTrigger
+                                Binding="{Binding Path=., Converter={StaticResource currentDateBoolConverter}}"
+                                Value="true">
+                                <Setter Property="ItemsControl.Foreground" Value="{DynamicResource Title.Foreground}" />
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                        <TextBlock Text="{Binding}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <command:EventToCommand Command="{Binding YearChangedCommand}"
+                                                PassEventArgsToCommand="False" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ComboBox>
+        </StackPanel>
+        <con:MonthCalendar Grid.Row="1" Grid.Column="0" Heading="January" Days="{Binding January}" />
+        <con:MonthCalendar Grid.Row="1" Grid.Column="1" Heading="February" Days="{Binding February}" />
+        <con:MonthCalendar Grid.Row="1" Grid.Column="2" Heading="March" Days="{Binding March}" />
+        <con:MonthCalendar Grid.Row="2" Grid.Column="0" Heading="April" Days="{Binding April}" />
+        <con:MonthCalendar Grid.Row="2" Grid.Column="1" Heading="May" Days="{Binding May}" />
+        <con:MonthCalendar Grid.Row="2" Grid.Column="2" Heading="June" Days="{Binding June}" />
+        <con:MonthCalendar Grid.Row="3" Grid.Column="0" Heading="July" Days="{Binding July}" />
+        <con:MonthCalendar Grid.Row="3" Grid.Column="1" Heading="August" Days="{Binding August}" />
+        <con:MonthCalendar Grid.Row="3" Grid.Column="2" Heading="September" Days="{Binding September}" />
+        <con:MonthCalendar Grid.Row="4" Grid.Column="0" Heading="October" Days="{Binding October}" />
+        <con:MonthCalendar Grid.Row="4" Grid.Column="1" Heading="November" Days="{Binding November}" />
+        <con:MonthCalendar Grid.Row="4" Grid.Column="2" Heading="December" Days="{Binding December}" />
+        <GroupBox Grid.Row="2" Grid.RowSpan="2" Grid.Column="3" Style="{StaticResource GroupBoxStyle}">
+            <GroupBox.Header>
+                <TextBlock Style="{DynamicResource TitleTextBlockStyle}" Text="Legend" />
+            </GroupBox.Header>
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="Good productivity" Style="{DynamicResource TextBlockStyle}" Margin="2" />
+                <TextBlock Width="50" Height="50" Background="DarkGreen" Margin="0" />
+                <TextBlock Width="50" Height="50" Background="OliveDrab" Margin="0" />
+                <TextBlock Width="50" Height="50" Background="DarkOrange" Margin="0" />
+                <TextBlock Width="50" Height="50" Background="OrangeRed" Margin="0" />
+                <TextBlock Width="50" Height="50" Background="Firebrick" Margin="0" />
+                <TextBlock Text="Bad productivity" Style="{DynamicResource TextBlockStyle}" Margin="2" />
+            </StackPanel>
+        </GroupBox>
+    </Grid>
+</UserControl>

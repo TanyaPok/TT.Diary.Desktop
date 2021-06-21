@@ -1,0 +1,56 @@
+﻿<UserControl x:Class="TT.Diary.Desktop.Views.TimeManagement.ScheduledWish"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:c="clr-namespace:TT.Diary.Desktop.Converters"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <c:NullableDateBoolConverter x:Key="nullableDateBoolConverter" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Text="{Binding Description, Mode=OneWay}" TextWrapping="Wrap"
+                   VerticalAlignment="Bottom">
+            <TextBlock.Resources>
+                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+                    <Style.Triggers>
+                        <DataTrigger
+                            Binding="{Binding Schedule.CompletionDate, Mode=OneWay, Converter={StaticResource nullableDateBoolConverter}}"
+                            Value="True">
+                            <Setter Property="TextDecorations" Value="Strikethrough" />
+                        </DataTrigger>
+                        <DataTrigger
+                            Binding="{Binding Schedule.CompletionDate, Mode=OneWay, Converter={StaticResource nullableDateBoolConverter}}"
+                            Value="False">
+                            <Setter Property="TextDecorations" Value="None" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Resources>
+        </TextBlock>
+        <TextBlock Grid.Row="1" Text="{Binding Author, Mode=OneWay}" FontSize="14" TextWrapping="Wrap"
+                   VerticalAlignment="Bottom">
+            <TextBlock.Resources>
+                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextBlockStyle}">
+                    <Style.Triggers>
+                        <DataTrigger
+                            Binding="{Binding Schedule.CompletionDate, Mode=OneWay, Converter={StaticResource nullableDateBoolConverter}}"
+                            Value="True">
+                            <Setter Property="TextDecorations" Value="Strikethrough" />
+                        </DataTrigger>
+                        <DataTrigger
+                            Binding="{Binding Schedule.CompletionDate, Mode=OneWay, Converter={StaticResource nullableDateBoolConverter}}"
+                            Value="False">
+                            <Setter Property="TextDecorations" Value="None" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Resources>
+        </TextBlock>
+    </Grid>
+</UserControl>

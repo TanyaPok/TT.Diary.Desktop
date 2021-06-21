@@ -1,0 +1,121 @@
+﻿<UserControl x:Class="TT.Diary.Desktop.Views.Controls.TimeManagement.ScheduledList"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:c="clr-namespace:TT.Diary.Desktop.Converters"
+             xmlns:s="clr-namespace:TT.Diary.Desktop.Views.Controls"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <c:EnumVisibilityConverter x:Key="enumVisibilityConverter" />
+        <c:EnumInverseVisibilityConverter x:Key="enumInverseVisibilityConverter" />
+    </UserControl.Resources>
+
+    <Grid>
+        <GroupBox Style="{StaticResource GroupBoxStyle}">
+            <GroupBox.Header>
+                <StackPanel Orientation="Horizontal">
+                    <ContentPresenter
+                        Content="{Binding Icon, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
+                    <TextBlock Style="{DynamicResource TitleTextBlockStyle}"
+                               Text="{Binding Title, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+            </GroupBox.Header>
+
+            <ListBox ItemsSource="{Binding Items}" Style="{StaticResource ListBoxStyle}">
+                <ListBox.Template>
+                    <ControlTemplate TargetType="{x:Type ListBox}">
+                        <DockPanel LastChildFill="True">
+                            <Grid DockPanel.Dock="Top"
+                                  Visibility="{Binding WeekdaysVisibility, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}">
+                                <ItemsControl
+                                    ItemsSource="{Binding Dates, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel
+                                                MaxWidth="{Binding TrackersAreaWidth, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                                Orientation="Horizontal" HorizontalAlignment="Right" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock
+                                                Width="{Binding TrackerAreaWidth, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                Style="{DynamicResource LabelTextBlockStyle}"
+                                                Text="{Binding Path=., StringFormat=ddd}" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Grid>
+                            <ScrollViewer>
+                                <ItemsPresenter />
+                            </ScrollViewer>
+                        </DockPanel>
+                    </ControlTemplate>
+                </ListBox.Template>
+                <ListBox.Resources>
+                    <s:DataContextSpy
+                        DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"
+                        x:Key="DCSpy" />
+                    <StackPanel x:Shared="false" x:Key="ListBox.ContentPresenterOperations" Orientation="Horizontal"
+                                HorizontalAlignment="Right">
+                        <Button Command="{Binding DataContext.ItemCompleteCommand, Source={StaticResource DCSpy}}"
+                                Style="{StaticResource ButtonStyle}" Margin="0,0,5,0"
+                                CommandParameter="{Binding Schedule}"
+                                Visibility="{Binding State, Converter={StaticResource enumInverseVisibilityConverter}, ConverterParameter=New}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image
+                                    Source="{Binding DataContext.ItemCompleteCommand.ImgUrl, Source={StaticResource DCSpy}}"
+                                    Width="16" Height="16" />
+                                <TextBlock
+                                    Text="{Binding DataContext.ItemCompleteCommand.Name, Source={StaticResource DCSpy}}"
+                                    Style="{StaticResource LabelTextBlockStyle}" />
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{Binding DataContext.ItemSaveCommand, Source={StaticResource DCSpy}}"
+                                CommandParameter="{Binding}"
+                                Style="{StaticResource ButtonStyle}" Margin="0,0,5,0"
+                                Visibility="{Binding State, Converter={StaticResource enumVisibilityConverter}, ConverterParameter=New}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image
+                                    Source="{Binding DataContext.ItemSaveCommand.ImgUrl, Source={StaticResource DCSpy}}"
+                                    Width="16" Height="16" />
+                                <TextBlock
+                                    Text="{Binding DataContext.ItemSaveCommand.Name, Source={StaticResource DCSpy}}"
+                                    Style="{StaticResource LabelTextBlockStyle}" />
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{Binding DataContext.ItemRescheduleCommand, Source={StaticResource DCSpy}}"
+                                CommandParameter="{Binding Schedule}"
+                                Style="{StaticResource ButtonStyle}" Margin="0,0,5,0"
+                                Visibility="{Binding State, Converter={StaticResource enumInverseVisibilityConverter}, ConverterParameter=New}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image
+                                    Source="{Binding DataContext.ItemRescheduleCommand.ImgUrl, Source={StaticResource DCSpy}}"
+                                    Width="16" Height="16" />
+                                <TextBlock
+                                    Text="{Binding DataContext.ItemRescheduleCommand.Name, Source={StaticResource DCSpy}}"
+                                    Style="{StaticResource LabelTextBlockStyle}" />
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{Binding DataContext.ItemDeleteCommand, Source={StaticResource DCSpy}}"
+                                CommandParameter="{Binding}"
+                                Visibility="{Binding State, Converter={StaticResource enumVisibilityConverter}, ConverterParameter=New}"
+                                Style="{StaticResource ButtonStyle}" Margin="0,0,5,0">
+                            <StackPanel Orientation="Horizontal">
+                                <Image
+                                    Source="{Binding DataContext.ItemDeleteCommand.ImgUrl, Source={StaticResource DCSpy}}"
+                                    Width="16" Height="16" />
+                                <TextBlock
+                                    Text="{Binding DataContext.ItemDeleteCommand.Name, Source={StaticResource DCSpy}}"
+                                    Style="{StaticResource LabelTextBlockStyle}" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </ListBox.Resources>
+            </ListBox>
+        </GroupBox>
+    </Grid>
+</UserControl>
