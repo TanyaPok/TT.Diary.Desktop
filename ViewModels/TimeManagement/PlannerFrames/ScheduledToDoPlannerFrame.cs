@@ -8,10 +8,11 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames
     public class
         ScheduledToDoPlannerFrame : AbstractTrackedItemPlannerFrame<ToDo<ScheduleSettings>, UnscheduledItemSummary>
     {
-        public ScheduledToDoPlannerFrame(int userId) : base(userId,
-            ServiceOperationContract.GetUnscheduledTodoList, ServiceOperationContract.TodoSchedule,
-            ServiceOperationContract.TodoTracker)
+        public static ScheduledToDoPlannerFrame Create(int userId)
         {
+            var frame = new ScheduledToDoPlannerFrame(userId);
+            frame.GenerateCommands();
+            return frame;
         }
 
         protected override async Task InitializeItem()
@@ -37,6 +38,12 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames
             schedule.Repeat = Repeat.None;
             schedule.Every = 0;
             schedule.DaysAmount = 0;
+        }
+
+        private ScheduledToDoPlannerFrame(int userId) : base(userId,
+            ServiceOperationContract.GetUnscheduledTodoList, ServiceOperationContract.TodoSchedule,
+            ServiceOperationContract.TodoTracker)
+        {
         }
     }
 }

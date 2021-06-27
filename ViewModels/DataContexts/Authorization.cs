@@ -8,10 +8,10 @@ using System.Text;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Command;
-using System.Net.Http;
 using TT.Diary.Desktop.ViewModels.Common;
 using TT.Diary.Desktop.ViewModels.Interfaces;
 using TT.Diary.Desktop.ViewModels.Extensions;
+using TT.Diary.Desktop.ViewModels.Interlayer;
 
 namespace TT.Diary.Desktop.ViewModels.DataContexts
 {
@@ -136,16 +136,13 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
 
         private async Task<int> SetUser(User userInfo)
         {
-            using (var response =
-                await Context.DiaryHttpClient.PostAsJsonAsync(ServiceOperationContract.SetUser, userInfo))
+            var request = new Request
             {
-                if (response.IsSuccessStatusCode)
-                {
-                    return await response.Content.ReadAsAsync<int>();
-                }
-
-                throw new Exception(string.Format(ErrorMessages.SetUserError.GetDescription(), response.StatusCode));
-            }
+                OperationContract = ServiceOperationContract.SetUser,
+                Data = userInfo,
+                AdditionalInfo = "User " + userInfo.Given_Name
+            };
+            return await Endpoint.CreateAsync(request);
         }
 
         // ref http://stackoverflow.com/a/3978040

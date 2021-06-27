@@ -2,7 +2,6 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -10,6 +9,7 @@ using TT.Diary.Desktop.ViewModels.Commands;
 using TT.Diary.Desktop.ViewModels.Commands.InitializingCommands;
 using TT.Diary.Desktop.ViewModels.Common;
 using TT.Diary.Desktop.ViewModels.Extensions;
+using TT.Diary.Desktop.ViewModels.Interlayer;
 using TT.Diary.Desktop.ViewModels.Lists;
 
 namespace TT.Diary.Desktop.ViewModels.DataContexts
@@ -56,20 +56,14 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
         protected override async Task LoadDataAsync()
         {
             var requestUri = string.Format(_listGettingOperationName, UserId);
-            using (var response = await Context.DiaryHttpClient.GetAsync(requestUri))
+            var root = await Endpoint.GetAsync<Category<T>>(requestUri, ErrorMessages.GetList.GetDescription(),
+                _listGettingOperationName);
+            if (Data.Count > 0)
             {
-                if (!response.IsSuccessStatusCode)
-                    throw new Exception(string.Format(ErrorMessages.GetList.GetDescription(), _listGettingOperationName,
-                        response.StatusCode));
-                var root = await response.Content.ReadAsAsync<Category<T>>();
-
-                if (Data.Count > 0)
-                {
-                    Data.Clear();
-                }
-
-                Data.Add(root);
+                Data.Clear();
             }
+
+            Data.Add(root);
         }
 
         protected override Task DataSettingAsync()

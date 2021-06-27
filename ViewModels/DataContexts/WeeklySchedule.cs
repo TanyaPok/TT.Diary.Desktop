@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using GalaSoft.MvvmLight.CommandWpf;
 using TT.Diary.Desktop.ViewModels.Common;
 using TT.Diary.Desktop.ViewModels.Extensions;
+using TT.Diary.Desktop.ViewModels.Interlayer;
 using TT.Diary.Desktop.ViewModels.TimeManagement;
 using TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames;
 
@@ -78,17 +78,10 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
             DateRangeChangedCommand =
                 new RelayCommand(async () => { await DateRangeChanged(); }, () => true);
 
-            HabitPlanner = new ScheduledHabitPlannerFrame(UserId);
-            HabitPlanner.GenerateCommands();
-
-            ToDoPlanner = new ScheduledToDoPlannerFrame(UserId);
-            ToDoPlanner.GenerateCommands();
-
-            AppointmentPlanner = new ScheduledAppointmentPlannerFrame(UserId);
-            AppointmentPlanner.GenerateCommands();
-
-            WishPlanner = new ScheduledWishPlannerFrame(UserId);
-            WishPlanner.GenerateCommands();
+            HabitPlanner = ScheduledHabitPlannerFrame.Create(UserId);
+            ToDoPlanner = ScheduledToDoPlannerFrame.Create(UserId);
+            AppointmentPlanner = ScheduledAppointmentPlannerFrame.Create(UserId);
+            WishPlanner = ScheduledWishPlannerFrame.Create(UserId);
         }
 
         protected override bool InRangeDates(DateRange dateRange)
@@ -110,21 +103,12 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
                 UserId,
                 SelectedDateRange.StartDate.Date.ToString(ServiceOperationContract.DateFormat),
                 SelectedDateRange.FinishDate.Date.ToString(ServiceOperationContract.DateFormat));
-            using (var response = await Context.DiaryHttpClient.GetAsync(requestUri))
-            {
-                if (!response.IsSuccessStatusCode)
-                    throw new Exception(
-                        string.Format(ErrorMessages.GetSchedule.GetDescription(),
-                            $"{SelectedDateRange.StartDate.Date}-{SelectedDateRange.FinishDate.Date}",
-                            response.StatusCode));
-                using (var planner = await response.Content.ReadAsAsync<Planner>())
-                {
-                    ToDoPlanner.Items.ReUpload(planner.ToDoList);
-                    AppointmentPlanner.Items.ReUpload(planner.Appointments);
-                    HabitPlanner.Items.ReUpload(planner.Habits);
-                    WishPlanner.Items.ReUpload(planner.WishList);
-                }
-            }
+            var planner = await Endpoint.GetAsync<Planner>(requestUri, ErrorMessages.GetSchedule.GetDescription(),
+                $"{SelectedDateRange.StartDate.Date}-{SelectedDateRange.FinishDate.Date}");
+            ToDoPlanner.Items.ReUpload(planner.ToDoList);
+            AppointmentPlanner.Items.ReUpload(planner.Appointments);
+            HabitPlanner.Items.ReUpload(planner.Habits);
+            WishPlanner.Items.ReUpload(planner.WishList);
         }
 
         protected override Task DataSettingAsync()

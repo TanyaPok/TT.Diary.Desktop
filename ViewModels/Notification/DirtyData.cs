@@ -9,7 +9,7 @@ namespace TT.Diary.Desktop.ViewModels.Notification
     }
 
     /// <summary>
-    /// Notification message for form dirty data that must be saved. The message will be dispose after processing.
+    /// Notification message for form dirty data that must be saved. The message will be disposed after processing.
     /// </summary>
     public class DirtyData : IMessage
     {

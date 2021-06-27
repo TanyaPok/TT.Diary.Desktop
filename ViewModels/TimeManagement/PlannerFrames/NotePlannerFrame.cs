@@ -4,8 +4,11 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames
 {
     public class NotePlannerFrame : AbstractItemPlannerFrame<Note>
     {
-        public NotePlannerFrame(int userId) : base(userId)
+        public static NotePlannerFrame Create(int userId)
         {
+            var frame = new NotePlannerFrame(userId);
+            frame.GenerateCommands();
+            return frame;
         }
 
         protected override void Prepare(Note element)
@@ -22,6 +25,10 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames
         {
             item.Notify();
             base.Remove(item);
+        }
+
+        private NotePlannerFrame(int userId) : base(userId)
+        {
         }
     }
 }

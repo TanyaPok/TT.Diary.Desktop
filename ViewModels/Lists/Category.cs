@@ -175,7 +175,7 @@ namespace TT.Diary.Desktop.ViewModels.Lists
 
         internal async Task Move(Category<T> parent, Category<T> oldParent)
         {
-            await Endpoint.UpdateEntity(
+            await Endpoint.UpdateAsync(
                 new Request
                 {
                     OperationContract = ServiceOperationContract.Category,
