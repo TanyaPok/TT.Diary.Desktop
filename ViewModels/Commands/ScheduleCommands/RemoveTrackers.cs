@@ -13,7 +13,7 @@ namespace TT.Diary.Desktop.ViewModels.Commands.ScheduleCommands
             (
                 async () =>
                 {
-                    await Endpoint.RemoveEntity(owner.GetRemoveTrackersRequest());
+                    await Endpoint.RemoveAsync(owner.GetRemoveTrackersRequest());
                     owner.AfterRemovingTrackers();
                 },
                 owner.CanRemoveTrackers,

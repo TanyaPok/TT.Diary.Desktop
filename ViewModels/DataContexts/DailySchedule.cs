@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using GalaSoft.MvvmLight.CommandWpf;
 using TT.Diary.Desktop.ViewModels.Commands.InitializingCommands;
 using TT.Diary.Desktop.ViewModels.Common;
 using TT.Diary.Desktop.ViewModels.Extensions;
+using TT.Diary.Desktop.ViewModels.Interlayer;
 using TT.Diary.Desktop.ViewModels.TimeManagement;
 using TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames;
 
@@ -77,22 +77,13 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
         public DailySchedule(int userId) : base(userId)
         {
             SelectedDateChangedCommand =
-                new RelayCommand(async () => { await SelectedDateChanged(); }, CanSelectedDateChanged);
+                new RelayCommand(async () => { await SelectedDateChanged(); }, () => IsConsistentState);
 
-            NotePlanner = new NotePlannerFrame(UserId);
-            NotePlanner.GenerateCommands();
-
-            HabitPlanner = new ScheduledHabitPlannerFrame(UserId);
-            HabitPlanner.GenerateCommands();
-
-            ToDoPlanner = new ScheduledToDoPlannerFrame(UserId);
-            ToDoPlanner.GenerateCommands();
-
-            AppointmentPlanner = new ScheduledAppointmentPlannerFrame(UserId);
-            AppointmentPlanner.GenerateCommands();
-
-            WishPlanner = new ScheduledWishPlannerFrame(UserId);
-            WishPlanner.GenerateCommands();
+            NotePlanner = NotePlannerFrame.Create(UserId);
+            HabitPlanner = ScheduledHabitPlannerFrame.Create(UserId);
+            ToDoPlanner = ScheduledToDoPlannerFrame.Create(UserId);
+            AppointmentPlanner = ScheduledAppointmentPlannerFrame.Create(UserId);
+            WishPlanner = ScheduledWishPlannerFrame.Create(UserId);
         }
 
         public void RemoveNewNotSavedEntities()
@@ -116,20 +107,13 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
                 UserId,
                 SelectedDate.Date.ToString(ServiceOperationContract.DateFormat),
                 SelectedDate.Date.ToString(ServiceOperationContract.DateFormat));
-            using (var response = await Context.DiaryHttpClient.GetAsync(requestUri))
-            {
-                if (!response.IsSuccessStatusCode)
-                    throw new Exception(string.Format(ErrorMessages.GetSchedule.GetDescription(), SelectedDate,
-                        response.StatusCode));
-                using (var planner = await response.Content.ReadAsAsync<Planner>())
-                {
-                    ToDoPlanner.ReUploadItems(planner.ToDoList);
-                    AppointmentPlanner.ReUploadItems(planner.Appointments);
-                    HabitPlanner.ReUploadItems(planner.Habits);
-                    NotePlanner.ReUploadItems(planner.Notes);
-                    WishPlanner.ReUploadItems(planner.WishList);
-                }
-            }
+            var planner = await Endpoint.GetAsync<Planner>(requestUri, ErrorMessages.GetSchedule.GetDescription(),
+                SelectedDate);
+            ToDoPlanner.ReUploadItems(planner.ToDoList);
+            AppointmentPlanner.ReUploadItems(planner.Appointments);
+            HabitPlanner.ReUploadItems(planner.Habits);
+            NotePlanner.ReUploadItems(planner.Notes);
+            WishPlanner.ReUploadItems(planner.WishList);
         }
 
         protected override async Task DataSettingAsync()
@@ -143,11 +127,6 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
             await ToDoPlanner.SetUnscheduledData();
             await AppointmentPlanner.SetUnscheduledData();
             await WishPlanner.SetUnscheduledData();
-        }
-
-        private bool CanSelectedDateChanged()
-        {
-            return IsConsistentState;
         }
 
         private async Task SelectedDateChanged()

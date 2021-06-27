@@ -28,11 +28,11 @@ namespace TT.Diary.Desktop.ViewModels.Commands.SaveCommands
         {
             if (storable.Id == default)
             {
-                storable.Id = await Endpoint.CreateEntity(storable.GetCreateRequest());
+                storable.Id = await Endpoint.CreateAsync(storable.GetCreateRequest());
             }
             else
             {
-                await Endpoint.UpdateEntity(storable.GetUpdateRequest());
+                await Endpoint.UpdateAsync(storable.GetUpdateRequest());
             }
 
             storable.AfterAcceptChanges();
@@ -54,11 +54,11 @@ namespace TT.Diary.Desktop.ViewModels.Commands.SaveCommands
 
                     if (storable.Id == default)
                     {
-                        storable.Id = await Endpoint.CreateEntity(storable.GetCreateRequest());
+                        storable.Id = await Endpoint.CreateAsync(storable.GetCreateRequest());
                     }
                     else
                     {
-                        await Endpoint.UpdateEntity(storable.GetUpdateRequest());
+                        await Endpoint.UpdateAsync(storable.GetUpdateRequest());
                     }
                     
                     storable.AfterAcceptChanges();

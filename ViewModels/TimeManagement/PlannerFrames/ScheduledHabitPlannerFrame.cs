@@ -10,10 +10,11 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames
     public class
         ScheduledHabitPlannerFrame : AbstractTrackedItemPlannerFrame<Habit<ScheduleSettings>, UnscheduledHabitSummary>
     {
-        public ScheduledHabitPlannerFrame(int userId) : base(userId,
-            ServiceOperationContract.GetUnscheduledHabits, ServiceOperationContract.HabitSchedule,
-            ServiceOperationContract.HabitTracker)
+        public static ScheduledHabitPlannerFrame Create(int userId)
         {
+            var frame = new ScheduledHabitPlannerFrame(userId);
+            frame.GenerateCommands();
+            return frame;
         }
 
         protected override void FillUnscheduledItemSummaries(IEnumerable<Habit<ScheduleSettings>> data)
@@ -63,6 +64,12 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames
             }
 
             NewItem.Amount = Template?.Amount;
+        }
+
+        private ScheduledHabitPlannerFrame(int userId) : base(userId,
+            ServiceOperationContract.GetUnscheduledHabits, ServiceOperationContract.HabitSchedule,
+            ServiceOperationContract.HabitTracker)
+        {
         }
     }
 }

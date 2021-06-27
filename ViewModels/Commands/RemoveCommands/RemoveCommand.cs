@@ -23,7 +23,7 @@ namespace TT.Diary.Desktop.ViewModels.Commands.RemoveCommands
                 {
                     if (removable.Id != default)
                     {
-                        await Endpoint.RemoveEntity(removable.GetRemoveRequest());
+                        await Endpoint.RemoveAsync(removable.GetRemoveRequest());
                     }
 
                     remover.Remove(removable);

@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TT.Diary.Desktop.ViewModels.Lists;
 
 namespace TT.Diary.Desktop.ViewModels.TimeManagement
 {
-    public class Planner : IDisposable
+    public class Planner
     {
         public IEnumerable<Note> Notes { get; set; }
 
@@ -15,9 +14,5 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement
         public IEnumerable<Appointment<ScheduleSettings>> Appointments { get; set; }
 
         public IEnumerable<Wish<ScheduleSettings>> WishList { get; set; }
-
-        public void Dispose()
-        {
-        }
     }
 }

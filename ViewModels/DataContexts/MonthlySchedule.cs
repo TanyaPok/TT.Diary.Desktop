@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using GalaSoft.MvvmLight.CommandWpf;
 using TT.Diary.Desktop.ViewModels.Calendar;
 using TT.Diary.Desktop.ViewModels.Common;
 using TT.Diary.Desktop.ViewModels.Extensions;
+using TT.Diary.Desktop.ViewModels.Interlayer;
 
 namespace TT.Diary.Desktop.ViewModels.DataContexts
 {
@@ -72,14 +72,9 @@ namespace TT.Diary.Desktop.ViewModels.DataContexts
                 new DateTime(MonthsViewModel.SelectedYear, MonthsViewModel.SelectedMonth.Key,
                         DateTime.DaysInMonth(MonthsViewModel.SelectedYear, MonthsViewModel.SelectedMonth.Key))
                     .ToString(ServiceOperationContract.DateFormat));
-            using (var response = await Context.DiaryHttpClient.GetAsync(requestUri))
-            {
-                if (!response.IsSuccessStatusCode)
-                    throw new Exception(string.Format(ErrorMessages.GetSchedule.GetDescription(),
-                        $"{MonthsViewModel.SelectedMonth.Value}, {MonthsViewModel.SelectedYear}",
-                        response.StatusCode));
-                _data = await response.Content.ReadAsAsync<List<DailyScheduledAppointments>>();
-            }
+            _data = await Endpoint.GetAsync<List<DailyScheduledAppointments>>(requestUri,
+                ErrorMessages.GetSchedule.GetDescription(),
+                $"{MonthsViewModel.SelectedMonth.Value}, {MonthsViewModel.SelectedYear}");
         }
 
         protected override async Task DataSettingAsync()

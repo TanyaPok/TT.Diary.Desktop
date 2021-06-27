@@ -10,9 +10,11 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames
     public class
         ScheduledWishPlannerFrame : AbstractScheduledItemPlannerFrame<Wish<ScheduleSettings>, UnscheduledWishSummary>
     {
-        public ScheduledWishPlannerFrame(int userId) : base(userId,
-            ServiceOperationContract.GetUnscheduledWishList, ServiceOperationContract.WishSchedule)
+        public static ScheduledWishPlannerFrame Create(int userId)
         {
+            var frame = new ScheduledWishPlannerFrame(userId);
+            frame.GenerateCommands();
+            return frame;
         }
 
         protected override void FillUnscheduledItemSummaries(IEnumerable<Wish<ScheduleSettings>> data)
@@ -58,6 +60,11 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames
 
             NewItem.Author = Template.Author;
             NewItem.Rating = Template.Rating;
+        }
+
+        private ScheduledWishPlannerFrame(int userId) : base(userId,
+            ServiceOperationContract.GetUnscheduledWishList, ServiceOperationContract.WishSchedule)
+        {
         }
     }
 }

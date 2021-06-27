@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -12,7 +11,7 @@ using TT.Diary.Desktop.ViewModels.Commands.InitializingCommands;
 using TT.Diary.Desktop.ViewModels.Commands.RemoveCommands;
 using TT.Diary.Desktop.ViewModels.Commands.SaveCommands;
 using TT.Diary.Desktop.ViewModels.Extensions;
-using TT.Diary.Desktop.ViewModels.DataContexts;
+using TT.Diary.Desktop.ViewModels.Interlayer;
 using TT.Diary.Desktop.ViewModels.Lists;
 using TT.Diary.Desktop.ViewModels.Notification;
 using TT.Diary.Desktop.ViewModels.TimeManagement.UnscheduledSummaries;
@@ -125,9 +124,7 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames
         internal async Task SetUnscheduledData()
         {
             var rootCategory = await GetUnscheduledItemsCategory();
-            RootCategoryId = rootCategory.Id == default
-                ? throw new ArgumentOutOfRangeException(nameof(rootCategory.Id))
-                : rootCategory.Id;
+            RootCategoryId = rootCategory.Id;
 
             if (UnscheduledItemSummaries.Count > 0)
             {
@@ -200,16 +197,8 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames
         private async Task<Category<T>> GetUnscheduledItemsCategory()
         {
             var requestUri = string.Format(_getUnscheduledItemsOperation, UserId);
-            using (var response = await Context.DiaryHttpClient.GetAsync(requestUri))
-            {
-                if (response.IsSuccessStatusCode)
-                {
-                    return await response.Content.ReadAsAsync<Category<T>>();
-                }
-
-                throw new Exception(string.Format(ErrorMessages.GetList.GetDescription(), _getUnscheduledItemsOperation,
-                    response.StatusCode));
-            }
+            return await Endpoint.GetAsync<Category<T>>(requestUri, ErrorMessages.GetList.GetDescription(),
+                _getUnscheduledItemsOperation);
         }
     }
 }

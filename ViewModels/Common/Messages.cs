@@ -13,9 +13,6 @@ namespace TT.Diary.Desktop.ViewModels.Common
         [Description("Received request with invalid state ({0}).")]
         RequestInvalidState,
 
-        [Description("User cannot be set - response with status code ({0}).")]
-        SetUserError,
-
         [Description("Unexpected type {0}.")] UnexpectedType,
 
         [Description("List {0} cannot be got - response with status code ({1}).")]

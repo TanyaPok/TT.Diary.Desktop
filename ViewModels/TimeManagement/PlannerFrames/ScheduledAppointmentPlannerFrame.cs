@@ -9,12 +9,13 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames
         ScheduledAppointmentPlannerFrame : AbstractTrackedItemPlannerFrame<Appointment<ScheduleSettings>,
             UnscheduledItemSummary>
     {
-        public ScheduledAppointmentPlannerFrame(int userId)
-            : base(userId, ServiceOperationContract.GetUnscheduledAppointments,
-                ServiceOperationContract.AppointmentSchedule, ServiceOperationContract.AppointmentTracker)
+        public static ScheduledAppointmentPlannerFrame Create(int userId)
         {
+            var frame = new ScheduledAppointmentPlannerFrame(userId);
+            frame.GenerateCommands();
+            return frame;
         }
-
+       
         protected override async Task InitializeItem()
         {
             await SetUnscheduledData();
@@ -39,6 +40,12 @@ namespace TT.Diary.Desktop.ViewModels.TimeManagement.PlannerFrames
             schedule.Repeat = Repeat.None;
             schedule.Every = 0;
             schedule.DaysAmount = 0;
+        }
+        
+        private ScheduledAppointmentPlannerFrame(int userId)
+            : base(userId, ServiceOperationContract.GetUnscheduledAppointments,
+                ServiceOperationContract.AppointmentSchedule, ServiceOperationContract.AppointmentTracker)
+        {
         }
     }
 }
